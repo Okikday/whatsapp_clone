@@ -18,7 +18,7 @@ class CustomTextfield extends StatefulWidget {
   final void Function()? onEditingComplete;
   final TextInputType? keyboardType;
   final Widget? suffixIcon;
-  final Icon? prefixIcon;
+  final Widget? prefixIcon;
   final bool obscureText; // Toggle for password field
   final TextStyle? labelStyle;
   final TextStyle? hintStyle;

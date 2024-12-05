@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
@@ -15,12 +16,14 @@ class SelectLanguageBottomSheet extends StatelessWidget {
       items: whatsappLanguages.keys.toList(),
       activeColor: Colors.green,
     );
-
+    
     return DraggableScrollableSheet(
       maxChildSize: 1.0,
       initialChildSize: 0.5,
       minChildSize: 0.5,
       expand: false,
+      snap: true,
+      snapSizes: const [0.5],
       builder: (context, scrollController) {
         return SizedBox(
           child: Column(

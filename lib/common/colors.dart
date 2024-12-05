@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class WhatsAppColors {
   // Primary Colors
-  static const Color primary = Color(0xFF128C7E); // WhatsApp Green
-  static const Color secondary = Color(0xFF25D366); // Lighter Green
+  static const Color primary = Color(0xFF1DAB61); // WhatsApp Green
+  static const Color secondary = Color(0xFF21C063); // Lighter Green
   static const Color accent = Color(0xFF075E54); // Darker Green
-  static const Color background = Color(0xFFECE5DD); // Chat Background
+  static const Color background = Color(0xFFFFFFFF); // Chat Background
 
   // Message Bubble Colors
   static const Color messageSent = Color(0xFFDFF8C8); // Sent Message Bubble

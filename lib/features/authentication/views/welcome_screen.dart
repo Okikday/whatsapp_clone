@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,24 +11,23 @@ import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/images_strings.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
-import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
 import 'package:whatsapp_clone/features/authentication/views/widgets/select_language_bottom_sheet.dart';
+import 'package:whatsapp_clone/routes_names.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Color scaffoldBgColor = Get.theme.scaffoldBackgroundColor;
-    authUiController.setSystemNavBarColor(scaffoldBgColor);
+    
 
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle(systemNavigationBarColor: authUiController.systemNavBarColor.value),
+      value: SystemUiOverlayStyle(systemNavigationBarColor: Get.theme.scaffoldBackgroundColor),
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
           automaticallyImplyLeading: false,
-          backgroundColor: scaffoldBgColor,
+          backgroundColor: Get.theme.scaffoldBackgroundColor,
           actions: const [
             CustomPopupMenuButton(
               menuItems: ["Help"],
@@ -35,22 +36,16 @@ class WelcomeScreen extends StatelessWidget {
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: Get.height > Get.width ? Get.width * 0.05 : Get.height * 0.05),
-          child: Get.width > Get.height
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: welcomeScreenWidgets(context),
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: welcomeScreenWidgets(context),
-                ),
+          child: Get.width > Get.height ? Row(children: welcomeScreenWidgets(context),) : Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: welcomeScreenWidgets(context),),
         ),
       ),
     );
   }
 }
 
-List<Widget> welcomeScreenWidgets(BuildContext context) {
+
+
+List<Widget> welcomeScreenWidgets(BuildContext context){
   final bool isDarkMode = Get.theme.brightness == Brightness.dark;
   return [
     SizedBox(
@@ -96,7 +91,7 @@ List<Widget> welcomeScreenWidgets(BuildContext context) {
               ),
               CustomElevatedButton(
                 elevation: 0,
-                backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : const Color.fromARGB(255, 223, 223, 223),
+                backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : const Color(0xFFF7F7FA),
                 overlayColor: isDarkMode ? WhatsAppColors.secondary.withOpacity(0.1) : WhatsAppColors.primary.withOpacity(0.1),
                 onClick: () async {
 
@@ -140,13 +135,23 @@ List<Widget> welcomeScreenWidgets(BuildContext context) {
               ),
             ],
           ),
-          CustomElevatedButton(
-            label: "Agree and Continue",
-            backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
-            screenWidth: 100,
-            textColor: WhatsAppColors.textPrimary,
-            textSize: Constants.fontSizeSmall + 1,
-          )
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CustomElevatedButton(
+                pixelHeight: 48,
+                label: "Agree and Continue",
+                backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
+                screenWidth: 100,
+                textSize: Constants.fontSizeSmall + 1,
+                onClick: (){
+                  log("Clicked to new page");
+                  Get.to(() => RoutesNames.contactVerificationView, transition: Transition.downToUp, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: Constants.spaceExtraSmall,)
         ],
       ),
     )
