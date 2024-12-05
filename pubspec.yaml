@@ -1,0 +1,59 @@
+name: whatsapp_clone
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  flutter_animate: ^4.5.0
+  get: ^4.6.6
+  google_fonts: ^6.2.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  font_awesome_flutter: ^10.8.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/icons/
+    - assets/images/
+    - assets/logo/
+
+  #-FONTS
+  fonts:
+    - family: AlbertSans
+      fonts:
+        - asset: assets/fonts/AlbertSans/AlbertSans-Regular.ttf
+        - asset: assets/fonts/AlbertSans/AlbertSans-Light.ttf
+          weight: 100
+        - asset: assets/fonts/AlbertSans/AlbertSans-Medium.ttf
+          weight: 200
+        - asset: assets/fonts/AlbertSans/AlbertSans-MediumItalic.ttf
+          style: italic
+          weight: 300
+        - asset: assets/fonts/AlbertSans/AlbertSans-SemiBold.ttf
+          weight: 500
+        - asset: assets/fonts/AlbertSans/AlbertSans-SemiBoldItalic.ttf
+          style: italic
+          weight: 700
+        - asset: assets/fonts/AlbertSans/AlbertSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/AlbertSans/AlbertSans-BoldItalic.ttf
+          style: italic
+          weight: 700
+        - asset: assets/fonts/AlbertSans/AlbertSans-Italic.ttf
+          style: italic
