@@ -9,13 +9,14 @@ import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';
 import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
+import 'package:whatsapp_clone/routes_names.dart';
 
 class ContactVerificationView extends StatelessWidget {
   const ContactVerificationView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Color scaffoldBgColor = Get.theme.scaffoldBackgroundColor;
+    final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
     authUiController.setSystemNavBarColor(scaffoldBgColor);
     final bool isDarkMode = Get.theme.brightness == Brightness.dark;
     final InputBorder underlineInputBorder =
@@ -125,7 +126,9 @@ class ContactVerificationView extends StatelessWidget {
                         backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
                         screenWidth: 100,
                         textSize: Constants.fontSizeSmall + 1,
-                        onClick: () {},
+                        onClick: () {
+                          Get.to(() => RoutesNames.homeView,);
+                        },
                       ),
                     ),
                   ),

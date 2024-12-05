@@ -25,45 +25,48 @@ class SelectLanguageBottomSheet extends StatelessWidget {
       snap: true,
       snapSizes: const [0.5],
       builder: (context, scrollController) {
-        return SizedBox(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 36,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 12),
-                    const CloseButton(),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: CustomWidgets.text(
-                        context,
-                        "App's Language",
-                        align: TextAlign.left,
-                        fontSize: Constants.fontSizeMedium,
-                        fontWeight: FontWeight.w600,
+        return ColoredBox(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: SizedBox(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 36,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 12),
+                      const CloseButton(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: CustomWidgets.text(
+                          context,
+                          "App's Language",
+                          align: TextAlign.left,
+                          fontSize: Constants.fontSizeMedium,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const Divider(),
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: whatsappLanguages.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: customRadioButtons.getRadio(
-                        index: index,
-                      ),
-                      title: CustomWidgets.text(context, whatsappLanguages.keys.toList()[index]),
-                      subtitle: CustomWidgets.text(context, whatsappLanguages.values.toList()[index], color: WhatsAppColors.darkTextSecondary),
-                    );
-                  },
+                const Divider(),
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: whatsappLanguages.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: customRadioButtons.getRadio(
+                          index: index,
+                        ),
+                        title: CustomWidgets.text(context, whatsappLanguages.keys.toList()[index]),
+                        subtitle: CustomWidgets.text(context, whatsappLanguages.values.toList()[index], color: WhatsAppColors.darkTextSecondary),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

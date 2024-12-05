@@ -19,15 +19,14 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-
+    final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle(systemNavigationBarColor: Get.theme.scaffoldBackgroundColor),
+      value: SystemUiOverlayStyle(systemNavigationBarColor: scaffoldBgColor),
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
           automaticallyImplyLeading: false,
-          backgroundColor: Get.theme.scaffoldBackgroundColor,
+          backgroundColor: scaffoldBgColor,
           actions: const [
             CustomPopupMenuButton(
               menuItems: ["Help"],
@@ -36,7 +35,7 @@ class WelcomeScreen extends StatelessWidget {
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: Get.height > Get.width ? Get.width * 0.05 : Get.height * 0.05),
-          child: Get.width > Get.height ? Row(children: welcomeScreenWidgets(context),) : Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: welcomeScreenWidgets(context),),
+          child: Get.width > Get.height ? Row(children: welcomeScreenWidgets(context,),) : Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: welcomeScreenWidgets(context,),),
         ),
       ),
     );
@@ -45,7 +44,7 @@ class WelcomeScreen extends StatelessWidget {
 
 
 
-List<Widget> welcomeScreenWidgets(BuildContext context){
+List<Widget> welcomeScreenWidgets(BuildContext context,){
   final bool isDarkMode = Get.theme.brightness == Brightness.dark;
   return [
     SizedBox(
@@ -101,7 +100,7 @@ List<Widget> welcomeScreenWidgets(BuildContext context){
                         enableDrag: true,
                         showDragHandle: true,
                         isScrollControlled: true,
-                        backgroundColor: Get.theme.scaffoldBackgroundColor,
+                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                         builder: (context) {
                           return const SelectLanguageBottomSheet();
                         });
