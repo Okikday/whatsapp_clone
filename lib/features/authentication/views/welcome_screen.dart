@@ -35,26 +35,44 @@ class WelcomeScreen extends StatelessWidget {
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: Get.height > Get.width ? Get.width * 0.05 : Get.height * 0.05),
-          child: Get.width > Get.height ? Row(children: welcomeScreenWidgets(context,),) : Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: welcomeScreenWidgets(context,),),
+          child: Get.width > Get.height
+              ? Row(
+                  children: welcomeScreenWidgets(
+                    context,
+                  ),
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: welcomeScreenWidgets(
+                    context,
+                  ),
+                ),
         ),
       ),
     );
   }
 }
 
-
-
-List<Widget> welcomeScreenWidgets(BuildContext context,){
+List<Widget> welcomeScreenWidgets(
+  BuildContext context,
+) {
   final bool isDarkMode = Get.theme.brightness == Brightness.dark;
   return [
     SizedBox(
         height: Get.height > Get.width ? Get.height * 0.4 : Get.width * 0.5,
         child: Padding(
           padding: const EdgeInsets.all(Constants.spaceExtraLarge + 8),
-          child: Image.asset(
-            isDarkMode ? ImagesStrings.welcomeImgDark : ImagesStrings.welcomeImgLight,
-            fit: BoxFit.contain,
-          ),
+          child: isDarkMode
+              ? Image.asset(
+                  ImagesStrings.welcomeImgDark,
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  ImagesStrings.welcomeImgDark,
+                  fit: BoxFit.contain,
+                  color: const Color(0xFF2BAB6F),
+                  colorBlendMode: BlendMode.srcIn,
+                ),
         )),
     Expanded(
       child: Column(
@@ -93,7 +111,6 @@ List<Widget> welcomeScreenWidgets(BuildContext context,){
                 backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : const Color(0xFFF7F7FA),
                 overlayColor: isDarkMode ? WhatsAppColors.secondary.withOpacity(0.1) : WhatsAppColors.primary.withOpacity(0.1),
                 onClick: () async {
-
                   if (context.mounted) {
                     await showModalBottomSheet(
                         context: context,
@@ -110,6 +127,7 @@ List<Widget> welcomeScreenWidgets(BuildContext context,){
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
+                      vertical: 8
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -143,14 +161,17 @@ List<Widget> welcomeScreenWidgets(BuildContext context,){
                 backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
                 screenWidth: 100,
                 textSize: Constants.fontSizeSmall + 1,
-                onClick: (){
+                onClick: () {
                   log("Clicked to new page");
-                  Get.to(() => RoutesNames.contactVerificationView, transition: Transition.downToUp, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);
+                  Get.to(() => RoutesNames.contactVerificationView,
+                      transition: Transition.zoom, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);
                 },
               ),
             ),
           ),
-          const SizedBox(height: Constants.spaceExtraSmall,)
+          const SizedBox(
+            height: Constants.spaceExtraSmall,
+          )
         ],
       ),
     )

@@ -4,7 +4,6 @@ const String iconPath = "assets/icons";
 class ImagesStrings {
   
   static const welcomeImgDark = "$imgPath/7k.png";
-  static const welcomeImgLight = "$imgPath/bbh.png";
   static const whatsAppTextGreen = "$imgPath/8p.png";
   
 }
