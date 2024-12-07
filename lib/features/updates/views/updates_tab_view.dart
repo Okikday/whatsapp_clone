@@ -18,7 +18,7 @@ class UpdatesTabView extends StatelessWidget {
         const SizedBox(height: 16,),
         Padding(
           padding: generalPadding,
-          child: SizedBox(width: Get.width, child: CustomWidgets.text(context, "Status")),
+          child: SizedBox(width: Get.width, child: CustomWidgets.text(context, "Status", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500)),
         ),
         const SizedBox(height: 16,),
         SizedBox(
@@ -29,7 +29,7 @@ class UpdatesTabView extends StatelessWidget {
             itemCount: 10,
             padding: EdgeInsets.only(left: generalPadding.left),
             itemBuilder: (context, index){
-            return StatusListTile(padding: EdgeInsets.only(left: index == 0 ? 0 : 4, right: index == 10 ? 0 : 4 ),);
+            return StatusListTile(margin: EdgeInsets.only(left: index == 0 ? 0 : 4, right: index == 10 ? 0 : 4 ),);
           }),
         ),
       ],

@@ -14,9 +14,9 @@ dependencies:
   flutter_animate: ^4.5.0
   get: ^4.6.6
   google_fonts: ^6.2.1
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
   font_awesome_flutter: ^10.8.0
+  sqflite: ^2.0.0+4
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
