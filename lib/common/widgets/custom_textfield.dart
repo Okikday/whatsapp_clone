@@ -79,7 +79,8 @@ class CustomTextfield extends StatefulWidget {
       this.maxLength,
       this.inputFormatters,
       this.internalArgs,
-      this.dispose2});
+      this.dispose2,
+    });
 
   @override
   State<CustomTextfield> createState() => _CustomTextfieldState();

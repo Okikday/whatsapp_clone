@@ -46,11 +46,11 @@ class CustomElevatedButton extends StatelessWidget {
       height: screenHeight != null ? MediaQuery.of(context).size.height * (screenHeight! / 100) : pixelHeight,
       child: ElevatedButton(
           onPressed: onClick,
-          
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(backgroundColor ?? Theme.of(context).primaryColor),
             padding: WidgetStatePropertyAll(contentPadding ?? EdgeInsets.zero),
             overlayColor: WidgetStatePropertyAll(overlayColor ?? Colors.blue.withOpacity(0.1)),
+            shadowColor: const WidgetStatePropertyAll(Colors.transparent),
             elevation: WidgetStatePropertyAll(elevation),
             shape: WidgetStatePropertyAll(shape ?? RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 24) )),
             side: WidgetStatePropertyAll(side),

@@ -2,35 +2,37 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
-import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/utilities.dart';
 
 class StatusListTile extends StatelessWidget {
   final EdgeInsets? margin;
   final Widget? child;
-  final ImageSource imgSrc;
-  final File? imgFile;
-  final String? imgURL;
-  const StatusListTile({super.key, this.margin, this.child, this.imgSrc = ImageSource.network, this.imgFile, this.imgURL});
+  final ImageSource profilePhotoSrc;
+  final File? profilePhotoFile;
+  final String? profilePhotoURL;
+  final String title;
+  final String? thumbnailURL;
+  final File? thumbnailFile;
+  final ImageSource thumbnailSrc;
+  const StatusListTile(
+      {super.key,
+      this.margin,
+      this.child,
+      this.profilePhotoSrc = ImageSource.network,
+      this.profilePhotoFile,
+      this.profilePhotoURL,
+      required this.title,
+      this.thumbnailURL,
+      this.thumbnailFile,
+      this.thumbnailSrc = ImageSource.network});
 
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     const double width = 120;
     const double height = 160;
-
-    ImageProvider? imgProvider(){
-      if(imgFile == null && imgURL == null){
-        return const AssetImage("");
-      }else if(imgURL != null && imgSrc == ImageSource.network){
-        return NetworkImage(imgURL!);
-      }else if(imgSrc == ImageSource.file && imgFile != null){
-        return FileImage(imgFile!);
-      }else{
-        return null;
-      }
-    }
 
     return Padding(
       padding: margin ?? EdgeInsets.zero,
@@ -56,12 +58,9 @@ class StatusListTile extends StatelessWidget {
                       top: Constants.spaceSmall,
                       child: CircleAvatar(
                         backgroundColor: Colors.grey,
-                        backgroundImage: imgProvider(),
+                        backgroundImage: Utilities.imgProvider(imgsrc: profilePhotoSrc, imgfile: profilePhotoFile, imgurl: profilePhotoURL),
                       )),
-                  Positioned(
-                    left: Constants.spaceSmall,
-                    bottom: Constants.spaceExtraSmall,
-                    child: CustomWidgets.text(context, "Someone"))
+                  Positioned(left: Constants.spaceSmall, bottom: Constants.spaceExtraSmall, child: CustomWidgets.text(context, title))
                 ],
               ),
         ),

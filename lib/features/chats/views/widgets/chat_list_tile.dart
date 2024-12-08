@@ -11,9 +11,13 @@ class ChatListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
-      overlayColor: WidgetStatePropertyAll(isDarkMode ? WhatsAppColors.secondary.withOpacity(0.25) : WhatsAppColors.primary.withOpacity(0.25)),
+      overlayColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.1)),
       onTap: (){
-
+        //For when it's long pressed
+        isDarkMode ? WhatsAppColors.secondary.withOpacity(0.25) : WhatsAppColors.primary.withOpacity(0.25);
+      },
+      onLongPress: () {
+        
       },
       child: Container(
         width: width,

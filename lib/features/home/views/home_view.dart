@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
@@ -41,6 +42,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
+    WidgetsBinding.instance.addPostFrameCallback((_) => homeUiController.homeCameraIconAnimController.value!.forward(from: 0));
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
@@ -59,41 +61,44 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             child: Row(
               children: [
                 Obx(
-                  (){
+                  () {
                     final int obxCurrentIndex = homeUiController.homeBottomNavBarCurrentIndex.value;
                     return CustomWidgets.text(context, AppConstants.homeTabTitles[obxCurrentIndex],
-                      fontWeight: obxCurrentIndex == 0 ? FontWeight.w600 : FontWeight.w500, fontSize: 24, color: isDarkMode ? WhatsAppColors.background : (obxCurrentIndex == 0 ? WhatsAppColors.primary : Colors.black));
+                        fontWeight: obxCurrentIndex == 0 ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: 24,
+                        color: isDarkMode ? WhatsAppColors.background : (obxCurrentIndex == 0 ? WhatsAppColors.primary : Colors.black));
                   },
                 ),
                 Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Animate(
-                        controller: homeUiController.homeCameraIconAnimController.value,
-                        effects: const [MoveEffect(begin: Offset(24, 0), end: Offset(0, 0)), FadeEffect(begin: 0, end: 1, duration: Duration(milliseconds: 500))],
-                        child: IconButton(
-                            onPressed: () {},
-                            icon: Image.asset(
-                              IconStrings.cameraIconHome,
-                              width: 24,
-                              height: 24,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                              colorBlendMode: BlendMode.srcIn,
-                            )),
-                      ),
-                    ),),
-                Obx(
-                      () => Visibility(
-                          visible: homeUiController.homeBottomNavBarCurrentIndex.value == 1 || homeUiController.homeBottomNavBarCurrentIndex.value == 3,
-                          child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.search,
-                                size: 24,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              )).animate().fadeIn(duration: const Duration(milliseconds: 150))),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Animate(
+                      controller: homeUiController.homeCameraIconAnimController.value,
+                      effects: const [MoveEffect(begin: Offset(24, 0), end: Offset(0, 0)), FadeEffect(begin: 0, end: 1, duration: Duration(milliseconds: 500))],
+                      child: IconButton(
+                          onPressed: () {},
+                          icon: Image.asset(
+                            IconStrings.cameraIconHome,
+                            width: 24,
+                            height: 24,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            colorBlendMode: BlendMode.srcIn,
+                          )),
                     ),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, size: 24, color: isDarkMode ? Colors.white : Colors.black))
+                  ),
+                ),
+                Obx(
+                  () => Visibility(
+                      visible: homeUiController.homeBottomNavBarCurrentIndex.value == 1 || homeUiController.homeBottomNavBarCurrentIndex.value == 3,
+                      child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.search,
+                            size: 24,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          )).animate().fadeIn(duration: const Duration(milliseconds: 150))),
+                ),
+                IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, size: 24, color: isDarkMode ? Colors.white : Colors.black))
               ],
             ),
           ),
@@ -185,6 +190,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Icon(Icons.add_comment, color: Theme.of(context).scaffoldBackgroundColor,),
         ),
         body: PageView(
             controller: pageController,

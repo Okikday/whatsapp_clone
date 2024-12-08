@@ -3,8 +3,10 @@ const String iconPath = "assets/icons";
 
 class ImagesStrings {
   
+  static const imgPlaceholder = "$imgPath/img_placeholder.png";
   static const welcomeImgDark = "$imgPath/7k.png";
   static const whatsAppTextGreen = "$imgPath/8p.png";
+  static const chatBackground = "$imgPath/bae.png";
   
 }
 

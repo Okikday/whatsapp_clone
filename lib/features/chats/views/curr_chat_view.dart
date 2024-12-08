@@ -1,0 +1,143 @@
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:whatsapp_clone/common/app_constants.dart';
+import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/images_strings.dart';
+import 'package:whatsapp_clone/common/utilities.dart';
+import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
+import 'package:whatsapp_clone/common/widgets/custom_flutter_native_text_input.dart';
+import 'package:whatsapp_clone/features/chats/controllers/curr_chat_view_controller.dart';
+
+class CurrChatView extends StatelessWidget {
+  const CurrChatView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
+
+    return AnnotatedRegion(
+      value: SystemUiOverlayStyle(
+          systemNavigationBarColor: scaffoldBgColor, statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark, statusBarColor: scaffoldBgColor),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        extendBody: true,
+        appBar: PreferredSize(
+          preferredSize: Size(Get.width, 64),
+          child: Container(
+            color: scaffoldBgColor,
+            width: Get.width,
+            height: 64,
+            margin: const EdgeInsets.only(top: kToolbarHeight - 26),
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: Row(
+              children: [
+                const BackButton(),
+                CircleAvatar(
+                  backgroundColor: Colors.grey.withOpacity(0.5),
+                  backgroundImage: Utilities.imgProvider(imgsrc: ImageSource.network),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                Expanded(child: CustomWidgets.text(context, "Someone")),
+                IconButton(onPressed: () {}, icon: Icon(FontAwesomeIcons.video, size: 24, color: isDarkMode ? Colors.white : Colors.black)),
+                IconButton(
+                    onPressed: () {},
+                    icon: Image.asset(
+                      IconStrings.callsIconOutlined,
+                      width: 24,
+                      height: 24,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      colorBlendMode: BlendMode.srcIn,
+                    )),
+                IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, size: 24, color: isDarkMode ? Colors.white : Colors.black)),
+              ],
+            ),
+          ),
+        ),
+        body: SizedBox(
+          width: Get.width,
+          height: Get.height,
+          child: Stack(
+            clipBehavior: Clip.hardEdge,
+            children: [
+              // Chat background
+              Container(
+                height: Get.height,
+                width: Get.width,
+                decoration:
+                    const BoxDecoration(color: Color(0xFF081010), image: DecorationImage(image: AssetImage(ImagesStrings.chatBackground), fit: BoxFit.fill)),
+              ),
+
+              Positioned(
+                width: Get.width,
+                bottom: MediaQuery.viewInsetsOf(context).bottom.clamp(4.0, Get.height / 1.9),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Obx(
+                            () => CustomFlutterNativeTextField(
+                              backgroundColor: scaffoldBgColor,
+                              pixelHeight: currChatViewController.messageBarHeight.value,
+                              borderRadius: 64,
+                              maxLines: 100,
+                              inputTextStyle: TextStyle(color: Colors.orange, height: 1.5, fontSize: 16),
+                              prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
+                              alwaysShowSuffixIcon: true,
+                              suffixIcon: SizedBox(
+                                width: 110,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(onPressed: () {}, icon: Icon(Icons.attachment)),
+                                      IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              internalArgs: (contentHeight) {
+                                log("$contentHeight");
+
+                                currChatViewController.setMessageBarHeight(contentHeight.clamp(48.0, 120.0));
+                              },
+                              onchanged: (text) {
+                                // final RenderBox renderBox = textInputKey.currentContext!.findRenderObject() as RenderBox;
+                                // log("${renderBox.size.height}");
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      CustomElevatedButton(
+                        shape: const CircleBorder(),
+                        pixelWidth: 48,
+                        pixelHeight: 48,
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: Icon(
+                          Icons.mic,
+                          size: 28,
+                          color: scaffoldBgColor,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
