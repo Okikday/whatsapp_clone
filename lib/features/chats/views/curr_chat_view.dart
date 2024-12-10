@@ -9,8 +9,7 @@ import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/images_strings.dart';
 import 'package:whatsapp_clone/common/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
-import 'package:whatsapp_clone/common/widgets/custom_flutter_native_text_input.dart';
-import 'package:whatsapp_clone/features/chats/controllers/curr_chat_view_controller.dart';
+import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 
 class CurrChatView extends StatelessWidget {
   const CurrChatView({super.key});
@@ -84,39 +83,34 @@ class CurrChatView extends StatelessWidget {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(right: 4),
-                          child: Obx(
-                            () => CustomFlutterNativeTextField(
-                              backgroundColor: scaffoldBgColor,
-                              pixelHeight: currChatViewController.messageBarHeight.value,
-                              borderRadius: 64,
-                              maxLines: 100,
-                              inputTextStyle: TextStyle(color: Colors.orange, height: 1.5, fontSize: 16),
-                              prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
-                              alwaysShowSuffixIcon: true,
-                              suffixIcon: SizedBox(
-                                width: 110,
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(onPressed: () {}, icon: Icon(Icons.attachment)),
-                                      IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined)),
-                                    ],
-                                  ),
-                                ),
+                          child: SizedBox(
+                            width: 120,
+                            height: 48,
+                            child: ColoredBox(
+                              color: Colors.blue, 
+                              child: CustomNativeTextInput()
                               ),
-                              internalArgs: (contentHeight) {
-                                log("$contentHeight");
-
-                                currChatViewController.setMessageBarHeight(contentHeight.clamp(48.0, 120.0));
-                              },
-                              onchanged: (text) {
-                                // final RenderBox renderBox = textInputKey.currentContext!.findRenderObject() as RenderBox;
-                                // log("${renderBox.size.height}");
-                              },
-                            ),
-                          ),
+                          )
+                          // child: CustomFlutterNativeTextField(
+                          //   backgroundColor: scaffoldBgColor,
+                          //   borderRadius: 64,
+                          //   maxLines: 100,
+                          //   prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
+                          //   alwaysShowSuffixIcon: true,
+                          //   suffixIcon: SizedBox(
+                          //     width: 110,
+                          //     child: Padding(
+                          //       padding: EdgeInsets.only(right: 8),
+                          //       child: Row(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: [
+                          //           IconButton(onPressed: () {}, icon: Icon(Icons.attachment)),
+                          //           IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined)),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ),
                       ),
                       CustomElevatedButton(
