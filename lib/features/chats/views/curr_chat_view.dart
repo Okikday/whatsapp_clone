@@ -11,9 +11,16 @@ import 'package:whatsapp_clone/common/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 
-class CurrChatView extends StatelessWidget {
+final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
+
+class CurrChatView extends StatefulWidget {
   const CurrChatView({super.key});
 
+  @override
+  State<CurrChatView> createState() => _CurrChatViewState();
+}
+
+class _CurrChatViewState extends State<CurrChatView> {
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -71,6 +78,18 @@ class CurrChatView extends StatelessWidget {
                 width: Get.width,
                 decoration:
                     const BoxDecoration(color: Color(0xFF081010), image: DecorationImage(image: AssetImage(ImagesStrings.chatBackground), fit: BoxFit.fill)),
+                child: CustomElevatedButton(
+                    onClick: () {
+                      log("Clicked");
+                      // Send the updated state to the native side
+                      // Find the nearest CustomNativeTextInputState in the widget tree
+                      setState(() {
+                        nativeTextInputController.updateArguments({
+                        'hasFocus': false
+                      });
+                      });
+                    },
+                    label: "Play"),
               ),
 
               Positioned(
@@ -82,36 +101,45 @@ class CurrChatView extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: SizedBox(
-                            width: 120,
-                            height: 48,
-                            child: ColoredBox(
-                              color: Colors.blue, 
-                              child: CustomNativeTextInput()
-                              ),
-                          )
-                          // child: CustomFlutterNativeTextField(
-                          //   backgroundColor: scaffoldBgColor,
-                          //   borderRadius: 64,
-                          //   maxLines: 100,
-                          //   prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
-                          //   alwaysShowSuffixIcon: true,
-                          //   suffixIcon: SizedBox(
-                          //     width: 110,
-                          //     child: Padding(
-                          //       padding: EdgeInsets.only(right: 8),
-                          //       child: Row(
-                          //         mainAxisAlignment: MainAxisAlignment.center,
-                          //         children: [
-                          //           IconButton(onPressed: () {}, icon: Icon(Icons.attachment)),
-                          //           IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined)),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                        ),
+                            padding: const EdgeInsets.only(right: 4),
+                            child: SizedBox(
+                              width: 120,
+                              height: 48,
+                              child: ColoredBox(
+                                  color: Colors.blue.withOpacity(0.1),
+                                  child: CustomNativeTextInput(
+                                      nativeTextInputController: nativeTextInputController,
+                                      hint: "What is it",
+                                      keyboardType: TextInputType.number,
+                                      defaultText: "Default text",
+                                      inputTextStyle: const TextStyle(fontSize: 24),
+                                      cursorWidth: 4,
+                                      cursorColor: Colors.red,
+                                      backgroundColor: Colors.blue,
+                                      cursorHandleColor: Colors.black,
+                                      textStyles: [NativeTextStyle(start: 0, end: 4, style: "bold", color: Colors.orange, backgroundColor: Colors.red)])),
+                            )
+                            // child: CustomFlutterNativeTextField(
+                            //   backgroundColor: scaffoldBgColor,
+                            //   borderRadius: 64,
+                            //   maxLines: 100,
+                            //   prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
+                            //   alwaysShowSuffixIcon: true,
+                            //   suffixIcon: SizedBox(
+                            //     width: 110,
+                            //     child: Padding(
+                            //       padding: EdgeInsets.only(right: 8),
+                            //       child: Row(
+                            //         mainAxisAlignment: MainAxisAlignment.center,
+                            //         children: [
+                            //           IconButton(onPressed: () {}, icon: Icon(Icons.attachment)),
+                            //           IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined)),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
+                            ),
                       ),
                       CustomElevatedButton(
                         shape: const CircleBorder(),

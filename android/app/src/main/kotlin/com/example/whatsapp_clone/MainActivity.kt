@@ -11,7 +11,8 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val registry: PlatformViewRegistry = flutterEngine.platformViewsController.registry
-        registry.registerViewFactory("native-text-input", NativeTextInputFactory())
+        registry.registerViewFactory("native-text-input", NativeTextInputFactory(flutterEngine.dartExecutor.binaryMessenger))
+
     }
 }
 
