@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <size android:width="2dp"/> <!-- Cursor width -->
+    <solid android:color="@color/your_cursor_color"/> <!-- Cursor color -->
+</shape>
