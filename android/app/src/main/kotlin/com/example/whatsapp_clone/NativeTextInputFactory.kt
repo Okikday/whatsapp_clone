@@ -13,6 +13,7 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.method.ScrollingMovementMethod
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.LineHeightSpan
@@ -24,10 +25,12 @@ import android.view.MotionEvent
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import io.flutter.embedding.engine.systemchannels.TextInputChannel.TextInputType
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
@@ -61,8 +64,11 @@ class NativeTextInputFactory(
             setText(args.defaultText ?: "")
             textSize = (args.fontSize ?: 14.0).toFloat()
             isEnabled = args.isEnabled as? Boolean ?: true
-            maxLines = (args.maxLines as? Int) ?: 1
-            inputType = _parseKeyboardType(args.keyboardType)
+            args.minLines?.let { setMinLines(it)}
+            args.maxLines?.let { setMaxLines(it) }
+            args.lines?.let { setLines(it) }
+            setRawInputType(_parseKeyboardType(args.keyboardType))
+            args.hintTextColor?.let { setHintTextColor(it) }
 
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             if (args.hasFocus) {
@@ -73,8 +79,10 @@ class NativeTextInputFactory(
                 imm?.hideSoftInputFromWindow(windowToken, 0)
             }
 
-            args.inputBoxWidth?.let { width = it }
-            args.inputBoxHeight?.let { height = it }
+            args.inputBoxWidth?.let { setWidth(it) }
+            args.inputBoxHeight?.let { setHeight(it) }
+            args.minHeight?.let { setMinHeight(it) }
+            args.maxHeight?.let { setMaxHeight(it) }
 
             gravity = when (args.textAlign) { // Set text alignment
                 "center" -> android.view.Gravity.CENTER
@@ -249,7 +257,7 @@ class NativeTextInputFactory(
         private var currentState: NativeTextInputModel? = args
 
         fun _parseKeyboardType(value: String): Int{
-            val type = when (value) {
+            return when (value) {
                 "number" -> InputType.TYPE_CLASS_NUMBER
                 "emailAddress" -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                 "phone" -> InputType.TYPE_CLASS_PHONE
@@ -262,7 +270,6 @@ class NativeTextInputFactory(
                 "numberDecimal" -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                 else -> InputType.TYPE_CLASS_TEXT
             }
-            return type
         }
 
         fun _setCursorProperty(args: NativeTextInputModel) {
@@ -333,13 +340,15 @@ class NativeTextInputFactory(
                 if (currentState?.isEnabled != newState.isEnabled) {
                     editText.isEnabled = newState.isEnabled
                 }
+                if (currentState?.minLines != newState.minLines) {
+                    newState.minLines?.let { editText.minLines = it }
+                }
                 if (currentState?.maxLines != newState.maxLines) {
-                    editText.maxLines = newState.maxLines.toInt()
+                    newState.maxLines?.let { editText.maxLines = it }
                 }
                 if (currentState?.keyboardType != newState.keyboardType) {
-                    editText.inputType = _parseKeyboardType(newState.keyboardType ?: "text")
+                    editText.setRawInputType(_parseKeyboardType(newState.keyboardType))
                 }
-
                 if (newState.hasFocus != currentState?.hasFocus) {
                     val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
                     if (newState.hasFocus) {
@@ -366,6 +375,16 @@ class NativeTextInputFactory(
                     newState.maxLength?.let { // Set maximum length if provided
                         editText.filters = arrayOf(android.text.InputFilter.LengthFilter(it))
                     }
+                }
+                if(newState.hintTextColor != currentState?.hintTextColor){
+                    newState.hintTextColor?.let { editText.setHintTextColor(it) }
+                }
+                if(newState.minHeight != currentState?.minHeight || newState.maxHeight != currentState?.maxHeight){
+                    newState.minHeight?.let { editText.setMinHeight(it) }
+                    newState.maxHeight?.let { editText.setMaxHeight(it) }
+                }
+                if(newState.lines != currentState?.lines){
+                    newState.lines?.let { editText.setLines(it) }
                 }
 
                 // Save the new state as the current state
@@ -413,6 +432,7 @@ class NativeTextInputFactory(
                                 InputType.TYPE_CLASS_NUMBER -> "number"
                                 InputType.TYPE_CLASS_TEXT -> "text"
                                 InputType.TYPE_TEXT_VARIATION_PASSWORD -> "password"
+                                InputType.TYPE_TEXT_FLAG_MULTI_LINE -> "multiline"
                                 else -> "text"
                             },
                             maxLength = editText.filters.filterIsInstance<InputFilter.LengthFilter>().firstOrNull()?.max,
@@ -463,6 +483,7 @@ class NativeTextInputFactory(
                                     defaultText = args["defaultText"] as? String,
                                     fontSize = (args["fontSize"] as? Double)?.toFloat() ?: currentState?.fontSize ?: 16f,
                                     isEnabled = args["isEnabled"] as? Boolean ?: currentState?.isEnabled ?: true,
+                                    minLines = args["minLines"] as? Int ?: currentState?.minLines ?: 1,
                                     maxLines = args["maxLines"] as? Int ?: currentState?.maxLines ?: 1,
                                     keyboardType = args["keyboardType"] as? String ?: currentState?.keyboardType ?: "text",
                                     hasFocus = args["hasFocus"] as? Boolean ?: currentState?.hasFocus ?: false,
@@ -513,7 +534,9 @@ data class NativeTextInputModel(
     val defaultText: String? = null, // Default text to display in the EditText
     val fontSize: Float = 16.0f, // Font size for the text
     val isEnabled: Boolean = true, // Whether the EditText is enabled
-    val maxLines: Int = 1, // Maximum number of lines
+    val minLines: Int? = null,
+    val maxLines: Int? = null, // Maximum number of lines
+    val lines: Int? = null,
     val textAlign: String = "start", // Text alignment ("start", "center", "end")
     val keyboardType: String = "text", // Input type ("text", "number", etc.)
     val maxLength: Int? = null, // Maximum length of the text
@@ -526,6 +549,9 @@ data class NativeTextInputModel(
     val cursorHandleColor: Int? = null,
     val inputBoxWidth: Int? = null,
     val inputBoxHeight: Int? = null,
+    val hintTextColor: Int? = null,
+    val minHeight: Int? = null,
+    val maxHeight: Int? = null,
 ) {
     // Converts the model to a Map
     fun toMap(): Map<String, Any?> {
@@ -535,7 +561,9 @@ data class NativeTextInputModel(
             "defaultText" to defaultText,
             "fontSize" to fontSize,
             "isEnabled" to isEnabled,
+            "minLines" to minLines,
             "maxLines" to maxLines,
+            "lines" to lines,
             "textAlign" to textAlign,
             "keyboardType" to keyboardType,
             "maxLength" to maxLength,
@@ -547,7 +575,10 @@ data class NativeTextInputModel(
             "cursorWidth" to cursorWidth,
             "cursorHandleColor" to cursorHandleColor,
             "inputBoxWidth" to inputBoxWidth,
-            "inputBoxHeight" to inputBoxHeight
+            "inputBoxHeight" to inputBoxHeight,
+            "hintTextColor" to hintTextColor,
+            "minHeight" to minHeight,
+            "maxHeight" to maxHeight
         )
     }
 
@@ -563,11 +594,13 @@ data class NativeTextInputModel(
                 hint = map["hint"] as? String,
                 label = map["label"] as? String,
                 defaultText = map["defaultText"] as? String,
-                fontSize = (map["fontSize"] as? Double ?: 16.0).toFloat(),
+                fontSize = (map["fontSize"] as? Double ?: 14.0).toFloat(),
                 isEnabled = map["isEnabled"] as? Boolean ?: true,
-                maxLines = map["maxLines"] as? Int ?: 1,
+                minLines = map["minLines"] as Int,
+                maxLines = map["maxLines"] as? Int,
+                lines = map["lines"] as? Int,
                 textAlign = map["textAlign"] as? String ?: "start",
-                keyboardType = map["keyboardType"] as? String ?: "text",
+                keyboardType = map["keyboardType"] as String ?: "text",
                 maxLength = map["maxLength"] as? Int,
                 backgroundColor = (map["backgroundColor"] as? Number)?.toLong()?.toInt(),
                 cursorColor = (map["cursorColor"] as? Number)?.toLong()?.toInt(),
@@ -576,8 +609,11 @@ data class NativeTextInputModel(
                 hasFocus = map["hasFocus"] as? Boolean ?: false,
                 cursorWidth = map["cursorWidth"] as? Int ?: 2,
                 cursorHandleColor = (map["cursorHandleColor"] as? Number)?.toLong()?.toInt(),
-                inputBoxWidth = (map["inputBoxWidth"] as? Int),
-                inputBoxHeight = (map["inputBoxHeight"] as? Int)
+                inputBoxWidth = map["inputBoxWidth"] as? Int,
+                inputBoxHeight = map["inputBoxHeight"] as? Int,
+                hintTextColor = (map["hintTextColor"] as? Number)?.toLong()?.toInt(),
+                minHeight = map["minHeight"] as? Int,
+                maxHeight = map["maxHeight"] as? Int
             )
         }
     }

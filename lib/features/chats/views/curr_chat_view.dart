@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +45,7 @@ class _CurrChatViewState extends State<CurrChatView> {
               children: [
                 const BackButton(),
                 CircleAvatar(
-                  backgroundColor: Colors.grey.withOpacity(0.5),
+                  backgroundColor: Colors.grey.shade500,
                   backgroundImage: Utilities.imgProvider(imgsrc: ImageSource.network),
                 ),
                 const SizedBox(
@@ -78,18 +79,6 @@ class _CurrChatViewState extends State<CurrChatView> {
                 width: Get.width,
                 decoration:
                     const BoxDecoration(color: Color(0xFF081010), image: DecorationImage(image: AssetImage(ImagesStrings.chatBackground), fit: BoxFit.fill)),
-                child: CustomElevatedButton(
-                    onClick: () {
-                      log("Clicked");
-                      // Send the updated state to the native side
-                      // Find the nearest CustomNativeTextInputState in the widget tree
-                      setState(() {
-                        nativeTextInputController.updateArguments({
-                        'hasFocus': false
-                      });
-                      });
-                    },
-                    label: "Play"),
               ),
 
               Positioned(
@@ -106,18 +95,29 @@ class _CurrChatViewState extends State<CurrChatView> {
                               width: 120,
                               height: 48,
                               child: ColoredBox(
-                                  color: Colors.blue.withOpacity(0.1),
+                                  color: Colors.blue.shade100,
                                   child: CustomNativeTextInput(
-                                      nativeTextInputController: nativeTextInputController,
-                                      hint: "What is it",
-                                      keyboardType: TextInputType.number,
-                                      defaultText: "Default text",
-                                      inputTextStyle: const TextStyle(fontSize: 24),
-                                      cursorWidth: 4,
-                                      cursorColor: Colors.red,
-                                      backgroundColor: Colors.blue,
-                                      cursorHandleColor: Colors.black,
-                                      textStyles: [NativeTextStyle(start: 0, end: 4, style: "bold", color: Colors.orange, backgroundColor: Colors.red)])),
+                                    nativeTextInputController: nativeTextInputController,
+                                    hint: "Hint text",
+                                    inputBoxHeight: 200,
+                                    inputBoxWidth: 200,
+                                    minLines: 3,
+                                    maxLines: 5,
+                                    maxLength: 200,
+                                    keyboardType: TextInputType.multiline,
+                                    backgroundColor: Colors.orange,
+                                    inputTextStyle: const TextStyle(fontSize: 16),
+                                    cursorWidth: 4,
+                                    cursorColor: Colors.black,
+                                    cursorHandleColor: Colors.green,
+                                    onchanged: (text) async {
+                                      log("Typed in: $text");
+                                    },
+                                    internalArgs: (args) async {
+                                      log("arguments: ${args.toMap()}");
+                                      log("Run internal args");
+                                    },
+                                  )),
                             )
                             // child: CustomFlutterNativeTextField(
                             //   backgroundColor: scaffoldBgColor,

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
@@ -9,37 +11,25 @@ import 'package:flutter/services.dart';
 class CustomNativeTextInput extends StatefulWidget {
   final CustomNativeTextInputController nativeTextInputController;
   final String? hint; // Shows hint
-  final String? label; // Shows Label
   final double? pixelHeight; // Use pixel height for the normal height
   final double? pixelWidth; // Use pixel width for the normal width
-  final double? maxHeight;
-  final double? minHeight;
-  final double? screenHeight; // Height based on screen size
-  final double? screenWidth; // Width based on screen size
-  final bool alwaysShowSuffixIcon; // Always show suffix icon if true
+  final int? inputBoxHeight;
+  final int? inputBoxWidth;
   final String defaultText; // Default text for the TextField
-  final void Function()? ontap; // Tap action
+  final Future<void> Function()? ontap; // Tap action
   final void Function()? onTapOutside;
-  final Function(String text)? onchanged; // Change listener for text
-  final Function(String text)? onSubmitted;
-  final void Function()? onEditingComplete;
+  final Future<void> Function(String text)? onchanged; // Change listener for text
   final TextInputType? keyboardType;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
-  final bool? obscureText; // Toggle for password field
-  final TextStyle? labelStyle;
   final TextStyle? hintStyle;
   final TextStyle? inputTextStyle;
   final double? borderRadius;
   final Color? backgroundColor;
-  final InputBorder? border;
-  final InputBorder? disabledBorder;
-  final InputBorder? enabledBorder;
-  final InputBorder? focusedBorder;
-  final TextEditingController? controller;
+  final BoxBorder? boxBorder;
   final TextAlign? textAlign;
   final EdgeInsets? contentPadding;
-  final FocusNode? focusNode;
+  final int? minLines;
   final int? maxLines;
   final bool? isEnabled;
   final Color? cursorColor;
@@ -47,52 +37,45 @@ class CustomNativeTextInput extends StatefulWidget {
   final bool? hasFocus;
   final List<TextInputFormatter>? inputFormatters;
   final List<NativeTextStyle>? textStyles;
-  final double? cursorWidth;
+  final int? cursorWidth;
   final Color? cursorHandleColor;
+  final Future<void> Function(NativeTextInputModel args)? internalArgs;
+  final int? minHeight;
+  final int? maxHeight;
+  final int? lines;
   const CustomNativeTextInput(
       {super.key,
       required this.nativeTextInputController,
       this.hint,
-      this.label,
       this.pixelHeight,
       this.pixelWidth,
-      this.screenHeight,
-      this.screenWidth,
-      this.alwaysShowSuffixIcon = false,
       this.defaultText = "",
       this.ontap,
       this.onTapOutside,
       this.onchanged,
-      this.onSubmitted,
-      this.onEditingComplete,
       this.keyboardType,
       this.suffixIcon,
       this.prefixIcon,
-      this.obscureText,
-      this.labelStyle,
       this.hintStyle,
       this.inputTextStyle,
       this.borderRadius,
       this.backgroundColor,
-      this.border,
-      this.disabledBorder,
-      this.enabledBorder,
-      this.focusedBorder,
-      this.controller,
+      this.boxBorder,
       this.textAlign,
       this.contentPadding,
-      this.focusNode,
+      this.minLines,
       this.maxLines,
       this.isEnabled,
       this.cursorColor,
       this.maxLength,
       this.inputFormatters,
       this.hasFocus,
-      this.minHeight,
-      this.maxHeight,
+      this.inputBoxWidth,
+      this.inputBoxHeight,
       this.textStyles,
       this.cursorWidth,
-      this.cursorHandleColor});
+      this.cursorHandleColor,
+      this.internalArgs, this.minHeight, this.maxHeight, this.lines});
 
   @override
   State<CustomNativeTextInput> createState() => CustomNativeTextInputState();
@@ -104,12 +87,14 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
   @override
   void initState() {
     super.initState();
-    widget.nativeTextInputController.attach(this);  // Attach the state to the controller
+    widget.nativeTextInputController.attach(this); // Attach the state to the controller
   }
 
   @override
   void dispose() {
-    widget.nativeTextInputController.detach();  // Detach the state when the widget is disposed
+    _channel.setMethodCallHandler(null); // Remove handler
+    widget.nativeTextInputController.detach(); // Detach the state when the widget is disposed
+
     super.dispose();
   }
 
@@ -124,9 +109,10 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
       'defaultText': widget.defaultText,
       'fontSize': widget.inputTextStyle?.fontSize,
       'isEnabled': widget.isEnabled,
+      'minLines': widget.minLines,
       'maxLines': widget.maxLines,
       'textAlign': widget.textAlign,
-      'keyboardType': widget.obscureText == true ? TextInputType.visiblePassword : widget.keyboardType,
+      'keyboardType': widget.keyboardType,
       'maxLength': widget.maxLength,
       'backgroundColor': widget.backgroundColor,
       'cursorColor': widget.cursorColor,
@@ -135,6 +121,12 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
       'cursorWidth': widget.cursorWidth,
       'cursorHandleColor': widget.cursorHandleColor,
       'hasFocus': widget.hasFocus,
+      'inputBoxHeight': widget.inputBoxHeight,
+      'inputBoxWidth': widget.inputBoxWidth,
+      'hintTextColor': widget.hintStyle?.color,
+      'lines': widget.lines,
+      'minHeight': widget.minHeight,
+      'maxHeight': widget.maxHeight
     };
 
     context.findAncestorStateOfType<CustomNativeTextInputState>()?.updateArguments({...currentParams, ...updatedArgs});
@@ -145,27 +137,39 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
     const String viewType = 'native-text-input';
 
     final Map<String, dynamic> creationParams = NativeTextInputModel(
-            hint: widget.hint,
-            label: widget.label,
-            defaultText: widget.defaultText,
-            fontSize: widget.inputTextStyle?.fontSize,
-            isEnabled: widget.isEnabled,
-            maxLines: widget.maxLines,
-            textAlign: widget.textAlign,
-            keyboardType: widget.obscureText == true ? TextInputType.visiblePassword : widget.keyboardType,
-            maxLength: widget.maxLength,
-            backgroundColor: widget.backgroundColor,
-            cursorColor: widget.cursorColor,
-            contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-            textStyles: widget.textStyles,
-            cursorWidth: widget.cursorWidth,
-            cursorHandleColor: widget.cursorHandleColor,
-            hasFocus: widget.hasFocus)
-        .toMap();
+      hint: widget.hint,
+      defaultText: widget.defaultText,
+      fontSize: widget.inputTextStyle?.fontSize,
+      isEnabled: widget.isEnabled,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      textAlign: widget.textAlign,
+      keyboardType: widget.keyboardType,
+      maxLength: widget.maxLength,
+      backgroundColor: Colors.transparent,
+      cursorColor: widget.cursorColor,
+      contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+      textStyles: widget.textStyles,
+      cursorWidth: widget.cursorWidth,
+      cursorHandleColor: widget.cursorHandleColor,
+      hasFocus: widget.hasFocus,
+      inputBoxHeight: widget.inputBoxHeight,
+      inputBoxWidth: widget.inputBoxWidth,
+      hintTextColor: widget.hintStyle?.color,
+      lines: widget.lines,
+      minHeight: widget.minHeight,
+      maxHeight: widget.maxHeight
+    ).toMap();
 
-    return SizedBox(
-      width: widget.screenWidth != null ? MediaQuery.of(context).size.width * (widget.screenWidth! / 100) : widget.pixelWidth,
-      height: widget.screenHeight != null ? MediaQuery.of(context).size.height * (widget.screenHeight! / 100) : widget.pixelHeight,
+    return Container(
+      width: widget.pixelWidth,
+      height: widget.pixelHeight,
+      padding: widget.contentPadding,
+      decoration: BoxDecoration(
+        color: widget.backgroundColor,
+        border: widget.boxBorder,
+        borderRadius: BorderRadius.circular(widget.borderRadius ?? 4),
+      ),
       child: PlatformViewLink(
         viewType: viewType,
         surfaceFactory: (context, controller) {
@@ -177,18 +181,15 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
         },
         onCreatePlatformView: (params) {
           _channel = MethodChannel('native_text_input_${params.id}'); // Initialize the MethodChannel
-      
+
           _channel.setMethodCallHandler((call) async {
-            if (call.method == 'onTap') {
-              log('EditText tapped');
-            }
-      
-            final Map<String, dynamic>? map = await CustomNativeTextInputFunctions.getProperties(_channel);
-            final text = await CustomNativeTextInputFunctions.getText(_channel);
-            log(NativeTextInputModel.fromMap(map ?? {}).isEnabled.toString());
-            log("User typed: ${text.toString()}");
+            final String? text = await CustomNativeTextInputFunctions.getText(_channel);
+            if(text != null) widget.onchanged!(text);
+            final NativeTextInputModel? properties = await CustomNativeTextInputFunctions.getProperties(_channel);
+            if (properties != null) widget.internalArgs!(properties);
+            if (call.method == 'onTap') widget.ontap!();
           });
-      
+
           return PlatformViewsService.initSurfaceAndroidView(
             id: params.id,
             viewType: viewType,
@@ -210,41 +211,27 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
 class CustomNativeTextInputController {
   CustomNativeTextInputState? _state;
 
-  // Attach the state to the controller
-  void attach(CustomNativeTextInputState state) {
-    _state = state;
-  }
-
-  // Detach the state when no longer needed
-  void detach() {
-    _state = null;
-  }
-
-  // Update arguments in the native input field
-  void updateArguments(Map<String, dynamic> args) {
-    _state?.updateArguments(args);
-  }
+  void attach(CustomNativeTextInputState state) => _state = state;
+  void detach() => _state = null;
+  void updateArguments(Map<String, dynamic> args) => _state?.updateArguments(args);
 }
-
 
 class CustomNativeTextInputFunctions {
   static Future<String?> getText(MethodChannel channel) async {
     try {
-      final text = await channel.invokeMethod<String>('getText');
-      return text;
+      return await channel.invokeMethod<String>('getText');
     } catch (e) {
-      log('Error retrieving text: $e');
+      log("error fetching text");
       return null;
     }
   }
 
-  static Future<Map<String, dynamic>?> getProperties(MethodChannel channel) async {
+  static Future<NativeTextInputModel?> getProperties(MethodChannel channel) async {
     try {
       final properties = await channel.invokeMethod<Map>('getProperties');
-      log(' properties: $properties');
+
       if (properties != null) {
-        // Manually cast the result to Map<String, dynamic>
-        return Map<String, dynamic>.from(properties);
+        return NativeTextInputModel.fromMap(Map<String, dynamic>.from(properties));
       } else {
         return null;
       }
@@ -261,6 +248,7 @@ class NativeTextInputModel {
   final String? defaultText; // Default text to display in the TextField
   final double? fontSize; // Font size for the text
   final bool? isEnabled; // Whether the TextField is enabled
+  final int? minLines;
   final int? maxLines; // Maximum number of lines
   final TextAlign? textAlign; // Text alignment
   final TextInputType? keyboardType; // Input type
@@ -270,10 +258,14 @@ class NativeTextInputModel {
   final EdgeInsets? contentPadding; // Padding as EdgeInsets
   final List<NativeTextStyle>? textStyles; // List of styles to apply to text
   final bool? hasFocus;
-  final double? cursorWidth;
+  final int? cursorWidth;
   final Color? cursorHandleColor;
   final int? inputBoxHeight;
   final int? inputBoxWidth;
+  final Color? hintTextColor;
+  final int? minHeight;
+  final int? maxHeight;
+  final int? lines;
 
   NativeTextInputModel(
       {this.hint,
@@ -281,7 +273,8 @@ class NativeTextInputModel {
       this.defaultText,
       this.fontSize = 16.0,
       this.isEnabled = true,
-      this.maxLines = 1,
+      this.minLines,
+      this.maxLines,
       TextAlign? textAlign,
       TextInputType? keyboardType,
       this.maxLength,
@@ -293,7 +286,11 @@ class NativeTextInputModel {
       this.cursorWidth = 4,
       this.cursorHandleColor,
       this.inputBoxHeight,
-      this.inputBoxWidth})
+      this.inputBoxWidth,
+      this.hintTextColor,
+      this.lines,
+      this.maxHeight,
+      this.minHeight,})
       : textAlign = textAlign ?? TextAlign.start,
         keyboardType = keyboardType ?? TextInputType.text;
 
@@ -305,6 +302,7 @@ class NativeTextInputModel {
       'defaultText': defaultText,
       'fontSize': fontSize,
       'isEnabled': isEnabled,
+      'minLines': minLines,
       'maxLines': maxLines,
       'textAlign': textAlign.toString().split('.').last,
       'keyboardType': keyboardType == TextInputType.streetAddress
@@ -323,7 +321,11 @@ class NativeTextInputModel {
       'cursorWidth': cursorWidth,
       'cursorHandleColor': cursorHandleColor?.value,
       'inputBoxHeight': inputBoxHeight,
-      'inputBoxWidth': inputBoxWidth
+      'inputBoxWidth': inputBoxWidth,
+      'hintTextColor': hintTextColor?.value,
+      'minHeight': minHeight,
+      'maxHeight': maxHeight,
+      'lines': lines
     };
   }
 
@@ -333,9 +335,10 @@ class NativeTextInputModel {
         hint: map['hint'] as String?,
         label: map['label'] as String?,
         defaultText: map['defaultText'] as String?,
-        fontSize: (map['fontSize'] as num?)?.toDouble() ?? 16.0,
+        fontSize: (map['fontSize'] as num?)?.toDouble(),
         isEnabled: map['isEnabled'] as bool? ?? true,
-        maxLines: map['maxLines'] as int? ?? 1,
+        minLines: (map['minLines'] as int?),
+        maxLines: map['maxLines'] as int?,
         textAlign: _parseTextAlign(map['textAlign'] as String?),
         keyboardType: _parseTextInputType(map['keyboardType'] as String?),
         maxLength: map['maxLength'] as int?,
@@ -351,10 +354,16 @@ class NativeTextInputModel {
             : null,
         textStyles: (map['textStyles'] as List?)?.map((styleMap) => NativeTextStyle.fromMap(Map<String, dynamic>.from(styleMap))).toList(),
         hasFocus: (map['hasFocus'] as bool?) ?? false,
-        cursorWidth: (map['cursorWidth'] as double),
+        cursorWidth: (map['cursorWidth'] as int),
         cursorHandleColor: (map['cursorHandleColor'] as int?)?.toColor(),
         inputBoxHeight: (map['inputBoxHeight'] as int?),
-        inputBoxWidth: (map['inputBoxWidth'] as int?));
+        inputBoxWidth: (map['inputBoxWidth'] as int?),
+        hintTextColor: (map['hintTextColor'] as int?)?.toColor(),
+        minHeight: (map['minHeight'] as int?),
+        maxHeight: (map['maxHeight'] as int?),
+        lines: (map['lines'] as int?)
+        );
+
   }
 
   static TextAlign _parseTextAlign(String? value) {
