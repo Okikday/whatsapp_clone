@@ -99,13 +99,13 @@ class _CurrChatViewState extends State<CurrChatView> {
                                   child: CustomNativeTextInput(
                                     nativeTextInputController: nativeTextInputController,
                                     hint: "Hint text",
+                                    defaultText: "Hello",
                                     inputBoxHeight: 200,
                                     inputBoxWidth: 200,
                                     minLines: 3,
                                     maxLines: 5,
                                     maxLength: 200,
                                     keyboardType: TextInputType.multiline,
-                                    backgroundColor: Colors.orange,
                                     inputTextStyle: const TextStyle(fontSize: 16),
                                     cursorWidth: 4,
                                     cursorColor: Colors.black,
@@ -114,7 +114,7 @@ class _CurrChatViewState extends State<CurrChatView> {
                                       log("Typed in: $text");
                                     },
                                     internalArgs: (args) async {
-                                      log("arguments: ${args.toMap()}");
+                                      log("arguments: ${args.toMap()["maxHeight"]}");
                                       log("Run internal args");
                                     },
                                   )),

@@ -88,6 +88,7 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
   void initState() {
     super.initState();
     widget.nativeTextInputController.attach(this); // Attach the state to the controller
+    WidgetsBinding.instance.addPostFrameCallback((_){log("Init");});
   }
 
   @override

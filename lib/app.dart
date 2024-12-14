@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/themes.dart';
-import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
+import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 import 'package:whatsapp_clone/features/chats/views/curr_chat_view.dart';
 
 class App extends StatelessWidget {

@@ -25,10 +25,12 @@ import android.view.MotionEvent
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toolbar
 import androidx.core.content.ContextCompat.getSystemService
 import io.flutter.embedding.engine.systemchannels.TextInputChannel.TextInputType
 import io.flutter.plugin.common.BinaryMessenger
@@ -46,6 +48,7 @@ class NativeTextInputFactory(
             Log.e("NativeTextInputFactory", "Error parsing arguments", e)
             NativeTextInputModel() // Fallback to default values
         }
+
 
         return NativeTextInput(context, id, argsModel, messenger)
     }
@@ -78,6 +81,7 @@ class NativeTextInputFactory(
                 clearFocus()
                 imm?.hideSoftInputFromWindow(windowToken, 0)
             }
+
 
             args.inputBoxWidth?.let { setWidth(it) }
             args.inputBoxHeight?.let { setHeight(it) }
@@ -245,13 +249,15 @@ class NativeTextInputFactory(
 
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    requestFocus()
-                    channel.invokeMethod("onTap", null) // Notify Flutter about the tap
+                    if(!(this.showSoftInputOnFocus)) showSoftInputOnFocus = true
+                    if(!(this.hasFocus())) requestFocus()
+                    channel.invokeMethod("onTap", null)
                 }
                 false // Allow default behavior
             }
 
-
+            showSoftInputOnFocus = false
+            requestFocus() // Request focus
         }
 
         private var currentState: NativeTextInputModel? = args
@@ -422,6 +428,8 @@ class NativeTextInputFactory(
                             fontSize = editText.textSize,
                             isEnabled = editText.isEnabled,
                             maxLines = editText.maxLines,
+                            maxHeight = editText.layout.height,
+                            lines = editText.layout.lineCount,
                             textAlign = when (editText.textAlignment) {
                                 View.TEXT_ALIGNMENT_TEXT_START -> "start"
                                 View.TEXT_ALIGNMENT_CENTER -> "center"
@@ -513,10 +521,7 @@ class NativeTextInputFactory(
         }
 
 
-
-
         override fun getView(): View {
-            //editText.setTextCursorDrawable(R.drawable.cursor_color)
             return editText
         }
 
