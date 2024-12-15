@@ -32,10 +32,15 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.os.HandlerCompat.postDelayed
 import io.flutter.embedding.engine.systemchannels.TextInputChannel.TextInputType
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Objects
 
 class NativeTextInputFactory(
@@ -71,7 +76,7 @@ class NativeTextInputFactory(
             args.maxLines?.let { setMaxLines(it) }
             args.lines?.let { setLines(it) }
             setRawInputType(_parseKeyboardType(args.keyboardType))
-            args.hintTextColor?.let { setHintTextColor(it) }
+            args.hintTextColor?.let { setHintTextColor(Color.parseColor(it)) }
 
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             if (args.hasFocus) {
@@ -93,15 +98,23 @@ class NativeTextInputFactory(
                 "end" -> android.view.Gravity.END
                 else -> android.view.Gravity.START
             }
+            args.fontColor?.let { setTextColor(Color.parseColor(it)) }
 
-            args.backgroundColor?.let {
-                setBackgroundColor(it)
-            }
+
+            args.highlightColor?.let { highlightColor = Color.parseColor(it) }
+
             args.cursorColor?.let {
                 val drawable = textCursorDrawable
-                drawable?.mutate()?.setTint(it)
+                drawable?.mutate()?.setTint(Color.parseColor(it))
                 textCursorDrawable = drawable
             }
+
+            val shapeDrawable = GradientDrawable()
+            shapeDrawable.shape = GradientDrawable.RECTANGLE
+            shapeDrawable.setColor(Color.TRANSPARENT) // Set the background color to transparent
+            shapeDrawable.setStroke(0, Color.TRANSPARENT) // Set the border color to transparent
+            shapeDrawable.cornerRadius = 0f // Optional: Set corner radius for rounded edges
+            background = shapeDrawable
 
             args.maxLength?.let { // Set maximum length if provided
                 filters = arrayOf(android.text.InputFilter.LengthFilter(it))
@@ -117,7 +130,7 @@ class NativeTextInputFactory(
 
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(args.cursorColor ?: Color.BLACK) // Cursor color
+                setColor(Color.parseColor(args.cursorColor)) // Cursor color
                 setSize(args.cursorWidth.toInt(), lineHeight) // Cursor width and height
             }
 
@@ -143,7 +156,7 @@ class NativeTextInputFactory(
                         val handleField = TextView::class.java.getDeclaredField("mTextSelectHandle")
                         handleField.isAccessible = true
                         val handleDrawable = handleField.get(this) as Drawable
-                        handleDrawable.mutate().setTint(args.cursorHandleColor ?: Color.GRAY) // Handle color
+                        handleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -153,7 +166,7 @@ class NativeTextInputFactory(
                         val secondaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandleLeft")
                         secondaryHandleField.isAccessible = true
                         val secondaryHandleDrawable = secondaryHandleField.get(this) as Drawable
-                        secondaryHandleDrawable.mutate().setTint(args.cursorHandleColor ?: Color.GRAY) // Handle color
+                        secondaryHandleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -189,7 +202,7 @@ class NativeTextInputFactory(
                         )
                         "color" -> style.color?.let {
                             spannable.setSpan(
-                                ForegroundColorSpan(it),
+                                ForegroundColorSpan(Color.parseColor(it)),
                                 style.start,
                                 style.end,
                                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -197,7 +210,7 @@ class NativeTextInputFactory(
                         }
                         "backgroundColor" -> style.backgroundColor?.let {
                             spannable.setSpan(
-                                BackgroundColorSpan(it),
+                                BackgroundColorSpan(Color.parseColor(it)),
                                 style.start,
                                 style.end,
                                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -249,15 +262,13 @@ class NativeTextInputFactory(
 
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    if(!(this.showSoftInputOnFocus)) showSoftInputOnFocus = true
-                    if(!(this.hasFocus())) requestFocus()
+                    // if(!(this.showSoftInputOnFocus)) showSoftInputOnFocus = true
+                    requestFocus()
                     channel.invokeMethod("onTap", null)
                 }
                 false // Allow default behavior
             }
 
-            showSoftInputOnFocus = false
-            requestFocus() // Request focus
         }
 
         private var currentState: NativeTextInputModel? = args
@@ -278,10 +289,14 @@ class NativeTextInputFactory(
             }
         }
 
+        fun colorIntToHexString(color: Int): String{
+            return String.format("#%08X", color);
+        }
+
         fun _setCursorProperty(args: NativeTextInputModel) {
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(args.cursorColor ?: Color.BLACK) // Cursor color
+                setColor(Color.parseColor(args.cursorColor)) // Cursor color
                 setSize(args.cursorWidth.toInt(), editText.lineHeight) // Cursor width and height
             }
 
@@ -307,7 +322,7 @@ class NativeTextInputFactory(
                         val handleField = TextView::class.java.getDeclaredField("mTextSelectHandle")
                         handleField.isAccessible = true
                         val handleDrawable = handleField.get(editText) as Drawable
-                        handleDrawable.mutate().setTint(args.cursorHandleColor ?: Color.GRAY) // Handle color
+                        handleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -317,7 +332,7 @@ class NativeTextInputFactory(
                         val secondaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandleLeft")
                         secondaryHandleField.isAccessible = true
                         val secondaryHandleDrawable = secondaryHandleField.get(editText) as Drawable
-                        secondaryHandleDrawable.mutate().setTint(args.cursorHandleColor ?: Color.GRAY) // Handle color
+                        secondaryHandleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -383,7 +398,7 @@ class NativeTextInputFactory(
                     }
                 }
                 if(newState.hintTextColor != currentState?.hintTextColor){
-                    newState.hintTextColor?.let { editText.setHintTextColor(it) }
+                    newState.hintTextColor?.let { editText.setHintTextColor(Color.parseColor(it)) }
                 }
                 if(newState.minHeight != currentState?.minHeight || newState.maxHeight != currentState?.maxHeight){
                     newState.minHeight?.let { editText.setMinHeight(it) }
@@ -392,6 +407,12 @@ class NativeTextInputFactory(
                 if(newState.lines != currentState?.lines){
                     newState.lines?.let { editText.setLines(it) }
                 }
+                if(newState.highlightColor != currentState?.highlightColor){
+                    newState.highlightColor?.let { editText.highlightColor = Color.parseColor(it) }
+                }
+                if(newState.fontColor != currentState?.fontColor){
+                    newState.fontColor?.let { editText.setTextColor(Color.parseColor(it)) }
+                }
 
                 // Save the new state as the current state
                 currentState = newState
@@ -399,6 +420,13 @@ class NativeTextInputFactory(
         }
 
         init {
+            GlobalScope.launch(Dispatchers.Main) {
+                editText.showSoftInputOnFocus = false
+                editText.requestFocus()
+                delay(250) // Delay for a short time
+                editText.clearFocus()
+                editText.showSoftInputOnFocus = true
+            }
             editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence?, start: Int, count: Int, after: Int) {
                     // Optional: Handle before text change if needed
@@ -426,6 +454,7 @@ class NativeTextInputFactory(
                             hint = editText.hint?.toString(),
                             defaultText = editText.text.toString(),
                             fontSize = editText.textSize,
+                            fontColor = colorIntToHexString(editText.currentTextColor),
                             isEnabled = editText.isEnabled,
                             maxLines = editText.maxLines,
                             maxHeight = editText.layout.height,
@@ -444,8 +473,7 @@ class NativeTextInputFactory(
                                 else -> "text"
                             },
                             maxLength = editText.filters.filterIsInstance<InputFilter.LengthFilter>().firstOrNull()?.max,
-                            backgroundColor = (editText.background as? ColorDrawable)?.color,
-                            cursorColor = editText.highlightColor, // Assumes highlightColor as cursorColor
+                            cursorColor = colorIntToHexString(editText.highlightColor), // Assumes highlightColor as cursorColor
                             contentPadding = listOf(
                                 editText.paddingLeft.toFloat(),
                                 editText.paddingTop.toFloat(),
@@ -461,8 +489,12 @@ class NativeTextInputFactory(
                                     start = 0,
                                     end = editText.text.length,
                                     style = "normal", // Example style; you may replace with actual styles
-                                    color = editText.currentTextColor,
-                                    backgroundColor = (editText.background as? ColorDrawable)?.color,
+                                    color = colorIntToHexString(editText.currentTextColor),
+                                    backgroundColor = (editText.background as? ColorDrawable)?.color?.let {
+                                        colorIntToHexString(
+                                            it
+                                        )
+                                    },
                                     letterSpacing = editText.letterSpacing,
                                     lineHeight = editText.lineHeight.toFloat()
                                 )
@@ -495,13 +527,17 @@ class NativeTextInputFactory(
                                     maxLines = args["maxLines"] as? Int ?: currentState?.maxLines ?: 1,
                                     keyboardType = args["keyboardType"] as? String ?: currentState?.keyboardType ?: "text",
                                     hasFocus = args["hasFocus"] as? Boolean ?: currentState?.hasFocus ?: false,
-                                    cursorColor = (args["cursorColor"] as? Number)?.toInt() ?: currentState?.cursorColor,
+                                    cursorColor = (args["cursorColor"] as? String?) ?: currentState?.cursorColor,
                                     cursorWidth = (args["cursorWidth"] as? Double)?.toInt() ?: currentState?.cursorWidth ?: 2,
                                     inputBoxHeight = (args["inputBoxHeight"] as? Double)?.toInt() ?: currentState?.inputBoxHeight,
                                     inputBoxWidth = (args["inputBoxWidth"] as? Double)?.toInt() ?: currentState?.inputBoxWidth,
                                     maxLength = args["maxLength"] as? Int ?: currentState?.maxLength,
-                                    cursorHandleColor = (args["cursorHandleColor"] as? Number)?.toInt() ?: currentState?.cursorHandleColor,
-                                    textStyles = convertedTextStyles ?: currentState?.textStyles
+                                    cursorHandleColor = (args["cursorHandleColor"] as? String?) ?: currentState?.cursorHandleColor,
+                                    textStyles = convertedTextStyles ?: currentState?.textStyles,
+                                    fontColor = (args["fontColor"] as? String?) ?: currentState?.fontColor,
+                                    highlightColor = (args["highlightColor"] as? String?) ?: currentState?.highlightColor,
+                                    hintTextColor = (args["hintTextColor"] as? String?) ?: currentState?.hintTextColor,
+
                                 )
                                 updateProperties(newState)
                                 result.success(null)
@@ -545,18 +581,19 @@ data class NativeTextInputModel(
     val textAlign: String = "start", // Text alignment ("start", "center", "end")
     val keyboardType: String = "text", // Input type ("text", "number", etc.)
     val maxLength: Int? = null, // Maximum length of the text
-    val backgroundColor: Int? = null, // Background color (ARGB)
-    val cursorColor: Int? = null, // Cursor color (ARGB)
+    val cursorColor: String? = "#FFFFFF", // Cursor color (ARGB)
     val contentPadding: List<Float>? = null, // Padding as [left, top, right, bottom]
     val textStyles: List<NativeTextStyle>? = null, // List of styles to apply to text
     val hasFocus: Boolean = false,
     val cursorWidth: Int = 2,
-    val cursorHandleColor: Int? = null,
+    val cursorHandleColor: String? = "#000000",
     val inputBoxWidth: Int? = null,
     val inputBoxHeight: Int? = null,
-    val hintTextColor: Int? = null,
+    val hintTextColor: String? = "#DDDDDD",
     val minHeight: Int? = null,
     val maxHeight: Int? = null,
+    val highlightColor: String? = "#FFFFFF",
+    val fontColor: String? = "#000000",
 ) {
     // Converts the model to a Map
     fun toMap(): Map<String, Any?> {
@@ -572,7 +609,6 @@ data class NativeTextInputModel(
             "textAlign" to textAlign,
             "keyboardType" to keyboardType,
             "maxLength" to maxLength,
-            "backgroundColor" to backgroundColor,
             "cursorColor" to cursorColor,
             "contentPadding" to contentPadding,
             "textStyles" to textStyles,
@@ -583,7 +619,9 @@ data class NativeTextInputModel(
             "inputBoxHeight" to inputBoxHeight,
             "hintTextColor" to hintTextColor,
             "minHeight" to minHeight,
-            "maxHeight" to maxHeight
+            "maxHeight" to maxHeight,
+            "highlightColor" to highlightColor,
+            "fontColor" to fontColor
         )
     }
 
@@ -605,20 +643,21 @@ data class NativeTextInputModel(
                 maxLines = map["maxLines"] as? Int,
                 lines = map["lines"] as? Int,
                 textAlign = map["textAlign"] as? String ?: "start",
-                keyboardType = map["keyboardType"] as String ?: "text",
+                keyboardType = map["keyboardType"] as String,
                 maxLength = map["maxLength"] as? Int,
-                backgroundColor = (map["backgroundColor"] as? Number)?.toLong()?.toInt(),
-                cursorColor = (map["cursorColor"] as? Number)?.toLong()?.toInt(),
+                cursorColor = (map["cursorColor"] as String?),
                 contentPadding = (map["contentPadding"] as? List<*>)?.map { (it as? Double)?.toFloat() ?: 0f },
                 textStyles = convertedTextStyles,
                 hasFocus = map["hasFocus"] as? Boolean ?: false,
                 cursorWidth = map["cursorWidth"] as? Int ?: 2,
-                cursorHandleColor = (map["cursorHandleColor"] as? Number)?.toLong()?.toInt(),
+                cursorHandleColor = (map["cursorHandleColor"] as? String?),
                 inputBoxWidth = map["inputBoxWidth"] as? Int,
                 inputBoxHeight = map["inputBoxHeight"] as? Int,
-                hintTextColor = (map["hintTextColor"] as? Number)?.toLong()?.toInt(),
+                hintTextColor = (map["hintTextColor"] as? String?),
                 minHeight = map["minHeight"] as? Int,
-                maxHeight = map["maxHeight"] as? Int
+                maxHeight = map["maxHeight"] as? Int,
+                highlightColor = (map["highlightColor"] as? String?),
+                fontColor = (map["fontColor"] as? String?),
             )
         }
     }
@@ -628,8 +667,8 @@ data class NativeTextStyle(
     val start: Int = 0,
     val end: Int = 0,
     val style: String, // e.g., "bold", "italic", "underline"
-    val color: Int? = null, // Text color (ARGB)
-    val backgroundColor: Int? = null, // Background color (ARGB)
+    val color: String? = "#00000000", // Text color (ARGB)
+    val backgroundColor: String? = "#00000000", // Background color (ARGB)
     val letterSpacing: Float? = null,
     val lineHeight: Float? = null
 ) {
@@ -653,8 +692,8 @@ data class NativeTextStyle(
                 start = map["start"] as? Int ?: 0,
                 end = map["end"] as? Int ?: 0,
                 style = map["style"] as? String ?: "",
-                color = (map["color"] as? Number)?.toInt(),
-                backgroundColor = (map["backgroundColor"] as? Number)?.toInt(),
+                color = (map["color"] as? String?),
+                backgroundColor = (map["backgroundColor"] as? String?),
                 letterSpacing = (map["letterSpacing"] as? Number)?.toFloat(),
                 lineHeight = (map["lineHeight"] as? Number)?.toFloat()
             )

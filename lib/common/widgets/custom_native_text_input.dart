@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:whatsapp_clone/features/chats/views/curr_chat_view.dart';
 
 class CustomNativeTextInput extends StatefulWidget {
   final CustomNativeTextInputController nativeTextInputController;
@@ -43,6 +44,8 @@ class CustomNativeTextInput extends StatefulWidget {
   final int? minHeight;
   final int? maxHeight;
   final int? lines;
+  final Color? highlightColor;
+  final Color? fontColor;
   const CustomNativeTextInput(
       {super.key,
       required this.nativeTextInputController,
@@ -75,7 +78,12 @@ class CustomNativeTextInput extends StatefulWidget {
       this.textStyles,
       this.cursorWidth,
       this.cursorHandleColor,
-      this.internalArgs, this.minHeight, this.maxHeight, this.lines});
+      this.internalArgs,
+      this.minHeight,
+      this.maxHeight,
+      this.lines,
+      this.highlightColor,
+      this.fontColor});
 
   @override
   State<CustomNativeTextInput> createState() => CustomNativeTextInputState();
@@ -83,12 +91,37 @@ class CustomNativeTextInput extends StatefulWidget {
 
 class CustomNativeTextInputState extends State<CustomNativeTextInput> {
   late MethodChannel _channel; // Declare a private MethodChannel
+  late Map<String, dynamic> creationParams;
 
   @override
   void initState() {
     super.initState();
     widget.nativeTextInputController.attach(this); // Attach the state to the controller
-    WidgetsBinding.instance.addPostFrameCallback((_){log("Init");});
+    creationParams = NativeTextInputModel(
+      hint: widget.hint,
+      defaultText: widget.defaultText,
+      fontSize: widget.inputTextStyle?.fontSize,
+      fontColor: widget.inputTextStyle?.color,
+      isEnabled: widget.isEnabled,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      textAlign: widget.textAlign,
+      keyboardType: widget.keyboardType,
+      maxLength: widget.maxLength,
+      cursorColor: widget.cursorColor,
+      contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+      textStyles: widget.textStyles,
+      cursorWidth: widget.cursorWidth,
+      cursorHandleColor: widget.cursorHandleColor,
+      hasFocus: widget.hasFocus,
+      inputBoxHeight: widget.inputBoxHeight,
+      inputBoxWidth: widget.inputBoxWidth,
+      hintTextColor: widget.hintStyle?.color,
+      lines: widget.lines,
+      minHeight: widget.minHeight,
+      maxHeight: widget.maxHeight,
+      highlightColor: widget.highlightColor,
+    ).toMap();
   }
 
   @override
@@ -104,63 +137,10 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
     _channel.invokeMethod('updateArguments', args);
   }
 
-  void sendUpdatedArguments(Map<String, dynamic> updatedArgs) {
-    final currentParams = <String, dynamic>{
-      'hint': widget.hint,
-      'defaultText': widget.defaultText,
-      'fontSize': widget.inputTextStyle?.fontSize,
-      'isEnabled': widget.isEnabled,
-      'minLines': widget.minLines,
-      'maxLines': widget.maxLines,
-      'textAlign': widget.textAlign,
-      'keyboardType': widget.keyboardType,
-      'maxLength': widget.maxLength,
-      'backgroundColor': widget.backgroundColor,
-      'cursorColor': widget.cursorColor,
-      'contentPadding': widget.contentPadding,
-      'textStyles': widget.textStyles,
-      'cursorWidth': widget.cursorWidth,
-      'cursorHandleColor': widget.cursorHandleColor,
-      'hasFocus': widget.hasFocus,
-      'inputBoxHeight': widget.inputBoxHeight,
-      'inputBoxWidth': widget.inputBoxWidth,
-      'hintTextColor': widget.hintStyle?.color,
-      'lines': widget.lines,
-      'minHeight': widget.minHeight,
-      'maxHeight': widget.maxHeight
-    };
-
-    context.findAncestorStateOfType<CustomNativeTextInputState>()?.updateArguments({...currentParams, ...updatedArgs});
-  }
-
   @override
   Widget build(BuildContext context) {
     const String viewType = 'native-text-input';
-
-    final Map<String, dynamic> creationParams = NativeTextInputModel(
-      hint: widget.hint,
-      defaultText: widget.defaultText,
-      fontSize: widget.inputTextStyle?.fontSize,
-      isEnabled: widget.isEnabled,
-      minLines: widget.minLines,
-      maxLines: widget.maxLines,
-      textAlign: widget.textAlign,
-      keyboardType: widget.keyboardType,
-      maxLength: widget.maxLength,
-      backgroundColor: Colors.transparent,
-      cursorColor: widget.cursorColor,
-      contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-      textStyles: widget.textStyles,
-      cursorWidth: widget.cursorWidth,
-      cursorHandleColor: widget.cursorHandleColor,
-      hasFocus: widget.hasFocus,
-      inputBoxHeight: widget.inputBoxHeight,
-      inputBoxWidth: widget.inputBoxWidth,
-      hintTextColor: widget.hintStyle?.color,
-      lines: widget.lines,
-      minHeight: widget.minHeight,
-      maxHeight: widget.maxHeight
-    ).toMap();
+    log("build: $creationParams");
 
     return Container(
       width: widget.pixelWidth,
@@ -185,10 +165,13 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
 
           _channel.setMethodCallHandler((call) async {
             final String? text = await CustomNativeTextInputFunctions.getText(_channel);
-            if(text != null) widget.onchanged!(text);
+            if (text != null) widget.onchanged!(text);
             final NativeTextInputModel? properties = await CustomNativeTextInputFunctions.getProperties(_channel);
             if (properties != null) widget.internalArgs!(properties);
             if (call.method == 'onTap') widget.ontap!();
+            setState(() {
+              nativeTextInputController.updateArguments({});
+            });
           });
 
           return PlatformViewsService.initSurfaceAndroidView(
@@ -248,13 +231,13 @@ class NativeTextInputModel {
   final String? label;
   final String? defaultText; // Default text to display in the TextField
   final double? fontSize; // Font size for the text
+  final Color? fontColor;
   final bool? isEnabled; // Whether the TextField is enabled
   final int? minLines;
   final int? maxLines; // Maximum number of lines
   final TextAlign? textAlign; // Text alignment
   final TextInputType? keyboardType; // Input type
   final int? maxLength; // Maximum length of the text
-  final Color? backgroundColor; // Background color
   final Color? cursorColor; // Cursor color
   final EdgeInsets? contentPadding; // Padding as EdgeInsets
   final List<NativeTextStyle>? textStyles; // List of styles to apply to text
@@ -267,32 +250,34 @@ class NativeTextInputModel {
   final int? minHeight;
   final int? maxHeight;
   final int? lines;
+  final Color? highlightColor;
 
-  NativeTextInputModel(
-      {this.hint,
-      this.label,
-      this.defaultText,
-      this.fontSize = 16.0,
-      this.isEnabled = true,
-      this.minLines,
-      this.maxLines,
-      TextAlign? textAlign,
-      TextInputType? keyboardType,
-      this.maxLength,
-      this.backgroundColor,
-      this.cursorColor,
-      this.contentPadding,
-      this.textStyles,
-      this.hasFocus = false,
-      this.cursorWidth = 4,
-      this.cursorHandleColor,
-      this.inputBoxHeight,
-      this.inputBoxWidth,
-      this.hintTextColor,
-      this.lines,
-      this.maxHeight,
-      this.minHeight,})
-      : textAlign = textAlign ?? TextAlign.start,
+  NativeTextInputModel({
+    this.hint,
+    this.label,
+    this.defaultText,
+    this.fontSize = 16.0,
+    this.isEnabled = true,
+    this.minLines,
+    this.maxLines,
+    TextAlign? textAlign,
+    TextInputType? keyboardType,
+    this.maxLength,
+    this.cursorColor,
+    this.contentPadding,
+    this.textStyles,
+    this.hasFocus = false,
+    this.cursorWidth = 4,
+    this.cursorHandleColor,
+    this.inputBoxHeight,
+    this.inputBoxWidth,
+    this.hintTextColor,
+    this.lines,
+    this.maxHeight,
+    this.minHeight,
+    this.highlightColor,
+    this.fontColor,
+  })  : textAlign = textAlign ?? TextAlign.start,
         keyboardType = keyboardType ?? TextInputType.text;
 
   // Converts the model to a Map
@@ -314,19 +299,20 @@ class NativeTextInputModel {
                   ? "password"
                   : keyboardType.toString().split('.').last,
       'maxLength': maxLength,
-      'backgroundColor': backgroundColor?.value,
-      'cursorColor': cursorColor?.value,
+      'cursorColor': colorToHex(cursorColor),
       'contentPadding': contentPadding != null ? [contentPadding!.left, contentPadding!.top, contentPadding!.right, contentPadding!.bottom] : null,
       'textStyles': textStyles?.map((style) => style.toMap()).toList(),
       'hasFocus': hasFocus,
       'cursorWidth': cursorWidth,
-      'cursorHandleColor': cursorHandleColor?.value,
+      'cursorHandleColor': colorToHex(cursorHandleColor),
       'inputBoxHeight': inputBoxHeight,
       'inputBoxWidth': inputBoxWidth,
-      'hintTextColor': hintTextColor?.value,
+      'hintTextColor': colorToHex(hintTextColor),
       'minHeight': minHeight,
       'maxHeight': maxHeight,
-      'lines': lines
+      'lines': lines,
+      'highlightColor': colorToHex(highlightColor),
+      'fontColor': colorToHex(fontColor)
     };
   }
 
@@ -343,8 +329,7 @@ class NativeTextInputModel {
         textAlign: _parseTextAlign(map['textAlign'] as String?),
         keyboardType: _parseTextInputType(map['keyboardType'] as String?),
         maxLength: map['maxLength'] as int?,
-        backgroundColor: (map['backgroundColor'] as int?)?.toColor(),
-        cursorColor: (map['cursorColor'] as int?)?.toColor(),
+        cursorColor: hexToColor(map['cursorColor'] as String?),
         contentPadding: (map['contentPadding'] as List?) != null
             ? EdgeInsets.fromLTRB(
                 (map['contentPadding'][0] as num).toDouble(),
@@ -356,15 +341,15 @@ class NativeTextInputModel {
         textStyles: (map['textStyles'] as List?)?.map((styleMap) => NativeTextStyle.fromMap(Map<String, dynamic>.from(styleMap))).toList(),
         hasFocus: (map['hasFocus'] as bool?) ?? false,
         cursorWidth: (map['cursorWidth'] as int),
-        cursorHandleColor: (map['cursorHandleColor'] as int?)?.toColor(),
+        cursorHandleColor: hexToColor(map['cursorHandleColor'] as String?),
         inputBoxHeight: (map['inputBoxHeight'] as int?),
         inputBoxWidth: (map['inputBoxWidth'] as int?),
-        hintTextColor: (map['hintTextColor'] as int?)?.toColor(),
+        hintTextColor: hexToColor(map['hintTextColor'] as String?),
         minHeight: (map['minHeight'] as int?),
         maxHeight: (map['maxHeight'] as int?),
-        lines: (map['lines'] as int?)
-        );
-
+        lines: (map['lines'] as int?),
+        highlightColor: hexToColor(map['highlightColor'] as String?),
+        fontColor: hexToColor(map['fontColor'] as String?));
   }
 
   static TextAlign _parseTextAlign(String? value) {
@@ -422,8 +407,8 @@ class NativeTextStyle {
       'start': start,
       'end': end,
       'style': style,
-      'color': color?.value,
-      'backgroundColor': backgroundColor?.value,
+      'color': colorToHex(color),
+      'backgroundColor': colorToHex(backgroundColor),
       'letterSpacing': letterSpacing ?? 0.0, // Default to 0.0 if null
       'lineHeight': lineHeight ?? 0.0, // Default to 0.0 if null
     };
@@ -435,15 +420,26 @@ class NativeTextStyle {
       start: map['start'] as int,
       end: map['end'] as int,
       style: map['style'] as String,
-      color: (map['color'] as int?)?.toColor(),
-      backgroundColor: (map['backgroundColor'] as int?)?.toColor(),
+      color: hexToColor(map['color'] as String?),
+      backgroundColor: hexToColor(map['backgroundColor'] as String?),
       letterSpacing: map['letterSpacing'] as double?,
       lineHeight: map['lineHeight'] as double?,
     );
   }
 }
 
-// Extension to convert ARGB integer to Color
-extension IntToColor on int {
-  Color toColor() => Color(this);
+String? colorToHex(Color? color) {
+  if (color == null) return null;
+  return '#${color.value.toRadixString(16).padLeft(8, '0').toUpperCase()}';
+}
+
+Color? hexToColor(String? hexString) {
+  if (hexString == null) return null;
+
+  final buffer = StringBuffer();
+  if (hexString.length == 6 || hexString.length == 7) {
+    buffer.write('ff');
+  }
+  buffer.write(hexString.replaceFirst('#', ''));
+  return Color(int.parse(buffer.toString(), radix: 16));
 }

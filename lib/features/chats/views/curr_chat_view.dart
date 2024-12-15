@@ -94,52 +94,39 @@ class _CurrChatViewState extends State<CurrChatView> {
                             child: SizedBox(
                               width: 120,
                               height: 48,
-                              child: ColoredBox(
-                                  color: Colors.blue.shade100,
-                                  child: CustomNativeTextInput(
-                                    nativeTextInputController: nativeTextInputController,
-                                    hint: "Hint text",
-                                    defaultText: "Hello",
-                                    inputBoxHeight: 200,
-                                    inputBoxWidth: 200,
-                                    minLines: 3,
-                                    maxLines: 5,
-                                    maxLength: 200,
-                                    keyboardType: TextInputType.multiline,
-                                    inputTextStyle: const TextStyle(fontSize: 16),
-                                    cursorWidth: 4,
-                                    cursorColor: Colors.black,
-                                    cursorHandleColor: Colors.green,
-                                    onchanged: (text) async {
-                                      log("Typed in: $text");
-                                    },
-                                    internalArgs: (args) async {
-                                      log("arguments: ${args.toMap()["maxHeight"]}");
-                                      log("Run internal args");
-                                    },
-                                  )),
-                            )
-                            // child: CustomFlutterNativeTextField(
-                            //   backgroundColor: scaffoldBgColor,
-                            //   borderRadius: 64,
-                            //   maxLines: 100,
-                            //   prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
-                            //   alwaysShowSuffixIcon: true,
-                            //   suffixIcon: SizedBox(
-                            //     width: 110,
-                            //     child: Padding(
-                            //       padding: EdgeInsets.only(right: 8),
-                            //       child: Row(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           IconButton(onPressed: () {}, icon: Icon(Icons.attachment)),
-                            //           IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined)),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-                            ),
+                              child: CustomNativeTextInput(
+                                nativeTextInputController: nativeTextInputController,
+                                backgroundColor: scaffoldBgColor,
+                                borderRadius: 64,
+                                maxLines: 100,
+                                highlightColor: Colors.blue,
+                                onchanged: (text) async{
+                                  print("customPrint: Changed");
+                                  
+                                },
+                                internalArgs: (args) async{
+                                  log("message");
+                                  // nativeTextInputController.updateArguments({''});
+                                  log("args: ${args.toMap()}");
+                                  print("customPrint: internalArgs");
+                                },
+                                inputTextStyle: const TextStyle(color: Colors.white),
+                                prefixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.sticky_note_2_rounded)),
+                                suffixIcon: SizedBox(
+                                  width: 110,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(onPressed: () {}, icon: const Icon(Icons.attachment)),
+                                        IconButton(onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )),
                       ),
                       CustomElevatedButton(
                         shape: const CircleBorder(),
