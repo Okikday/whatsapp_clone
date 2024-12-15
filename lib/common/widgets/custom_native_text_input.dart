@@ -17,9 +17,9 @@ class CustomNativeTextInput extends StatefulWidget {
   final int? inputBoxHeight;
   final int? inputBoxWidth;
   final String defaultText; // Default text for the TextField
-  final Future<void> Function()? ontap; // Tap action
+  final void Function()? ontap; // Tap action
   final void Function()? onTapOutside;
-  final Future<void> Function(String text)? onchanged; // Change listener for text
+  final void Function(String text)? onchanged; // Change listener for text
   final TextInputType? keyboardType;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
@@ -42,10 +42,11 @@ class CustomNativeTextInput extends StatefulWidget {
   final Color? cursorHandleColor;
   final Future<void> Function(NativeTextInputModel args)? internalArgs;
   final int? minHeight;
-  final int? maxHeight;
+  final double? maxHeight;
   final int? lines;
   final Color? highlightColor;
   final Color? fontColor;
+  final Alignment alignInput;
   const CustomNativeTextInput(
       {super.key,
       required this.nativeTextInputController,
@@ -83,7 +84,9 @@ class CustomNativeTextInput extends StatefulWidget {
       this.maxHeight,
       this.lines,
       this.highlightColor,
-      this.fontColor});
+      this.fontColor,
+      this.alignInput = Alignment.center
+      });
 
   @override
   State<CustomNativeTextInput> createState() => CustomNativeTextInputState();
@@ -92,11 +95,12 @@ class CustomNativeTextInput extends StatefulWidget {
 class CustomNativeTextInputState extends State<CustomNativeTextInput> {
   late MethodChannel _channel; // Declare a private MethodChannel
   late Map<String, dynamic> creationParams;
+  late ValueNotifier<Map<String, dynamic>> creationParamsNotifier;
 
   @override
   void initState() {
     super.initState();
-    widget.nativeTextInputController.attach(this); // Attach the state to the controller
+    widget.nativeTextInputController.attach(this);
     creationParams = NativeTextInputModel(
       hint: widget.hint,
       defaultText: widget.defaultText,
@@ -119,9 +123,15 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
       hintTextColor: widget.hintStyle?.color,
       lines: widget.lines,
       minHeight: widget.minHeight,
-      maxHeight: widget.maxHeight,
+      maxHeight: widget.maxHeight?.toInt(),
       highlightColor: widget.highlightColor,
     ).toMap();
+
+    creationParamsNotifier = ValueNotifier(creationParams);
+
+    creationParamsNotifier.addListener(() {
+      updateArguments(creationParamsNotifier.value);
+    });
   }
 
   @override
@@ -132,61 +142,121 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(CustomNativeTextInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final updatedParams = NativeTextInputModel(
+      hint: widget.hint,
+      defaultText: widget.defaultText,
+      fontSize: widget.inputTextStyle?.fontSize,
+      fontColor: widget.inputTextStyle?.color,
+      isEnabled: widget.isEnabled,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      textAlign: widget.textAlign,
+      keyboardType: widget.keyboardType,
+      maxLength: widget.maxLength,
+      cursorColor: widget.cursorColor,
+      contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+      textStyles: widget.textStyles,
+      cursorWidth: widget.cursorWidth,
+      cursorHandleColor: widget.cursorHandleColor,
+      hasFocus: widget.hasFocus,
+      inputBoxHeight: widget.inputBoxHeight,
+      inputBoxWidth: widget.inputBoxWidth,
+      hintTextColor: widget.hintStyle?.color,
+      lines: widget.lines,
+      minHeight: widget.minHeight,
+      maxHeight: widget.maxHeight?.toInt(),
+      highlightColor: widget.highlightColor,
+    ).toMap();
+
+    if (creationParams != updatedParams) {
+      updateCreationParams(updatedParams);
+    }
+  }
+
+  void updateCreationParams(Map<String, dynamic> newParams) {
+    setState(() {
+      creationParams = newParams;
+      updateArguments(newParams);
+    });
+  }
+
   void updateArguments(Map<String, dynamic> args) {
-    // Ensure the channel is initialized before invoking methods
-    _channel.invokeMethod('updateArguments', args);
+    // Send the updated arguments to the native platform view
+    _channel.invokeMethod('updateArguments', creationParams);
   }
 
   @override
   Widget build(BuildContext context) {
     const String viewType = 'native-text-input';
-    log("build: $creationParams");
 
     return Container(
       width: widget.pixelWidth,
       height: widget.pixelHeight,
-      padding: widget.contentPadding,
       decoration: BoxDecoration(
         color: widget.backgroundColor,
         border: widget.boxBorder,
         borderRadius: BorderRadius.circular(widget.borderRadius ?? 4),
       ),
-      child: PlatformViewLink(
-        viewType: viewType,
-        surfaceFactory: (context, controller) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          );
-        },
-        onCreatePlatformView: (params) {
-          _channel = MethodChannel('native_text_input_${params.id}'); // Initialize the MethodChannel
-
-          _channel.setMethodCallHandler((call) async {
-            final String? text = await CustomNativeTextInputFunctions.getText(_channel);
-            if (text != null) widget.onchanged!(text);
-            final NativeTextInputModel? properties = await CustomNativeTextInputFunctions.getProperties(_channel);
-            if (properties != null) widget.internalArgs!(properties);
-            if (call.method == 'onTap') widget.ontap!();
-            setState(() {
-              nativeTextInputController.updateArguments({});
-            });
-          });
-
-          return PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
-            viewType: viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
-            onFocus: () {
-              params.onFocusChanged(true);
-            },
-          )
-            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-            ..create();
-        },
+      child: Row(
+        children: [
+          if (widget.prefixIcon != null) widget.prefixIcon!,
+          Expanded(
+            child: Align(
+              alignment: widget.alignInput,
+              child: ClipRRect(
+                clipBehavior: Clip.hardEdge,
+                child: SizedBox(
+                  height: widget.maxHeight,
+                  child: Padding(
+                    padding: widget.contentPadding ?? EdgeInsets.zero,
+                    child: PlatformViewLink(
+                      viewType: viewType,
+                      surfaceFactory: (context, controller) {
+                        return AndroidViewSurface(
+                          controller: controller as AndroidViewController,
+                          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+                          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+                        );
+                      },
+                      onCreatePlatformView: (params) {
+                        _channel = MethodChannel('native_text_input_${params.id}'); // Initialize the MethodChannel
+                    
+                        _channel.setMethodCallHandler((call) async {
+                          final String? text = await CustomNativeTextInputFunctions.getText(_channel);
+                          if (text != null) widget.onchanged!(text);
+                          final NativeTextInputModel? properties = await CustomNativeTextInputFunctions.getProperties(_channel);
+                          if (properties != null) widget.internalArgs!(properties);
+                          if (call.method == 'onTap') widget.ontap!();
+                          setState(() {
+                            nativeTextInputController.updateArguments({});
+                          });
+                        });
+                    
+                        return PlatformViewsService.initSurfaceAndroidView(
+                          id: params.id,
+                          viewType: viewType,
+                          layoutDirection: TextDirection.ltr,
+                          creationParams: creationParams,
+                          creationParamsCodec: const StandardMessageCodec(),
+                          onFocus: () {
+                            params.onFocusChanged(true);
+                          },
+                        )
+                          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+                          ..create();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (widget.suffixIcon != null) widget.suffixIcon!,
+        ],
       ),
     );
   }
@@ -198,6 +268,7 @@ class CustomNativeTextInputController {
   void attach(CustomNativeTextInputState state) => _state = state;
   void detach() => _state = null;
   void updateArguments(Map<String, dynamic> args) => _state?.updateArguments(args);
+  void updateCreationParams() => _state?.updateCreationParams(_state!.creationParamsNotifier.value);
 }
 
 class CustomNativeTextInputFunctions {

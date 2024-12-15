@@ -22,4 +22,7 @@ class IconStrings{
   static const callsIconFilled = "$iconPath/c4.png";
   
   static const cameraIconHome = "$iconPath/1k.png";
+  static const videoCallIcon = "$iconPath/6d.png";
+  static const stickersIcon = "$iconPath/4o.png";
+  // static const altStickersIcon
 }

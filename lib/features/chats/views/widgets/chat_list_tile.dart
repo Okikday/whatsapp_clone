@@ -1,7 +1,11 @@
 
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/features/chats/views/curr_chat_view.dart';
 
 class ChatListTile extends StatelessWidget {
   final double width;
@@ -15,6 +19,9 @@ class ChatListTile extends StatelessWidget {
       onTap: (){
         //For when it's long pressed
         isDarkMode ? WhatsAppColors.secondary.withOpacity(0.25) : WhatsAppColors.primary.withOpacity(0.25);
+
+        Get.to(() => const CurrChatView(), transition: Transition.downToUp);
+
       },
       onLongPress: () {
         

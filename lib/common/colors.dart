@@ -25,4 +25,15 @@ class WhatsAppColors {
   static const Color darkMessageReceived = Color(0xFF1F2C34); // Dark received message
   static const Color darkTextPrimary = Colors.white; // Main text in dark mode
   static const Color darkTextSecondary = Color(0xFF8696A0); // Subtle text in dark mode
+
+  // Chat wallpaper color
+  static const Color seaShell = Color(0xFFF7F4EF); //Light background
+  static const Color linen = Color(0xFFEEE5DD); // Light tint
+
+
+
+  // Other colors
+  static const Color arsenic = Color(0xFF1F272A);
+  static const Color battleshipGrey = Color(0xFF8D9598);
+  static const Color gray = Color(0xFF5D6267);
 }

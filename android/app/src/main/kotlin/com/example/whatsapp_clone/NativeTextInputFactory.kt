@@ -11,9 +11,9 @@ import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
-import android.text.method.ScrollingMovementMethod
 import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.LineHeightSpan
@@ -76,7 +76,7 @@ class NativeTextInputFactory(
             args.maxLines?.let { setMaxLines(it) }
             args.lines?.let { setLines(it) }
             setRawInputType(_parseKeyboardType(args.keyboardType))
-            args.hintTextColor?.let { setHintTextColor(Color.parseColor(it)) }
+            args.hintTextColor.let { setHintTextColor(Color.parseColor(it)) }
 
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             if (args.hasFocus) {
@@ -86,6 +86,8 @@ class NativeTextInputFactory(
                 clearFocus()
                 imm?.hideSoftInputFromWindow(windowToken, 0)
             }
+
+            overScrollMode = View.OVER_SCROLL_NEVER
 
 
             args.inputBoxWidth?.let { setWidth(it) }
@@ -103,11 +105,9 @@ class NativeTextInputFactory(
 
             args.highlightColor?.let { highlightColor = Color.parseColor(it) }
 
-            args.cursorColor?.let {
-                val drawable = textCursorDrawable
-                drawable?.mutate()?.setTint(Color.parseColor(it))
-                textCursorDrawable = drawable
-            }
+
+
+            styleTexts(this, textStyles = args.textStyles, context = context)
 
             val shapeDrawable = GradientDrawable()
             shapeDrawable.shape = GradientDrawable.RECTANGLE
@@ -128,137 +128,7 @@ class NativeTextInputFactory(
                 )
             }
 
-            val drawable = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(Color.parseColor(args.cursorColor)) // Cursor color
-                setSize(args.cursorWidth.toInt(), lineHeight) // Cursor width and height
-            }
-
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    // For Android 9 (API 28) and above, set the cursor drawable directly
-                    textCursorDrawable = drawable
-                } else {
-                    // For older versions, use reflection to change the cursor drawable
-                    val cursorField = TextView::class.java.getDeclaredField("mCursorDrawableRes")
-                    cursorField.isAccessible = true
-                    val cursorDrawableField = TextView::class.java.getDeclaredField("mEditor")
-                    cursorDrawableField.isAccessible = true
-                    val editor = cursorDrawableField.get(this)
-                    val cursorDrawableResField = editor::class.java.getDeclaredField("mCursorDrawable")
-                    cursorDrawableResField.isAccessible = true
-                    cursorDrawableResField.set(editor, arrayOf(drawable, drawable))
-                }
-
-                // Set the text selection handle color using reflection (for pre-API 28)
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    try {
-                        val handleField = TextView::class.java.getDeclaredField("mTextSelectHandle")
-                        handleField.isAccessible = true
-                        val handleDrawable = handleField.get(this) as Drawable
-                        handleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
-                    // Change the secondary handle (the other draggable handle)
-                    try {
-                        val secondaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandleLeft")
-                        secondaryHandleField.isAccessible = true
-                        val secondaryHandleDrawable = secondaryHandleField.get(this) as Drawable
-                        secondaryHandleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-
-
-            args.textStyles?.let { styles ->
-                val spannable = SpannableString(args.defaultText ?: "")
-                styles.forEach { style ->
-                    when (style.style) {
-                        "bold" -> spannable.setSpan(
-                            StyleSpan(Typeface.BOLD),
-                            style.start,
-                            style.end,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        "italic" -> spannable.setSpan(
-                            StyleSpan(Typeface.ITALIC),
-                            style.start,
-                            style.end,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        "underline" -> spannable.setSpan(
-                            UnderlineSpan(),
-                            style.start,
-                            style.end,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        "color" -> style.color?.let {
-                            spannable.setSpan(
-                                ForegroundColorSpan(Color.parseColor(it)),
-                                style.start,
-                                style.end,
-                                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                        }
-                        "backgroundColor" -> style.backgroundColor?.let {
-                            spannable.setSpan(
-                                BackgroundColorSpan(Color.parseColor(it)),
-                                style.start,
-                                style.end,
-                                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                        }
-                    }
-
-                    // Apply letterSpacing if defined
-                    style.letterSpacing?.let { letterSpacing ->
-                        spannable.setSpan(
-                            ScaleXSpan(1 + letterSpacing / 10), // Adjust letter spacing scaling as needed
-                            style.start,
-                            style.end,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    }
-
-                    // Apply lineHeight if defined
-                    style.lineHeight?.let { lineHeight ->
-                        spannable.setSpan(
-                            object : LineHeightSpan {
-                                override fun chooseHeight(
-                                    text: CharSequence?,
-                                    start: Int,
-                                    end: Int,
-                                    spanstartv: Int,
-                                    v: Int,
-                                    fm: Paint.FontMetricsInt?
-                                ) {
-                                    fm?.let {
-                                        val originalHeight = it.descent - it.ascent
-                                        val newHeight = (lineHeight * context.resources.displayMetrics.density).toInt()
-                                        if (newHeight > originalHeight) {
-                                            val delta = newHeight - originalHeight
-                                            it.descent += delta / 2
-                                            it.ascent -= delta / 2
-                                        }
-                                    }
-                                }
-                            },
-                            style.start,
-                            style.end,
-                            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                    }
-                }
-                setText(spannable)
-            } ?: setText(args.defaultText ?: "")
+            _setCursorProperty(this, cursorColor = args.cursorColor, cursorWidth = args.cursorWidth, cursorHandleColor = args.cursorHandleColor)
 
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
@@ -279,7 +149,7 @@ class NativeTextInputFactory(
                 "emailAddress" -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                 "phone" -> InputType.TYPE_CLASS_PHONE
                 "password" -> InputType.TYPE_TEXT_VARIATION_PASSWORD
-                "multiline" -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                "multiline" -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 "url" -> InputType.TYPE_TEXT_VARIATION_URI
                 "datetime" -> InputType.TYPE_DATETIME_VARIATION_NORMAL
                 "name" -> InputType.TYPE_TEXT_VARIATION_PERSON_NAME
@@ -293,55 +163,167 @@ class NativeTextInputFactory(
             return String.format("#%08X", color);
         }
 
-        fun _setCursorProperty(args: NativeTextInputModel) {
+        fun _setCursorProperty(
+            widget: EditText,
+            cursorColor: String,
+            cursorWidth: Int,
+            cursorHandleColor: String
+        ) {
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(Color.parseColor(args.cursorColor)) // Cursor color
-                setSize(args.cursorWidth.toInt(), editText.lineHeight) // Cursor width and height
+                setColor(Color.parseColor(cursorColor)) // Cursor color
+                setSize(cursorWidth, widget.lineHeight) // Cursor width and height
             }
 
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    // For Android 9 (API 28) and above, set the cursor drawable directly
-                    editText.textCursorDrawable = drawable
+                    // For Android 10 (API 29) and above, set the cursor drawable directly
+                    widget.textCursorDrawable = drawable
                 } else {
-                    // For older versions, use reflection to change the cursor drawable
-                    val cursorField = TextView::class.java.getDeclaredField("mCursorDrawableRes")
-                    cursorField.isAccessible = true
-                    val cursorDrawableField = TextView::class.java.getDeclaredField("mEditor")
-                    cursorDrawableField.isAccessible = true
-                    val editor = cursorDrawableField.get(editText)
-                    val cursorDrawableResField = editor::class.java.getDeclaredField("mCursorDrawable")
-                    cursorDrawableResField.isAccessible = true
-                    cursorDrawableResField.set(editor, arrayOf(drawable, drawable))
+                    // For older versions, use reflection to set the cursor drawable
+                    try {
+                        val editorField = TextView::class.java.getDeclaredField("mEditor")
+                        editorField.isAccessible = true
+                        val editor = editorField.get(widget)
+
+                        val cursorDrawableField = editor::class.java.getDeclaredField("mCursorDrawable")
+                        cursorDrawableField.isAccessible = true
+                        cursorDrawableField.set(editor, arrayOf(drawable, drawable)) // Set both primary and secondary cursors
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
 
-                // Set the text selection handle color using reflection (for pre-API 28)
+                // Set the text selection handle color using reflection for pre-API 29
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     try {
-                        val handleField = TextView::class.java.getDeclaredField("mTextSelectHandle")
-                        handleField.isAccessible = true
-                        val handleDrawable = handleField.get(editText) as Drawable
-                        handleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                        // Primary handle (the draggable handle)
+                        val primaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandle")
+                        primaryHandleField.isAccessible = true
+                        val primaryHandleDrawable = primaryHandleField.get(widget) as Drawable
+                        primaryHandleDrawable.mutate().setTint(Color.parseColor(cursorHandleColor))
 
-                    // Change the secondary handle (the other draggable handle)
-                    try {
+                        // Secondary handle (the other draggable handle)
                         val secondaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandleLeft")
                         secondaryHandleField.isAccessible = true
-                        val secondaryHandleDrawable = secondaryHandleField.get(editText) as Drawable
-                        secondaryHandleDrawable.mutate().setTint(Color.parseColor(args.cursorHandleColor)) // Handle color
+                        val secondaryHandleDrawable = secondaryHandleField.get(widget) as Drawable
+                        secondaryHandleDrawable.mutate().setTint(Color.parseColor(cursorHandleColor))
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
+
+                // Apply cursor tint if the cursor drawable exists (for any version)
+                widget.textCursorDrawable?.mutate()?.setTint(Color.parseColor(cursorColor))
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+
+
+        fun styleTexts(
+            widget: EditText,
+            textStyles: List<NativeTextStyle>? = null,
+            context: Context
+        ) {
+            // Get the current text from the EditText as the base for styling
+            val baseText = widget.text.toString()
+            val spannable = SpannableString(baseText)
+
+            // If no styles are provided, just keep the existing text
+            if (textStyles.isNullOrEmpty()) {
+                return
+            }
+
+            val textLength = baseText.length
+
+            textStyles.forEach { style ->
+                // Ensure start and end are within the valid range
+                val start = style.start.coerceIn(0, textLength)
+                val end = style.end.coerceIn(start, textLength) // Ensures end is not before start
+
+                when (style.style) {
+                    "bold" -> spannable.setSpan(
+                        StyleSpan(Typeface.BOLD),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    "italic" -> spannable.setSpan(
+                        StyleSpan(Typeface.ITALIC),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    "underline" -> spannable.setSpan(
+                        UnderlineSpan(),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    "color" -> style.color?.let {
+                        spannable.setSpan(
+                            ForegroundColorSpan(Color.parseColor(it)),
+                            start,
+                            end,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                    "backgroundColor" -> style.backgroundColor?.let {
+                        spannable.setSpan(
+                            BackgroundColorSpan(Color.parseColor(it)),
+                            start,
+                            end,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                }
+
+                // Apply letterSpacing if defined
+                style.letterSpacing?.let { letterSpacing ->
+                    spannable.setSpan(
+                        ScaleXSpan(1 + letterSpacing / 10),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+
+                // Apply lineHeight if defined
+                style.lineHeight?.let { lineHeight ->
+                    spannable.setSpan(
+                        object : LineHeightSpan {
+                            override fun chooseHeight(
+                                text: CharSequence?,
+                                start: Int,
+                                end: Int,
+                                spanstartv: Int,
+                                v: Int,
+                                fm: Paint.FontMetricsInt?
+                            ) {
+                                fm?.let {
+                                    val originalHeight = it.descent - it.ascent
+                                    val newHeight = (lineHeight * context.resources.displayMetrics.density).toInt()
+                                    if (newHeight > originalHeight) {
+                                        val delta = newHeight - originalHeight
+                                        it.descent += delta / 2
+                                        it.ascent -= delta / 2
+                                    }
+                                }
+                            }
+                        },
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+
+            // Apply the styled text to the EditText widget
+            widget.text = Editable.Factory.getInstance().newEditable(spannable)
+        }
+
 
 
 
@@ -382,7 +364,7 @@ class NativeTextInputFactory(
                 }
 
                 if(newState.cursorColor != currentState?.cursorColor || newState.cursorHandleColor != currentState?.cursorHandleColor){
-                    _setCursorProperty(args)
+                    _setCursorProperty(editText, cursorColor = newState.cursorColor, cursorWidth = newState.cursorWidth, cursorHandleColor = newState.cursorHandleColor)
                 }
                 if(newState.cursorWidth != currentState?.cursorWidth){
                     editText.width = newState.cursorWidth
@@ -398,7 +380,7 @@ class NativeTextInputFactory(
                     }
                 }
                 if(newState.hintTextColor != currentState?.hintTextColor){
-                    newState.hintTextColor?.let { editText.setHintTextColor(Color.parseColor(it)) }
+                    newState.hintTextColor.let { editText.setHintTextColor(Color.parseColor(it)) }
                 }
                 if(newState.minHeight != currentState?.minHeight || newState.maxHeight != currentState?.maxHeight){
                     newState.minHeight?.let { editText.setMinHeight(it) }
@@ -412,6 +394,11 @@ class NativeTextInputFactory(
                 }
                 if(newState.fontColor != currentState?.fontColor){
                     newState.fontColor?.let { editText.setTextColor(Color.parseColor(it)) }
+                }
+                if(newState.textStyles != currentState?.textStyles){
+                    if (context != null) {
+                        styleTexts(editText, textStyles = newState.textStyles, context = context)
+                    }
                 }
 
                 // Save the new state as the current state
@@ -457,7 +444,7 @@ class NativeTextInputFactory(
                             fontColor = colorIntToHexString(editText.currentTextColor),
                             isEnabled = editText.isEnabled,
                             maxLines = editText.maxLines,
-                            maxHeight = editText.layout.height,
+                            maxHeight = editText.layout?.getLineTop(editText.layout.lineCount)?.toInt() ?: editText.lineHeight.toInt(),
                             lines = editText.layout.lineCount,
                             textAlign = when (editText.textAlignment) {
                                 View.TEXT_ALIGNMENT_TEXT_START -> "start"
@@ -519,26 +506,26 @@ class NativeTextInputFactory(
                                     NativeTextStyle.fromMap(styleMap) // Assuming you have this conversion function
                                 }
                                 val newState = NativeTextInputModel(
-                                    hint = args["hint"] as? String,
-                                    defaultText = args["defaultText"] as? String,
+                                    hint = args["hint"] as? String ?: currentState?.hint,
+                                    defaultText = args["defaultText"] as? String ?: currentState?.defaultText,
                                     fontSize = (args["fontSize"] as? Double)?.toFloat() ?: currentState?.fontSize ?: 16f,
                                     isEnabled = args["isEnabled"] as? Boolean ?: currentState?.isEnabled ?: true,
-                                    minLines = args["minLines"] as? Int ?: currentState?.minLines ?: 1,
-                                    maxLines = args["maxLines"] as? Int ?: currentState?.maxLines ?: 1,
+                                    minLines = args["minLines"] as? Int ?: currentState?.minLines,
+                                    maxLines = args["maxLines"] as? Int ?: currentState?.maxLines,
                                     keyboardType = args["keyboardType"] as? String ?: currentState?.keyboardType ?: "text",
                                     hasFocus = args["hasFocus"] as? Boolean ?: currentState?.hasFocus ?: false,
-                                    cursorColor = (args["cursorColor"] as? String?) ?: currentState?.cursorColor,
-                                    cursorWidth = (args["cursorWidth"] as? Double)?.toInt() ?: currentState?.cursorWidth ?: 2,
+                                    cursorColor = args["cursorColor"] as? String ?: currentState?.cursorColor ?: "#FFFFFF",
+                                    cursorWidth = (args["cursorWidth"] as? Double)?.toInt() ?: currentState?.cursorWidth ?: 4,
                                     inputBoxHeight = (args["inputBoxHeight"] as? Double)?.toInt() ?: currentState?.inputBoxHeight,
                                     inputBoxWidth = (args["inputBoxWidth"] as? Double)?.toInt() ?: currentState?.inputBoxWidth,
                                     maxLength = args["maxLength"] as? Int ?: currentState?.maxLength,
-                                    cursorHandleColor = (args["cursorHandleColor"] as? String?) ?: currentState?.cursorHandleColor,
+                                    cursorHandleColor = args["cursorHandleColor"] as? String ?: currentState?.cursorHandleColor ?: "#000000",
                                     textStyles = convertedTextStyles ?: currentState?.textStyles,
-                                    fontColor = (args["fontColor"] as? String?) ?: currentState?.fontColor,
-                                    highlightColor = (args["highlightColor"] as? String?) ?: currentState?.highlightColor,
-                                    hintTextColor = (args["hintTextColor"] as? String?) ?: currentState?.hintTextColor,
-
+                                    fontColor = args["fontColor"] as? String ?: currentState?.fontColor ?: "#000000",
+                                    highlightColor = args["highlightColor"] as? String ?: currentState?.highlightColor ?: "#FFFFFF",
+                                    hintTextColor = args["hintTextColor"] as? String ?: currentState?.hintTextColor ?: "#DDDDDD"
                                 )
+
                                 updateProperties(newState)
                                 result.success(null)
                             } catch (e: Exception) {
@@ -581,15 +568,15 @@ data class NativeTextInputModel(
     val textAlign: String = "start", // Text alignment ("start", "center", "end")
     val keyboardType: String = "text", // Input type ("text", "number", etc.)
     val maxLength: Int? = null, // Maximum length of the text
-    val cursorColor: String? = "#FFFFFF", // Cursor color (ARGB)
+    val cursorColor: String = "#FFFFFF", // Cursor color (ARGB)
     val contentPadding: List<Float>? = null, // Padding as [left, top, right, bottom]
     val textStyles: List<NativeTextStyle>? = null, // List of styles to apply to text
     val hasFocus: Boolean = false,
-    val cursorWidth: Int = 2,
-    val cursorHandleColor: String? = "#000000",
+    val cursorWidth: Int = 4,
+    val cursorHandleColor: String = "#000000",
     val inputBoxWidth: Int? = null,
     val inputBoxHeight: Int? = null,
-    val hintTextColor: String? = "#DDDDDD",
+    val hintTextColor: String = "#DDDDDD",
     val minHeight: Int? = null,
     val maxHeight: Int? = null,
     val highlightColor: String? = "#FFFFFF",
@@ -632,35 +619,35 @@ data class NativeTextInputModel(
                 NativeTextStyle.fromMap(styleMap)
             }
 
-
             return NativeTextInputModel(
                 hint = map["hint"] as? String,
                 label = map["label"] as? String,
                 defaultText = map["defaultText"] as? String,
-                fontSize = (map["fontSize"] as? Double ?: 14.0).toFloat(),
+                fontSize = (map["fontSize"] as? Double ?: 16.0).toFloat(),
                 isEnabled = map["isEnabled"] as? Boolean ?: true,
-                minLines = map["minLines"] as Int,
+                minLines = map["minLines"] as? Int,
                 maxLines = map["maxLines"] as? Int,
                 lines = map["lines"] as? Int,
                 textAlign = map["textAlign"] as? String ?: "start",
-                keyboardType = map["keyboardType"] as String,
+                keyboardType = map["keyboardType"] as? String ?: "text",
                 maxLength = map["maxLength"] as? Int,
-                cursorColor = (map["cursorColor"] as String?),
+                cursorColor = map["cursorColor"] as? String ?: "#FFFFFF",
                 contentPadding = (map["contentPadding"] as? List<*>)?.map { (it as? Double)?.toFloat() ?: 0f },
                 textStyles = convertedTextStyles,
                 hasFocus = map["hasFocus"] as? Boolean ?: false,
-                cursorWidth = map["cursorWidth"] as? Int ?: 2,
-                cursorHandleColor = (map["cursorHandleColor"] as? String?),
+                cursorWidth = map["cursorWidth"] as? Int ?: 4,
+                cursorHandleColor = map["cursorHandleColor"] as? String ?: "#000000",
                 inputBoxWidth = map["inputBoxWidth"] as? Int,
                 inputBoxHeight = map["inputBoxHeight"] as? Int,
-                hintTextColor = (map["hintTextColor"] as? String?),
+                hintTextColor = map["hintTextColor"] as? String ?: "#DDDDDD",
                 minHeight = map["minHeight"] as? Int,
                 maxHeight = map["maxHeight"] as? Int,
-                highlightColor = (map["highlightColor"] as? String?),
-                fontColor = (map["fontColor"] as? String?),
+                highlightColor = map["highlightColor"] as? String ?: "#FFFFFF",
+                fontColor = map["fontColor"] as? String ?: "#000000",
             )
         }
     }
+
 }
 
 data class NativeTextStyle(
@@ -692,8 +679,8 @@ data class NativeTextStyle(
                 start = map["start"] as? Int ?: 0,
                 end = map["end"] as? Int ?: 0,
                 style = map["style"] as? String ?: "",
-                color = (map["color"] as? String?),
-                backgroundColor = (map["backgroundColor"] as? String?),
+                color = map["color"] as? String ?: "#00000000",
+                backgroundColor = map["backgroundColor"] as? String ?: "#00000000",
                 letterSpacing = (map["letterSpacing"] as? Number)?.toFloat(),
                 lineHeight = (map["lineHeight"] as? Number)?.toFloat()
             )
