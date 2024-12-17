@@ -164,7 +164,7 @@ List<Widget> welcomeScreenWidgets(
                 onClick: () {
                   log("Clicked to new page");
                   Get.to(() => RoutesNames.contactVerificationView,
-                      transition: Transition.zoom, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);
+                      transition: Transition.rightToLeft, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);
                 },
               ),
             ),

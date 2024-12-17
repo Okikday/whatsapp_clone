@@ -5,10 +5,12 @@ import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';
 import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
+import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
 class ContactVerificationView extends StatelessWidget {
@@ -78,8 +80,10 @@ class ContactVerificationView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: Constants.spaceMedium,
+                  height: Constants.spaceSmall,
                 ),
+
+                // Phone number
                 SizedBox(
                   width: Get.width * 0.7,
                   child: Row(
@@ -114,21 +118,47 @@ class ContactVerificationView extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                const SizedBox(height: Constants.spaceLarge,),
+
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: Constants.spaceExtraSmall),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: CustomElevatedButton(
-                        pixelHeight: 48,
-                        label: "Next",
-                        backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
-                        screenWidth: 100,
-                        textSize: Constants.fontSizeSmall + 1,
-                        onClick: () {
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: CustomElevatedButton(
+                      pixelHeight: 48,
+                      backgroundColor: isDarkMode ? Colors.white.withAlpha(75) : Colors.black.withAlpha(75),
+                      onClick: () async{
+                        final Result result = await UserAuth().signInWithGoogle();
+                        if(result.isSuccess || result.value == true){
                           Get.to(() => RoutesNames.homeView,);
-                        },
-                      ),
+                        }else{
+                          Get.snackbar("Error Signing in", "Unable to sign in with Google");
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 10,
+                        children: [
+                        const Icon(FontAwesomeIcons.google, color: WhatsAppColors.primary,),
+                        CustomWidgets.text(context, "Use Google", fontSize: 16)
+                      ],),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(bottom: Constants.spaceExtraSmall),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CustomElevatedButton(
+                      pixelHeight: 48,
+                      label: "Next",
+                      backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
+                      screenWidth: 100,
+                      textSize: Constants.fontSizeSmall + 1,
+                      onClick: () {
+                        Get.snackbar("Unavailable", "Not yet available", duration: const Duration(milliseconds: 1000));
+                      },
                     ),
                   ),
                 )

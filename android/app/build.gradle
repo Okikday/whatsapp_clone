@@ -1,5 +1,6 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -50,6 +51,14 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
+    signingConfigs {
+        debug{
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('whatsapp_clone.jks')
+            storePassword 'android'
+        }
+    }
 
     buildTypes {
         release {
@@ -64,6 +73,25 @@ flutter {
     source '../..'
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'com.squareup.okhttp:okhttp:2.7.5'
+        force 'com.squareup.okio:okio:1.17.5'
+    }
+}
+
 dependencies {
     // implementation 'androidx.core:core:1.15.0'
+    // Add any other dependencies you need
+    implementation platform('com.google.firebase:firebase-bom:32.0.0') // Firebase BoM for consistent versioning
+
+    // Add Firebase dependencies based on your needs:
+    // For Firebase Core
+    implementation 'com.google.firebase:firebase-analytics'
+    
+    // For example, if you're using Firebase Auth or Firestore:
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
+    implementation 'com.google.android.gms:play-services-basement:17.6.0'
 }

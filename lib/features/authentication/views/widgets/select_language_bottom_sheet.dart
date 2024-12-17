@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/widgets/custom_radio_buttons.dart';
-import 'package:whatsapp_clone/features/authentication/data/app_languages.dart';
 
 class SelectLanguageBottomSheet extends StatelessWidget {
   const SelectLanguageBottomSheet({super.key});
@@ -13,7 +13,7 @@ class SelectLanguageBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     // Create an instance of CustomRadioButtons
     final CustomRadioButtons customRadioButtons = CustomRadioButtons(
-      items: whatsappLanguages.keys.toList(),
+      items: AppConstants.whatsappLanguages.keys.toList(),
       activeColor: Colors.green,
     );
     
@@ -53,14 +53,14 @@ class SelectLanguageBottomSheet extends StatelessWidget {
                 Expanded(
                   child: ListView.builder(
                     controller: scrollController,
-                    itemCount: whatsappLanguages.length,
+                    itemCount: AppConstants.whatsappLanguages.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: customRadioButtons.getRadio(
                           index: index,
                         ),
-                        title: CustomWidgets.text(context, whatsappLanguages.keys.toList()[index]),
-                        subtitle: CustomWidgets.text(context, whatsappLanguages.values.toList()[index], color: WhatsAppColors.darkTextSecondary),
+                        title: CustomWidgets.text(context, AppConstants.whatsappLanguages.keys.toList()[index]),
+                        subtitle: CustomWidgets.text(context, AppConstants.whatsappLanguages.values.toList()[index], color: WhatsAppColors.darkTextSecondary),
                       );
                     },
                   ),
