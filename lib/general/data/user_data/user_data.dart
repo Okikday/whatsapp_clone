@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:whatsapp_clone/common/utilities.dart';
 import 'package:whatsapp_clone/general/data/hive_data/hive_data.dart';
@@ -30,8 +32,13 @@ class UserDataFunctions {
       await _secureStorage.delete(key: 'googleIDToken');
       await _secureStorage.delete(key: 'googleAccessToken');
       UserCredentialModel.defaultMap.forEach((key, value) async {
-        if (value != null) await hiveData.deleteData(key: "$_path/$key");
+        try{
+          await hiveData.deleteData(key: "$_path/$key");
+        }catch(e){
+          log("Error deleting user Data, $e");
+        }
       });
+      log("Successfully cleared user's data");
       return Result.success(true);
     } catch (e) {
       return Result.error("Error: $e");

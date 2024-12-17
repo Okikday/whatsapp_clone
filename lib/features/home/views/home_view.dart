@@ -1,19 +1,20 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/images_strings.dart';
+import 'package:whatsapp_clone/common/assets_strings.dart';
+import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
+import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
 import 'package:whatsapp_clone/features/calls/views/calls_tab_view.dart';
 import 'package:whatsapp_clone/features/chats/views/chats_tab_view.dart';
 import 'package:whatsapp_clone/features/communities/views/communities_tab_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
 import 'package:whatsapp_clone/features/updates/views/updates_tab_view.dart';
+import 'package:whatsapp_clone/general/widgets/loading_dialog.dart';
+import 'package:whatsapp_clone/routes_names.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -98,7 +99,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                             color: isDarkMode ? Colors.white : Colors.black,
                           )).animate().fadeIn(duration: const Duration(milliseconds: 150))),
                 ),
-                IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, size: 24, color: isDarkMode ? Colors.white : Colors.black))
+                CustomPopupMenuButton(
+                  menuItems: const ["Sign out"],
+                  onSelected: (value) async {
+                    if (value == "Sign out") {
+                      Get.dialog(
+                        const LoadingDialog(msg: "Signing out",),
+                      );
+                      Future.delayed(const Duration(seconds: 1), () async {
+                        await UserAuth().googleSignOut();
+                        Get.close(1);
+                        Get.off(() => RoutesNames.welcomeScreen);
+                      });
+                    }
+                  },
+                )
               ],
             ),
           ),
@@ -107,7 +122,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           () => NavigationBar(
             selectedIndex: homeUiController.homeBottomNavBarCurrentIndex.value,
             indicatorColor: isDarkMode ? const Color(0xFF103629) : const Color(0xFFD8FDD2),
-            overlayColor: WidgetStatePropertyAll(const Color(0xFF103629).withOpacity(0.1)),
+            overlayColor: WidgetStatePropertyAll(const Color(0xFF103629).withAlpha(26)),
             backgroundColor: scaffoldBgColor,
             onDestinationSelected: (value) {
               homeUiController.setHomeBottomNavBarCurrentIndex(value);
@@ -194,7 +209,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Icon(Icons.add_comment, color: Theme.of(context).scaffoldBackgroundColor,),
+          child: Icon(
+            Icons.add_comment,
+            color: Theme.of(context).scaffoldBackgroundColor,
+          ),
         ),
         body: PageView(
             controller: pageController,

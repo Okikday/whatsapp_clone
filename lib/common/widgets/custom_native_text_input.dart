@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:whatsapp_clone/features/chats/views/curr_chat_view.dart';
+import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 
 class CustomNativeTextInput extends StatefulWidget {
   final CustomNativeTextInputController nativeTextInputController;

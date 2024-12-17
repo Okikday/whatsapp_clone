@@ -1,5 +1,6 @@
 const String imgPath = "assets/images";
 const String iconPath = "assets/icons";
+const String svgPath = "assets/svgs";
 
 class ImagesStrings {
   
@@ -25,4 +26,12 @@ class IconStrings{
   static const videoCallIcon = "$iconPath/6d.png";
   static const stickersIcon = "$iconPath/4o.png";
   // static const altStickersIcon
+}
+
+
+
+class SvgStrings{
+  static const msgBubbleCorner1 = "$svgPath/msg_bbl_corner1.svg";
+  static const msgBubbleCorner2 = "$svgPath/msg_bbl_corner2.svg";
+  static const msgBubbleCorner3 = "$svgPath/msg_bbl_corner3.svg";
 }

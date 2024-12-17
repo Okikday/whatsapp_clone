@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +13,7 @@ import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';
 import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
 import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
+import 'package:whatsapp_clone/general/widgets/loading_dialog.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
 class ContactVerificationView extends StatelessWidget {
@@ -128,11 +131,15 @@ class ContactVerificationView extends StatelessWidget {
                       pixelHeight: 48,
                       backgroundColor: isDarkMode ? Colors.white.withAlpha(75) : Colors.black.withAlpha(75),
                       onClick: () async{
+                        Get.dialog(const LoadingDialog(), );
                         final Result result = await UserAuth().signInWithGoogle();
+                        Get.close(1);
                         if(result.isSuccess || result.value == true){
                           Get.to(() => RoutesNames.homeView,);
+                          Get.snackbar("Sign in", "Successfully signed in ✅");
                         }else{
-                          Get.snackbar("Error Signing in", "Unable to sign in with Google");
+                          Get.snackbar("Error Signing in", "${result.isError ? result.error : result.unavailable}");
+                          log(result.error.toString());
                         }
                       },
                       child: Row(

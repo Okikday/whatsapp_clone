@@ -1,25 +1,21 @@
-import 'dart:developer';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/images_strings.dart';
+import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/utilities.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
-import 'package:whatsapp_clone/features/chats/controllers/curr_chat_view_controller.dart';
+import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
 
-class CurrChatView extends StatelessWidget {
-  const CurrChatView({super.key});
+class ChatView extends StatelessWidget {
+  const ChatView({super.key});
 
   @override
   Widget build(BuildContext context) {

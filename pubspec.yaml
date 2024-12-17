@@ -31,6 +31,9 @@ dependencies:
   firebase_auth: ^5.3.4
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  uuid: ^4.5.1
+  connectivity_plus: ^6.1.1
+  device_info_plus: ^11.2.0
   
 
 dev_dependencies:
@@ -48,6 +51,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/logo/
+    - assets/svgs
 
   #-FONTS
   fonts:
