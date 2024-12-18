@@ -31,7 +31,6 @@ class IconStrings{
 
 
 class SvgStrings{
-  static const msgBubbleCorner1 = "$svgPath/msg_bbl_corner1.svg";
-  static const msgBubbleCorner2 = "$svgPath/msg_bbl_corner2.svg";
-  static const msgBubbleCorner3 = "$svgPath/msg_bbl_corner3.svg";
+  static const msgBubbleCornerLeft = "$svgPath/msg_bbl_corner_left.svg";
+  static const msgBubbleCornerRight = "$svgPath/msg_bbl_corner_right.svg";
 }

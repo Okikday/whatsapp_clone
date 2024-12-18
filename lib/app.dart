@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/themes.dart';
-import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/receiver_msg_bubble.dart';
-import 'package:whatsapp_clone/features/home/views/home_view.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/sender_msg_bubble.dart';
+import 'package:whatsapp_clone/routes_names.dart';
 
 class App extends StatelessWidget {
   final bool isUserSignedIn;
@@ -16,10 +16,8 @@ class App extends StatelessWidget {
       title: "WhatsApp Clone",
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,
-      // home:  isUserSignedIn ? const HomeView() : const WelcomeScreen(),
-      home: Scaffold(
-        body: Center(child: ReceiverMsgBubble(message: "Hello, ", time: "12:08PM", isFirstMsg: true,)),
-      ),
+      home:  isUserSignedIn ? RoutesNames.homeView : RoutesNames.welcomeScreen,
+      
     );
   }
 }

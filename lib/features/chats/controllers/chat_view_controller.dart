@@ -13,7 +13,8 @@ class ChatViewController extends GetxController {
   @override
   onInit(){
     super.onInit();
-    precacheImage(const ExactAssetImage(SvgStrings.msgBubbleCorner1, ), Get.context!);
+    precacheImage(const ExactAssetImage(SvgStrings.msgBubbleCornerLeft, ), Get.context!);
+    precacheImage(const ExactAssetImage(SvgStrings.msgBubbleCornerRight, ), Get.context!);
   }
 
   setMessageInput(String value) => messageInput.value = value;
