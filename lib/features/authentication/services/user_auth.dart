@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:whatsapp_clone/common/utilities.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/general/data/firebase_data/firebase_data.dart';
 import 'package:whatsapp_clone/general/data/user_data/user_data.dart';
 

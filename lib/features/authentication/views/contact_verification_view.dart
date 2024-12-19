@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/utilities.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';

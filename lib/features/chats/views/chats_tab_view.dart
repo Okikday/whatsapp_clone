@@ -8,12 +8,16 @@ import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/utilities/formatter.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chats_ui_controller.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
+import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
 
 class ChatsTabView extends StatelessWidget {
-  const ChatsTabView({super.key});
+  final List<ChatModel> chatModels;
+  const ChatsTabView({super.key, required this.chatModels});
   @override
   Widget build(BuildContext context) {
     chatUiController.overscrollOffset.value = 0;
@@ -89,11 +93,20 @@ class ChatsTabView extends StatelessWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
+                  final ChatModel cacheChatModel = chatModels[index];
                   return ChatListTile(
                     width: Get.width,
+                    chatName: cacheChatModel.chatName,
+                    profilePhoto: cacheChatModel.chatProfilePhoto,
+                    lastUpdated: Formatter.timeAgo(cacheChatModel.lastUpdated),
+                    lastMsg: cacheChatModel.lastMsg,
+                    onTap: (){
+                    Get.to(() => const ChatView(), transition: Transition.downToUp);
+
+                    }
                   ).animate().fadeIn(begin: 0.4, duration: const Duration(milliseconds: 350));
                 },
-                childCount: 20, // Example number of chats
+                childCount: chatModels.length, // Example number of chats
               ),
             ),
 

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/utilities.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
 
 class StatusListTile extends StatelessWidget {
   final EdgeInsets? margin;

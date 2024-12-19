@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
@@ -13,6 +14,7 @@ import 'package:whatsapp_clone/features/chats/views/chats_tab_view.dart';
 import 'package:whatsapp_clone/features/communities/views/communities_tab_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
 import 'package:whatsapp_clone/features/updates/views/updates_tab_view.dart';
+import 'package:whatsapp_clone/general/test_data/test_chats_data.dart';
 import 'package:whatsapp_clone/general/widgets/loading_dialog.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
@@ -104,7 +106,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   onSelected: (value) async {
                     if (value == "Sign out") {
                       Get.dialog(
-                        const LoadingDialog(msg: "Signing out",),
+                        const LoadingDialog(
+                          msg: "Signing out",
+                        ),
                       );
                       Future.delayed(const Duration(seconds: 1), () async {
                         await UserAuth().googleSignOut();
@@ -140,11 +144,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   color: isDarkMode ? null : WhatsAppColors.textPrimary,
                 ),
                 selectedIcon: Image.asset(
-                  IconStrings.chatsIconFilled,
+                  IconStrings.chatIconOutlined,
                   width: 24,
                   height: 24,
-                  colorBlendMode: BlendMode.srcIn,
-                  color: isDarkMode ? null : WhatsAppColors.accent,
+                  colorBlendMode: BlendMode.modulate,
+                  color: isDarkMode ? Colors.white : WhatsAppColors.accent,
                 ),
                 label: "Chats",
                 tooltip: "Chats",
@@ -210,7 +214,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           onPressed: () {},
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Icon(
-            Icons.add_comment,
+            FontAwesomeIcons.commentDots,
             color: Theme.of(context).scaffoldBackgroundColor,
           ),
         ),
@@ -219,11 +223,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             onPageChanged: (value) {
               homeUiController.setHomeBottomNavBarCurrentIndex(value);
             },
-            children: const [
-              ChatsTabView(),
-              UpdatesTabView(),
-              CommunitiesTabView(),
-              CallsTabView(),
+            children: [
+              ChatsTabView(
+                chatModels: TestChatsData.chatList,
+              ),
+              const UpdatesTabView(),
+              const CommunitiesTabView(),
+              const CallsTabView(),
             ]),
       ),
     );

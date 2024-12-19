@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:whatsapp_clone/common/utilities.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/features/authentication/use_cases/auth_functions.dart';
 import 'package:whatsapp_clone/general/data/user_data/user_data.dart';
 
