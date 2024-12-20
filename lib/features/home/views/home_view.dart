@@ -53,15 +53,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
           statusBarColor: Colors.transparent),
       child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size(Get.width, 64),
-          child: Container(
-            color: scaffoldBgColor,
-            width: Get.width,
-            height: 64,
-            margin: const EdgeInsets.only(top: kToolbarHeight - 24),
-            padding: EdgeInsets.only(left: Get.width > Get.height ? Get.width * 0.05 : 16, right: Get.width > Get.height ? Get.width * 0.05 : 0),
-            child: Row(
+        appBar: customAppBar(
+          child: Row(
               children: [
                 Obx(
                   () {
@@ -120,8 +113,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 )
               ],
             ),
-          ),
-        ),
+          scaffoldBgColor: scaffoldBgColor,),
         bottomNavigationBar: Obx(
           () => NavigationBar(
             selectedIndex: homeUiController.homeBottomNavBarCurrentIndex.value,
@@ -144,10 +136,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   color: isDarkMode ? null : WhatsAppColors.textPrimary,
                 ),
                 selectedIcon: Image.asset(
-                  IconStrings.chatIconOutlined,
+                  IconStrings.chatIconFilled,
                   width: 24,
                   height: 24,
-                  colorBlendMode: BlendMode.modulate,
+                  colorBlendMode: BlendMode.srcIn,
                   color: isDarkMode ? Colors.white : WhatsAppColors.accent,
                 ),
                 label: "Chats",
@@ -235,3 +227,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 }
+
+  PreferredSize customAppBar({required Widget child, required scaffoldBgColor}) {
+    return PreferredSize(
+        preferredSize: Size(Get.width, 64),
+        child: Container(
+          color: scaffoldBgColor,
+          width: Get.width,
+          height: 64,
+          margin: const EdgeInsets.only(top: kToolbarHeight - 24),
+          padding: EdgeInsets.only(left: Get.width > Get.height ? Get.width * 0.05 : 16, right: Get.width > Get.height ? Get.width * 0.05 : 0),
+          child: child
+        ),
+      );
+  }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class Utilities {
     if (imgfile == null && imgurl == null) {
       return AssetImage(defaulAssetImage);
     } else if (imgurl != null && imgsrc == ImageSource.network) {
-      return NetworkImage(imgurl);
+      return CachedNetworkImageProvider(imgurl);
     } else if (imgsrc == ImageSource.file && imgfile != null) {
       return FileImage(imgfile);
     } else {

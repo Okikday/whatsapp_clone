@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
@@ -18,6 +19,7 @@ class ChatListTile extends StatelessWidget {
   final bool? hasStatusUpdate;
   final bool isTyping;
   final void Function()? onTap;
+  final void Function()? onLongPress;
   const ChatListTile({
     super.key,
     required this.width,
@@ -29,6 +31,7 @@ class ChatListTile extends StatelessWidget {
     this.unreadMsgs,
     this.hasStatusUpdate,
     this.isTyping = false,
+    this.onLongPress
   });
 
   @override
@@ -40,7 +43,9 @@ class ChatListTile extends StatelessWidget {
         isDarkMode ? WhatsAppColors.secondary.withAlpha(70) : WhatsAppColors.primary.withAlpha(70);
         if (onTap != null) onTap!();
       },
-      onLongPress: () {},
+      onLongPress: () {
+        if(onLongPress != null) onLongPress!();
+      },
       child: Container(
         width: width,
         height: 80,
@@ -57,8 +62,8 @@ class ChatListTile extends StatelessWidget {
                 clipBehavior: Clip.hardEdge,
                 borderRadius: BorderRadius.circular(80),
                 child: profilePhoto != null
-                    ? Image.network(
-                        profilePhoto!,
+                    ? CachedNetworkImage(
+                        imageUrl: profilePhoto!,
                         fit: BoxFit.contain,
                       )
                     : null,

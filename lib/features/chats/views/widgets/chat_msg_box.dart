@@ -61,19 +61,19 @@ class ChatMsgBox extends StatelessWidget {
                         contentPadding:
                             currChatViewController.messageBarHeight > 48.0 ? const EdgeInsets.only(bottom: 2) : const EdgeInsets.only(top: 6, bottom: 2),
                         internalArgs: (args) async {
-                          final lines = args.lines;
+                          final int? lines = args.lines;
                           if (lines != null) {
                             currChatViewController.checkMessageBarHeight(lines, padding: 16);
                           }
                         },
-                        inputTextStyle: TextStyle(color: CustomWidgets.text(context, "").style?.color, fontSize: 19),
+                        inputTextStyle: TextStyle(color: CustomWidgets.text(context, "").style?.color, fontSize: 18),
                         prefixIcon: IconButton(
                           onPressed: () {},
                           icon: Image.asset(
                             IconStrings.stickersIcon,
                             width: 24,
                             height: 24,
-                            color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic,
+                            color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.arsenic,
                             colorBlendMode: BlendMode.srcIn,
                           ),
                         ),
@@ -136,7 +136,7 @@ class ChatMsgBox extends StatelessWidget {
           onPressed: () {},
           icon: Icon(
             Icons.camera_alt_outlined,
-            color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic,
+            color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.arsenic,
           )).animate().fadeIn(),
     );
   }
@@ -151,7 +151,7 @@ Widget _widgetAttachmentIconButton({
         quarterTurns: 3,
         child: Icon(
           Icons.attachment,
-          color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic,
+          color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.arsenic,
         ),
       ));
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/themes.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/sender_msg_bubble.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
 class App extends StatelessWidget {

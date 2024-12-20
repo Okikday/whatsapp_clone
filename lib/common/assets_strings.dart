@@ -17,6 +17,7 @@ class IconStrings{
   static const updatesIconOutlined = "$iconPath/c5.png";
   static const communitiesIconOutlined = "$iconPath/c6.png";
 
+  static const chatIconFilled = "$iconPath/msg_filled.png";
   static const updatesIconFilled = "$iconPath/c2.png";
   static const communitiesIconFilled = "$iconPath/c3.png";
   static const callsIconFilled = "$iconPath/c4.png";
@@ -27,6 +28,7 @@ class IconStrings{
   // static const altStickersIcon
 
   static const sendIcon = "$iconPath/7z.png";
+  static const iconFiller = "$iconPath/2a.png";
 }
 
 

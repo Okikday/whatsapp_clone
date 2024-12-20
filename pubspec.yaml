@@ -36,6 +36,7 @@ dependencies:
   device_info_plus: ^11.2.0
   intl: ^0.19.0
   flutter_image_compress: ^2.3.0
+  cached_network_image: ^3.4.1
   
 
 dev_dependencies:
@@ -79,3 +80,6 @@ flutter:
           weight: 700
         - asset: assets/fonts/AlbertSans/AlbertSans-Italic.ttf
           style: italic
+    - family: WhatsAppPaymentIcons
+      fonts:
+        - asset: assets/fonts/icon_fonts/dbf.ttf
