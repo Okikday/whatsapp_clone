@@ -21,6 +21,8 @@ class IconStrings{
   static const updatesIconFilled = "$iconPath/c2.png";
   static const communitiesIconFilled = "$iconPath/c3.png";
   static const callsIconFilled = "$iconPath/c4.png";
+
+  static const attachmentIcon = "$iconPath/bny.png";
   
   static const cameraIconHome = "$iconPath/1k.png";
   static const videoCallIcon = "$iconPath/6d.png";
@@ -28,7 +30,9 @@ class IconStrings{
   // static const altStickersIcon
 
   static const sendIcon = "$iconPath/7z.png";
-  static const iconFiller = "$iconPath/2a.png";
+  static const pinIconOutlined = "$iconPath/byx.png";
+  static const archiveIconOutlined = "$iconPath/qd.png";
+  static const notificationOffIconOutlined = "$iconPath/bun.png";
 }
 
 

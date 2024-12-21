@@ -8,13 +8,17 @@ import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_msgs_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_msg_box.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
 
 class ChatView extends StatelessWidget {
-  const ChatView({super.key});
+  final ChatModel chatModel;
+  final MessageModel messageModel;
+  const ChatView({super.key, required this.chatModel, required this.messageModel});
 
   @override
   Widget build(BuildContext context) {

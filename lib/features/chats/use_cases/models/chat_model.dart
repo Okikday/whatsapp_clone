@@ -11,6 +11,7 @@ class ChatModel {
   final int? unreadMsgs;
   final bool? hasStatusUpdate;
   final String? storedProfilePhoto;
+  
 
   ChatModel({
     required this.chatId,

@@ -69,6 +69,26 @@ class MessageModel {
       isDeleted: map['isDeleted'] == 1,
     );
   }
+
+  Map<String, dynamic> defaultMap() {
+  return {
+    'id': null, // SQLite auto-incremented ID
+    'messageId': '', // Default empty string
+    'chatId': '', // Default empty string
+    'senderId': '', // Default empty string
+    'receiverId': '', // Default empty string
+    'content': '', // Default empty string
+    'mediaUrl': null, // Default null for optional fields
+    'mediaCaption': null, // Default null for optional fields
+    'mediaType': 0, // Default 0 for MessageType
+    'sentAt': DateTime.now().toIso8601String(), // Default to the current timestamp
+    'deliveredAt': null, // Default null for optional fields
+    'readAt': null, // Default null for optional fields
+    'isStarred': 0, // Default 0 (false)
+    'isDeleted': 0, // Default 0 (false)
+  };
+}
+
 }
 
 enum MessageType {

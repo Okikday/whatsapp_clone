@@ -7,6 +7,7 @@ class CustomElevatedButton extends StatelessWidget {
   final Color? backgroundColor;
   final double? elevation;
   final void Function()? onClick;
+  final void Function()? onLongClick;
   final double? borderRadius;
   final double? textSize;
   final double? pixelHeight;   // Use pixel height for the normal height, declare for pixel if you want more customization over size
@@ -24,6 +25,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.label,
     this.child,
     this.onClick,
+    this.onLongClick,
     this.backgroundColor,
     this.elevation,
     this.borderRadius,
@@ -46,10 +48,11 @@ class CustomElevatedButton extends StatelessWidget {
       height: screenHeight != null ? MediaQuery.of(context).size.height * (screenHeight! / 100) : pixelHeight,
       child: ElevatedButton(
           onPressed: onClick,
+          onLongPress: onLongClick,
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(backgroundColor ?? Theme.of(context).primaryColor),
             padding: WidgetStatePropertyAll(contentPadding ?? EdgeInsets.zero),
-            overlayColor: WidgetStatePropertyAll(overlayColor ?? Colors.blue.withOpacity(0.1)),
+            overlayColor: WidgetStatePropertyAll(overlayColor ?? Colors.blue.withAlpha(26)),
             shadowColor: const WidgetStatePropertyAll(Colors.transparent),
             elevation: WidgetStatePropertyAll(elevation),
             shape: WidgetStatePropertyAll(shape ?? RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 24) )),
