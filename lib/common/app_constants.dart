@@ -4,8 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 class AppConstants {
   static const List<String> homeTabTitles = ["WhatsApp", "Updates", "Communities", "Calls"];
   static const List<String> defaultChatsFilters = ["All", "Unread", "Favourites", "Groups"];
-  static const List<Effect> homeCamAnimforwardEffect = [MoveEffect(begin: Offset(30, 0), end: Offset.zero), FadeEffect(begin: 0, end: 1, duration: Duration(milliseconds: 500))];
-  static const List<Effect> homeCamAnimBackwardEffect = [MoveEffect(begin: Offset(-30, 0), end: Offset.zero), FadeEffect(begin: 0, end: 1, duration: Duration(milliseconds: 500))];
+  static const List<Effect> homeCamAnimforwardEffect = [MoveEffect(begin: Offset(36, 0), end: Offset.zero), FadeEffect(begin: 0, end: 1, duration: Duration(milliseconds: 500))];
+  static const List<Effect> homeCamAnimBackwardEffect = [MoveEffect(begin: Offset(-36, 0), end: Offset.zero), FadeEffect(begin: 0, end: 1, duration: Duration(milliseconds: 500))];
 
 
 

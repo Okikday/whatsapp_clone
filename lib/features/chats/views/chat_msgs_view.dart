@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 
 class ChatMsgsView extends StatelessWidget {
   final bool isDarkMode;
-  const ChatMsgsView({super.key, required this.isDarkMode});
+  final List<MessageModel> messageModel;
+  const ChatMsgsView({super.key, required this.isDarkMode, required this.messageModel});
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +20,14 @@ class ChatMsgsView extends StatelessWidget {
               opacity: 0.8,
               image: const AssetImage(
                 ImagesStrings.chatBackground,
-              ),
+              ), 
               colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.gray : WhatsAppColors.linen, BlendMode.srcIn),
-              fit: BoxFit.fill)),
+              fit: BoxFit.cover)),
+              child: ListView.builder(
+                itemCount: 20,
+                itemBuilder: (context, index){
+
+              }),
     );
   }
 }

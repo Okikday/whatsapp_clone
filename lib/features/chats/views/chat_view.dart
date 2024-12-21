@@ -73,7 +73,7 @@ class ChatView extends StatelessWidget {
             clipBehavior: Clip.hardEdge,
             children: [
               // Chat background
-              ChatMsgsView(isDarkMode: isDarkMode,),
+              ChatMsgsView(isDarkMode: isDarkMode, messageModel: [messageModel, MessageModel.fromMap({...messageModel.toMap(), })],),
 
               ChatMsgBox(keyboardHeight: keyboardHeight, isDarkMode: isDarkMode, scaffoldBgColor: scaffoldBgColor)
             ],

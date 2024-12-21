@@ -27,9 +27,22 @@ class ChatMsgBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       width: Get.width,
-      bottom: keyboardHeight > 100 ? keyboardHeight + 4 : keyboardHeight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+      bottom: 0,
+      child: Container(
+        padding: const EdgeInsets.only(left: 4, right: 4, bottom: 4, top: 4),
+        margin: EdgeInsets.only(
+          bottom: keyboardHeight < 100 ? 0 : keyboardHeight,
+        ),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+              
+          opacity: 0.8,
+          image: const AssetImage(
+            ImagesStrings.chatBackground,
+          ),
+          colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.gray : WhatsAppColors.linen, BlendMode.srcIn),
+          fit: BoxFit.cover
+        )),
         child: Obx(
           () => Row(
             children: [

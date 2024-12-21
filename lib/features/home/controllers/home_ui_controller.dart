@@ -2,11 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
-import 'package:whatsapp_clone/common/assets_strings.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
 import 'package:whatsapp_clone/features/home/views/home_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/chats_tab_view.dart';
 
@@ -25,7 +22,7 @@ class HomeUiController extends GetxController {
   @override
   onInit() async {
     super.onInit();
-    homeBottomNavBarCurrentIndex.listen((int value) {
+    homeBottomNavBarCurrentIndex.listen((int value) { 
       if (value == 1 || value == 3) {
         homeCamIconAnimCtrlEffects.value = AppConstants.homeCamAnimforwardEffect;
         homeCameraIconAnimController.value?.forward(from: 0);
@@ -51,13 +48,13 @@ class HomeUiController extends GetxController {
     super.onClose();
   }
 
-  _setCurrHomeAppBar(PreferredSize widget) => currHomeAppBar.value = widget;
-  setIsDarkMode(bool value) => isDarkMode.value = value;
-  setHomeBottomNavBarCurrentIndex(int value) => homeBottomNavBarCurrentIndex.value = value;
-  sethomeCameraIconAnimController(AnimationController value) => homeCameraIconAnimController.value = value;
-  setCanPop(bool value) => canPop.value = value;
+  void _setCurrHomeAppBar(PreferredSize widget) => currHomeAppBar.value = widget;
+  void setIsDarkMode(bool value) => isDarkMode.value = value;
+  void setHomeBottomNavBarCurrentIndex(int value) => homeBottomNavBarCurrentIndex.value = value;
+  void sethomeCameraIconAnimController(AnimationController value) => homeCameraIconAnimController.value = value;
+  void setCanPop(bool value) => canPop.value = value;
   void updateHomeContext(BuildContext context) => homeContext.value = context;
-  setHomecamIconAnimCtrlEffects(List<Effect> effects) => homeCamIconAnimCtrlEffects.value = effects;
+  void setHomecamIconAnimCtrlEffects(List<Effect> effects) => homeCamIconAnimCtrlEffects.value = effects;
 
   // setChatTilesCount(int index) => chatTilesSelected = List.fi
   void selectChatTile(int index) => chatTilesSelected[index] = index;
@@ -67,7 +64,7 @@ class HomeUiController extends GetxController {
   setChatSelectionAppBar({BuildContext? context}){
     _setCurrHomeAppBar(customAppBar(
             scaffoldBgColor: Theme.of(context ?? Get.context!).scaffoldBackgroundColor,
-            padding: EdgeInsets.only(left: Get.width > Get.height ? Get.width * 0.05 : 16, right: Get.width > Get.height ? Get.width * 0.05 : 0),
+            padding: EdgeInsets.only(left: Get.width > Get.height ? Get.width * 0.05 : 8, right: Get.width > Get.height ? Get.width * 0.05 : 0),
             child: const ChatSelectionAppBarChild()));
   }
 

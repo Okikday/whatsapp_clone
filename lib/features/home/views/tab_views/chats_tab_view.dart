@@ -107,50 +107,51 @@ class ChatsTabView extends StatelessWidget {
                     () {
                       final Map<int, int?> chatTilesSelected = homeUiController.chatTilesSelected;
                       return ChatListTile(
-                      width: Get.width,
-                      chatName: cacheChatModel.chatName,
-                      profilePhoto: cacheChatModel.chatProfilePhoto,
-                      lastUpdated: Formatter.timeAgo(cacheChatModel.lastUpdated),
-                      lastMsg: cacheChatModel.lastMsg,
-                      isSelected: chatTilesSelected[index] != null,
-                      onTap: () async {
-                        if (chatTilesSelected.isEmpty) {
-                          await Future.delayed(const Duration(milliseconds: 175), () {
-                            Get.to(() => ChatView(chatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),), transition: Transition.downToUp);
-                          });
-                        } else {
+                        width: Get.width,
+                        chatName: cacheChatModel.chatName,
+                        profilePhoto: cacheChatModel.chatProfilePhoto,
+                        lastUpdated: Formatter.timeAgo(cacheChatModel.lastUpdated),
+                        lastMsg: cacheChatModel.lastMsg,
+                        isSelected: chatTilesSelected[index] != null,
+                        onTap: () async {
+                          if (chatTilesSelected.isEmpty) {
+                            await Future.delayed(const Duration(milliseconds: 175), () {
+                              _pushToChatView(
+                                  index: index, cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
+                            });
+                          } else {
+                            if (chatTilesSelected[index] != null) {
+                              homeUiController.removeSelectedChatTile(index);
+                            } else {
+                              homeUiController.selectChatTile(index);
+                            }
+                          }
+                        },
+                        onLongPress: () {
                           if (chatTilesSelected[index] != null) {
                             homeUiController.removeSelectedChatTile(index);
                           } else {
                             homeUiController.selectChatTile(index);
                           }
-                        }
-                      },
-                      onLongPress: () {
-                        if (chatTilesSelected[index] != null) {
-                          homeUiController.removeSelectedChatTile(index);
-                        } else {
-                          homeUiController.selectChatTile(index);
-                        }
-                      },
-                      onTapProfile: () {
-                        if (chatTilesSelected.isEmpty) {
-                        } else {
-                          if (chatTilesSelected[index] != null) {
-                            homeUiController.removeSelectedChatTile(index);
+                        },
+                        onTapProfile: () {
+                          if (chatTilesSelected.isEmpty) {
                           } else {
-                            homeUiController.selectChatTile(index);
+                            if (chatTilesSelected[index] != null) {
+                              homeUiController.removeSelectedChatTile(index);
+                            } else {
+                              homeUiController.selectChatTile(index);
+                            }
                           }
-                        }
-                      },
-                    ).animate().fadeIn(begin: 0.4, duration: const Duration(milliseconds: 350));
+                        },
+                      ).animate().fadeIn(begin: 0.4, duration: const Duration(milliseconds: 350));
                     },
                   );
                 },
                 childCount: chatModels.length, // Example number of chats
               ),
             ),
-    
+
             SliverToBoxAdapter(
               child: SizedBox(
                   height: 32,
@@ -166,8 +167,48 @@ class ChatsTabView extends StatelessWidget {
   }
 }
 
-
-
+_pushToChatView({required int index, required ChatModel cacheChatModel, required MessageModel messageModel}) {
+  navigator?.push(
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return ChatView(
+          chatModel: cacheChatModel,
+          messageModel: messageModel,
+        );
+      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const curve = Curves.decelerate;
+        // Offset transition
+        final offsetAnimation = animation.drive(
+          Tween(begin: const Offset(0.0, 0.2), end: Offset.zero).chain(CurveTween(curve: curve)),
+        );
+        // Fade transition
+        final fadeAnimation = animation.drive(
+          Tween<double>(begin: 0.5, end: 1.0).chain(CurveTween(curve: curve)),
+        );
+        // Scale transition
+        final scaleAnimation = animation.drive(
+          Tween<double>(begin: 1.1, end: 1.0).chain(CurveTween(curve: curve)),
+        );
+        final reverseFadeAnimation = animation.drive(
+          Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+        );
+        return FadeTransition(
+          opacity: animation.status == AnimationStatus.reverse ? reverseFadeAnimation : fadeAnimation,
+          child: SlideTransition(
+            position: offsetAnimation,
+            child: Transform.scale(
+              scaleY: scaleAnimation.value,
+              child: child,
+            ),
+          ),
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 350),
+      reverseTransitionDuration: const Duration(milliseconds: 200),
+    ),
+  );
+}
 
 class ChatSelectionAppBarChild extends StatelessWidget {
   const ChatSelectionAppBarChild({super.key});
@@ -177,13 +218,29 @@ class ChatSelectionAppBarChild extends StatelessWidget {
     final Color getCurrIconColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
     return Row(
       children: [
-        BackButton(color: getCurrIconColor,),
-        Expanded(child: Obx(() => CustomWidgets.text(context, homeUiController.chatTilesSelected.length.toString(), fontSize: 18, fontWeight: FontWeight.w500))),
-        IconButton(onPressed: (){}, icon: Image.asset(IconStrings.pinIconOutlined, width: 24, height: 24, color: getCurrIconColor, colorBlendMode: BlendMode.srcIn,)),
-        IconButton(onPressed: (){}, icon: Icon(Icons.delete, color: getCurrIconColor,)),
-        IconButton(onPressed: (){}, icon: Icon(Icons.notifications_off_outlined, color: getCurrIconColor)),
-        IconButton(onPressed: (){}, icon: Icon(Icons.archive_outlined, color: getCurrIconColor)),
-        IconButton(onPressed: (){}, icon: Icon(Icons.more_vert, color: getCurrIconColor))
+        BackButton(
+          color: getCurrIconColor,
+        ),
+        Expanded(
+            child: Obx(() => CustomWidgets.text(context, homeUiController.chatTilesSelected.length.toString(), fontSize: 18, fontWeight: FontWeight.w500))),
+        IconButton(
+            onPressed: () {},
+            icon: Image.asset(
+              IconStrings.pinIconOutlined,
+              width: 24,
+              height: 24,
+              color: getCurrIconColor,
+              colorBlendMode: BlendMode.srcIn,
+            )),
+        IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.delete,
+              color: getCurrIconColor,
+            )),
+        IconButton(onPressed: () {}, icon: Icon(Icons.notifications_off_outlined, color: getCurrIconColor)),
+        IconButton(onPressed: () {}, icon: Icon(Icons.archive_outlined, color: getCurrIconColor)),
+        IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, color: getCurrIconColor))
       ],
     ).animate().slideX(begin: -0.1, end: 0, duration: const Duration(milliseconds: 200)).fadeIn(duration: const Duration(milliseconds: 200));
   }
