@@ -10,7 +10,6 @@ class ChatModel {
   final bool isPinned; // Indicates if this chat is pinned to the top
   final int? unreadMsgs;
   final bool? hasStatusUpdate;
-  final String? storedProfilePhoto;
   
 
   ChatModel({
@@ -25,7 +24,6 @@ class ChatModel {
     this.isPinned = false,
     this.unreadMsgs,
     this.hasStatusUpdate,
-    this.storedProfilePhoto
   });
 
   // Converts a ChatModel instance to a Map
@@ -42,7 +40,6 @@ class ChatModel {
       'isPinned': isPinned,
       'unreadMsgs': unreadMsgs,
       'hasStatusUpdate': hasStatusUpdate,
-      'storedProfilePhoto': storedProfilePhoto
     };
   }
 
@@ -60,7 +57,6 @@ class ChatModel {
       isPinned: map['isPinned'] as bool? ?? false,
       unreadMsgs: map['unreadMsgs'] as int?,
       hasStatusUpdate: map['hasStatusUpdate'] as bool?,
-      storedProfilePhoto: map['storedProfilePhoto'] as String?
     );
   }
 
@@ -78,7 +74,6 @@ class ChatModel {
       'isPinned': false,
       'unreadMsgs': null,
       'hasStatusUpdate': null,
-      'storedProfilePhoto': null
     };
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:whatsapp_clone/app.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/general/data/hive_data/hive_data.dart';
 import 'package:whatsapp_clone/general/data/user_data/user_data.dart';
 import 'firebase_options.dart';
@@ -17,8 +19,9 @@ void main() async {
   final hiveData = HiveData();
   await hiveData.initSecureHiveData();
 
-
   final bool isUserSignedIn = await UserDataFunctions().isUserSignedIn();
+  
+
   runApp(App(
     isUserSignedIn: isUserSignedIn,
   ));
