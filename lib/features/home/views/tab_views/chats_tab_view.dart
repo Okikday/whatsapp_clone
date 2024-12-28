@@ -16,6 +16,7 @@ import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_overlay.dart';
+import 'package:whatsapp_clone/common/widgets/custom_scroll_physics.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chats_ui_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
@@ -46,6 +47,7 @@ class ChatsTabView extends StatelessWidget {
           );
         },
         child: CustomScrollView(
+          physics: CustomScrollPhysics.android(),
           slivers: [
             // Chats filters section that slides from the bottom
             SliverToBoxAdapter(
@@ -103,6 +105,7 @@ class ChatsTabView extends StatelessWidget {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
+                childCount: chatModels.length, // Example number of chats
                 (context, index) {
                   final ChatModel cacheChatModel = chatModels[index];
                   return Obx(
@@ -119,7 +122,7 @@ class ChatsTabView extends StatelessWidget {
                           if (chatTilesSelected.isEmpty) {
                             await Future.delayed(const Duration(milliseconds: 175), () {
                               _pushToChatView(
-                                  index: index, cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
+                                  index: index, cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index.clamp(0, 3)]));
                             });
                           } else {
                             if (chatTilesSelected[index] != null) {
@@ -150,7 +153,7 @@ class ChatsTabView extends StatelessWidget {
                     },
                   );
                 },
-                childCount: chatModels.length, // Example number of chats
+                
               ),
             ),
 
