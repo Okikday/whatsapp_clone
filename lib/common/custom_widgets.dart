@@ -19,6 +19,10 @@ class CustomWidgets {
     TextDecoration textDecoration = TextDecoration.none,
     Color decorationColor = Colors.black,
     List<Shadow> shadows = const [],
+    double? height,
+    double? letterSpacing,
+    double? wordSpacing,
+    TextDecorationStyle? decorationStyle,
   }) {
     if (darkColor != null && MediaQuery.of(context).platformBrightness == Brightness.dark) color = darkColor;
     return Text(
@@ -35,6 +39,10 @@ class CustomWidgets {
         decoration: textDecoration,
         decorationColor: decorationColor,
         shadows: shadows,
+        height: height,
+        letterSpacing: letterSpacing,
+        wordSpacing: wordSpacing,
+        decorationStyle: decorationStyle,
       ),
       textAlign: align ?? TextAlign.start,
       overflow: overflow,

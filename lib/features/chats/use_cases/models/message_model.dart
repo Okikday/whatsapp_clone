@@ -5,6 +5,7 @@ class MessageModel {
   final String senderId;
   final String receiverId;
   final String content;
+  final int? taggedMessageID;
   final String? mediaUrl; // URL for media like images, videos, etc.
   final String? mediaCaption; // Caption for media (e.g., image caption)
   final int mediaType; // Use an integer to represent MessageType
@@ -21,6 +22,7 @@ class MessageModel {
     required this.senderId,
     required this.receiverId,
     required this.content,
+    this.taggedMessageID,
     this.mediaUrl,
     this.mediaCaption,
     required this.mediaType,
@@ -39,6 +41,7 @@ class MessageModel {
       'senderId': senderId,
       'receiverId': receiverId,
       'content': content,
+      'taggedMessageID': taggedMessageID,
       'mediaUrl': mediaUrl,
       'mediaCaption': mediaCaption,
       'mediaType': mediaType,
@@ -59,6 +62,7 @@ class MessageModel {
       senderId: map['senderId'],
       receiverId: map['receiverId'],
       content: map['content'],
+      taggedMessageID: map['taggedMessageID'],
       mediaUrl: map['mediaUrl'],
       mediaCaption: map['mediaCaption'],
       mediaType: map['mediaType'],
@@ -114,6 +118,13 @@ extension MessageTypeExtension on MessageType {
   static MessageType fromInt(int value) {
     return MessageType.values[value];
   }
+}
+
+enum MsgStatus {
+  delivered,
+  offline,
+  read,
+  loading,
 }
 
 
