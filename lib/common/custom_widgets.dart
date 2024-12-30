@@ -23,6 +23,8 @@ class CustomWidgets {
     double? letterSpacing,
     double? wordSpacing,
     TextDecorationStyle? decorationStyle,
+    bool? softWrap,
+    int? maxLines,
   }) {
     if (darkColor != null && MediaQuery.of(context).platformBrightness == Brightness.dark) color = darkColor;
     return Text(
@@ -46,6 +48,8 @@ class CustomWidgets {
       ),
       textAlign: align ?? TextAlign.start,
       overflow: overflow,
+      softWrap: softWrap,
+      maxLines: maxLines,
     );
   }
 

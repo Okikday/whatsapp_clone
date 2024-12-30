@@ -121,8 +121,7 @@ class ChatsTabView extends StatelessWidget {
                         onTap: () async {
                           if (chatTilesSelected.isEmpty) {
                             await Future.delayed(const Duration(milliseconds: 175), () {
-                              _pushToChatView(
-                                  index: index, cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index.clamp(0, 3)]));
+                              _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index.clamp(0, 3)]));
                             });
                           } else {
                             if (chatTilesSelected[index] != null) {
@@ -172,7 +171,7 @@ class ChatsTabView extends StatelessWidget {
   }
 }
 
-_pushToChatView({required int index, required ChatModel cacheChatModel, required MessageModel messageModel}) {
+_pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) {
   navigator?.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {

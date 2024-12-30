@@ -5,13 +5,14 @@ class MessageModel {
   final String senderId;
   final String receiverId;
   final String content;
-  final int? taggedMessageID;
+  final String? taggedMessageID;
   final String? mediaUrl; // URL for media like images, videos, etc.
   final String? mediaCaption; // Caption for media (e.g., image caption)
   final int mediaType; // Use an integer to represent MessageType
   final DateTime sentAt;
   final DateTime? deliveredAt;
   final DateTime? readAt;
+  final DateTime? seenAt;
   final bool isStarred;
   final bool isDeleted;
 
@@ -29,6 +30,7 @@ class MessageModel {
     required this.sentAt,
     this.deliveredAt,
     this.readAt,
+    this.seenAt,
     this.isStarred = false,
     this.isDeleted = false,
   });
@@ -48,6 +50,7 @@ class MessageModel {
       'sentAt': sentAt.toIso8601String(),
       'deliveredAt': deliveredAt?.toIso8601String(),
       'readAt': readAt?.toIso8601String(),
+      'seenAt': seenAt?.toIso8601String(),
       'isStarred': isStarred ? 1 : 0,
       'isDeleted': isDeleted ? 1 : 0,
     };
@@ -62,13 +65,14 @@ class MessageModel {
       senderId: map['senderId'],
       receiverId: map['receiverId'],
       content: map['content'],
-      taggedMessageID: map['taggedMessageID'],
-      mediaUrl: map['mediaUrl'],
-      mediaCaption: map['mediaCaption'],
+      taggedMessageID: map['taggedMessageID'] as String?,
+      mediaUrl: map['mediaUrl'] as String?,
+      mediaCaption: map['mediaCaption'] as String?,
       mediaType: map['mediaType'],
       sentAt: DateTime.parse(map['sentAt']),
-      deliveredAt: map['deliveredAt'] != null ? DateTime.parse(map['deliveredAt']) : null,
+      deliveredAt: map['deliveredAt'] != null ? DateTime.parse(map['deliveredAt'] as String) : null,
       readAt: map['readAt'] != null ? DateTime.parse(map['readAt']) : null,
+      seenAt: map['readAt'] != null ? DateTime.parse(map['readAt']) : null,
       isStarred: map['isStarred'] == 1,
       isDeleted: map['isDeleted'] == 1,
     );
@@ -82,12 +86,14 @@ class MessageModel {
     'senderId': '', // Default empty string
     'receiverId': '', // Default empty string
     'content': '', // Default empty string
+    'taggedMessageID': null,
     'mediaUrl': null, // Default null for optional fields
     'mediaCaption': null, // Default null for optional fields
     'mediaType': 0, // Default 0 for MessageType
     'sentAt': DateTime.now().toIso8601String(), // Default to the current timestamp
     'deliveredAt': null, // Default null for optional fields
     'readAt': null, // Default null for optional fields
+    'seenAt': null,
     'isStarred': 0, // Default 0 (false)
     'isDeleted': 0, // Default 0 (false)
   };

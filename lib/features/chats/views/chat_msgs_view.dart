@@ -4,7 +4,7 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble.dart';
 import 'dart:math' as math;
 
 class ChatMsgsView extends StatelessWidget {
@@ -31,7 +31,7 @@ class ChatMsgsView extends StatelessWidget {
           itemCount: messageModel.length,
           itemBuilder: (context, index) {
             final MessageModel currMsgModel = messageModel[index];
-            return MsgBubble.sender(messageModel: currMsgModel,);
+            return MsgBubble.sender(messageModel: currMsgModel, isFirstMsg: true,);
           }),
     );
   }

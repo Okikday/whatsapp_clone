@@ -5,6 +5,7 @@ class WhatsAppColors {
   static const Color primary = Color(0xFF1DAB61); // WhatsApp Green
   static const Color secondary = Color(0xFF21C063); // Lighter Green
   static const Color accent = Color(0xFF15603F); // Darker Green
+  static const Color accentCompliment1 = Color(0xFF124333); // Darker Green compliment
   static const Color background = Color(0xFFFFFFFF); // Chat Background
 
   // Message Bubble Colors

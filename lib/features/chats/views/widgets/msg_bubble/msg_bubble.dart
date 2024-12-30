@@ -12,6 +12,8 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_content.dart';
 
 class MsgBubble extends StatelessWidget {
   final MessageModel messageModel;
@@ -78,23 +80,11 @@ class MsgBubble extends StatelessWidget {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
 
-    void onTapDown({Color? color}) {
-      splashColor.value = color ?? Colors.white.withAlpha(40);
-      animControl.value = Control.playFromStart;
-    }
-
-    void onTapUp() {
-      Future.delayed(const Duration(milliseconds: 150), () {
-        splashColor.value = Colors.transparent;
-        animControl.value = Control.playFromStart;
-      });
-    }
-
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
-      onTapDown: (details) => onTapDown(),
-      onTapUp: (details) => onTapUp(),
-      onTapCancel: () => onTapUp(),
+      onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(splashColor, animControl),
+      onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
+      onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
       child: CustomElevatedButton(
         backgroundColor: isSelected ? Theme.of(context).primaryColor.withAlpha(60) : Colors.transparent,
         borderRadius: 0,
@@ -112,9 +102,9 @@ class MsgBubble extends StatelessWidget {
             children: [
               // Whole Message box container
               GestureDetector(
-                onTapDown: (details) => onTapDown(),
-                onTapUp: (details) => onTapUp(),
-                onTapCancel: () => onTapUp(),
+                onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(splashColor, animControl),
+                onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
+                onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
                 onLongPress: () {
                   if (onLongPressed != null) onLongPressed!();
                 },
@@ -133,7 +123,7 @@ class MsgBubble extends StatelessWidget {
                               BubblePainter(isSender: isSender, backgroundColor: value ?? Colors.transparent, showTail: isFirstMsg, canRepaint: true),
                           painter: BubblePainter(isSender: isSender, backgroundColor: bgColor ?? WhatsAppColors.accent, showTail: isFirstMsg),
                           child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.8),
+                            constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.8, minWidth: 40),
                             child: Padding(
                                 padding: EdgeInsets.only(
                                     left: 6,
@@ -141,7 +131,6 @@ class MsgBubble extends StatelessWidget {
                                     top: 6,
                                     bottom: hasMedia && (messageModel.mediaCaption == null || messageModel.mediaCaption!.isEmpty) ? 6 : 16),
                                 child: MsgBubbleContent(
-                                  hasMedia: hasMedia,
                                   messageModel: messageModel,
                                 )),
                           ),
@@ -153,14 +142,11 @@ class MsgBubble extends StatelessWidget {
               // Overlay of Date part
               Positioned.fill(
                 right: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 6 : 8,
-                bottom: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 0 : 6,
+                bottom: 2,
                 child: Align(
                   alignment: Alignment.bottomRight,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                    decoration: hasMedia && (messageModel.mediaCaption == null || messageModel.mediaCaption!.isEmpty)
-                        ? BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withAlpha(85), blurRadius: 6, spreadRadius: 4, offset: Offset.zero)])
-                        : null,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -168,22 +154,20 @@ class MsgBubble extends StatelessWidget {
                         // Shows time message was sent
                         CustomWidgets.text(context, DateFormat.jm().format(messageModel.sentAt),
                             fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white70),
-
+                                        
                         if (isSender)
                           const SizedBox(
                             width: 2,
                           ),
-
+                                        
                         // Shows message delivered and sort
                         if (isSender)
-                          Icon(
-                            _getStatusIcon(messageModel.deliveredAt != null
+                          MsgBubbleFunctions.getMsgStatusIcon(
+                              messageModel.seenAt != null ? 
+                              MsgStatus.read :
+                              messageModel.deliveredAt != null
                                 ? MsgStatus.delivered
-                                : messageModel.readAt != null
-                                    ? MsgStatus.read
-                                    : MsgStatus.loading),
-                            size: 12,
-                            color: Colors.white70,
+                                : MsgStatus.offline
                           ),
                       ],
                     ),
@@ -197,133 +181,16 @@ class MsgBubble extends StatelessWidget {
     );
   }
 
-  IconData _getStatusIcon(MsgStatus status) {
-    switch (status) {
-      case MsgStatus.delivered:
-        return Icons.done_all;
-      case MsgStatus.offline:
-        return Icons.schedule;
-      case MsgStatus.read:
-        return Icons.done_all;
-      case MsgStatus.loading:
-        return Icons.access_time;
-    }
-  }
+  
 }
 
-class MsgBubbleContent extends StatelessWidget {
-  final bool hasMedia;
-  final MessageModel messageModel;
-  const MsgBubbleContent({super.key, required this.hasMedia, required this.messageModel});
+/*
 
-  @override
-  Widget build(BuildContext context) {
-    if (!hasMedia) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Column(
-          children: [
-            if (messageModel.taggedMessageID != null) _buildTaggedMessageWidget(context, messageModel: messageModel),
-            Expanded(
-              child: CustomWidgets.text(
-                context,
-                messageModel.content,
-                fontSize: 16,
-                color: Colors.white,
-                height: 1.1,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Column(
-        spacing: 8,
-        children: [
-          if (messageModel.taggedMessageID != null) _buildTaggedMessageWidget(context, messageModel: messageModel),
-          _buildAttachmentWidget(messageModel),
-          if (messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: CustomWidgets.text(
-                context,
-                messageModel.mediaCaption,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                height: 1.1,
-              ),
-            )
-        ],
-      );
-    }
-  }
-}
+hasMedia && (messageModel.mediaCaption == null || messageModel.mediaCaption!.isEmpty)
+                        ? BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withAlpha(85), blurRadius: 6, spreadRadius: 4, offset: Offset.zero)])
+                        */
 
-Widget _buildTaggedMessageWidget(BuildContext context, {required MessageModel messageModel}) {
-  return SizedBox(
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 120),
-            child: const SizedBox(
-              width: 20,
-              height: 120,
-              child: ColoredBox(color: Colors.deepPurpleAccent),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 6,
-              children: [
-                CustomWidgets.text(
-                  context,
-                  messageModel.content,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.deepPurpleAccent,
-                ),
-                CustomWidgets.text(
-                  context,
-                  messageModel.content,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white.withAlpha(125),
-                  height: 1.1,
-                ),
-              ],
-            ),
-          ),
-          const Icon(
-            Icons.image,
-            size: 100,
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
-Widget _buildAttachmentWidget(MessageModel messageModel) {
-  return ClipRRect(
-    clipBehavior: Clip.hardEdge,
-    borderRadius: BorderRadius.circular(6),
-    child: InkWell(
-        borderRadius: BorderRadius.circular(6),
-        onTap: () {},
-        child: ImageFiltered(
-          imageFilter: ColorFilter.mode(Colors.black.withAlpha(40), BlendMode.colorBurn),
-          child: CachedNetworkImage(
-            imageUrl: messageModel.mediaUrl!,
-            fit: BoxFit.fitWidth,
-          ),
-        )),
-  );
-}
 
 // CustomPainter for drawing the bubble with color fill
 class BubblePainter extends CustomPainter {
