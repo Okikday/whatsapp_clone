@@ -13,13 +13,15 @@ class MsgBubbleContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasTaggedMessage = messageModel.taggedMessageID != null && messageModel.taggedMessageID!.isNotEmpty;
+    final bool hasAttachment = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty && MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text;
     // if (!hasMedia) {
     return Column(
-      spacing: 6,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (messageModel.taggedMessageID != null) BuildTaggedMsgWidget(messageModel: messageModel),
-        Padding(
+        if (hasTaggedMessage) BuildTaggedMsgWidget(messageModel: messageModel),
+        if (hasAttachment) BuildAttachmentWidget(messageModel: messageModel),
+       if(!hasAttachment) Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: CustomWidgets.text(
             context,
@@ -58,8 +60,6 @@ class MsgBubbleContent extends StatelessWidget {
   }
 }
 
-
-
 class BuildTaggedMsgWidget extends StatefulWidget {
   final MessageModel messageModel;
   final Color accentColor;
@@ -97,76 +97,113 @@ class _BuildTaggedMsgWidgetState extends State<BuildTaggedMsgWidget> {
   @override
   Widget build(BuildContext context) {
     _calculateSize();
-    return ClipRRect(
-      clipBehavior: Clip.hardEdge,
-      borderRadius: BorderRadius.circular(12),
-      child: CustomElevatedButton(
-        key: _widgetKey, // Assign the GlobalKey to the widget
-        backgroundColor: WhatsAppColors.accentCompliment1,
-        borderRadius: 0,
-        overlayColor: Colors.white24,
-        onClick: () {
-          
-        },
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 8,
-          children: [
-            SizedBox(width: 6,
-              height: widgetSize?.height ?? 8, child: ColoredBox(color: widget.accentColor),),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 6, top: 6),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: [
-                    CustomWidgets.text(
-                      context,
-                      "Someone",
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: widget.accentColor,
-                      overflow: TextOverflow.clip,
-                    ),
-                    CustomWidgets.text(
-                      context,
-                      widget.messageModel.content,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withAlpha(125),
-                      height: 1.2,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
-                    ),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: ClipRRect(
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.circular(12),
+        child: CustomElevatedButton(
+          key: _widgetKey, // Assign the GlobalKey to the widget
+          backgroundColor: WhatsAppColors.accentCompliment1,
+          borderRadius: 0,
+          overlayColor: Colors.white24,
+          onClick: () {},
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              SizedBox(
+                width: 6,
+                height: widgetSize?.height ?? 8,
+                child: ColoredBox(color: widget.accentColor),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 6, top: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      CustomWidgets.text(
+                        context,
+                        "Someone",
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: widget.accentColor,
+                        overflow: TextOverflow.clip,
+                      ),
+                      CustomWidgets.text(
+                        context,
+                        widget.messageModel.content,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withAlpha(125),
+                        height: 1.2,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-                
-            FittedBox(
-                      child: Icon(Icons.image, size: widgetSize?.height != null ? widgetSize!.height - 16 : 16),
-                    )
-          ],
+              FittedBox(
+                child: Icon(Icons.image, size: widgetSize?.height != null ? widgetSize!.height - 16 : 16),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-Widget _buildAttachmentWidget(MessageModel messageModel) {
-  return ClipRRect(
-    clipBehavior: Clip.hardEdge,
-    borderRadius: BorderRadius.circular(6),
-    child: InkWell(
-        borderRadius: BorderRadius.circular(6),
-        onTap: () {},
-        child: ImageFiltered(
-          imageFilter: ColorFilter.mode(Colors.black.withAlpha(40), BlendMode.colorBurn),
-          child: CachedNetworkImage(
-            imageUrl: messageModel.mediaUrl!,
-            fit: BoxFit.fitWidth,
-          ),
-        )),
-  );
+class BuildAttachmentWidget extends StatelessWidget {
+  final MessageModel messageModel;
+  const BuildAttachmentWidget({super.key, required this.messageModel});
+
+  @override
+  Widget build(BuildContext context) {
+    final MessageType msgType = MessageTypeExtension.fromInt(messageModel.mediaType);
+    
+    if (msgType == MessageType.image) {
+      // Return Image Attachment
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: ClipRRect(
+          clipBehavior: Clip.hardEdge,
+          borderRadius: BorderRadius.circular(6),
+          child: InkWell(
+              borderRadius: BorderRadius.circular(6),
+              onTap: () {},
+              child: ImageFiltered(
+                imageFilter: ColorFilter.mode(Colors.black.withAlpha(40), BlendMode.colorBurn),
+                child: CachedNetworkImage(
+                  imageUrl: messageModel.mediaUrl!,
+                  fit: BoxFit.fitWidth,
+                ),
+              )),
+        ),
+      );
+    }else if (msgType == MessageType.document) {
+      return const SizedBox(
+        width: 0,
+        height: 0,
+      );
+    } else if (msgType == MessageType.video) {
+      return const SizedBox(
+        width: 0,
+        height: 0,
+      );
+    } else if (msgType == MessageType.link) {
+      return const SizedBox(
+        width: 0,
+        height: 0,
+      );
+    }  else {
+      return const SizedBox(
+        width: 0,
+        height: 0,
+      );
+    }
+  }
 }

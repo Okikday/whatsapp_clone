@@ -16,7 +16,6 @@ dependencies:
   google_fonts: ^6.2.1
   font_awesome_flutter: ^10.8.0
   sqflite: ^2.0.0+4
-  path: ^1.8.0
   simple_animations: ^5.0.2
   firebase_core: ^3.8.1
   firebase_ui_firestore: ^1.7.0 
@@ -40,6 +39,10 @@ dependencies:
   ntp: ^2.0.0
   redacted: ^1.0.13
   skeletonizer: ^1.4.2
+  path_provider: ^2.1.5
+  photo_manager: ^3.6.3
+  permission_handler: ^11.3.1
+  camera: ^0.11.0+2
   
 
 dev_dependencies:

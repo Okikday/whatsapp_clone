@@ -171,7 +171,9 @@ class ChatsTabView extends StatelessWidget {
   }
 }
 
-_pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) {
+
+
+Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) async{
   navigator?.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -184,15 +186,11 @@ _pushToChatView({required ChatModel cacheChatModel, required MessageModel messag
         const curve = Curves.decelerate;
         // Offset transition
         final offsetAnimation = animation.drive(
-          Tween(begin: const Offset(0.0, 0.2), end: Offset.zero).chain(CurveTween(curve: curve)),
+          Tween(begin: const Offset(0.0, 0.3), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
         // Fade transition
         final fadeAnimation = animation.drive(
-          Tween<double>(begin: 0.5, end: 1.0).chain(CurveTween(curve: curve)),
-        );
-        // Scale transition
-        final scaleAnimation = animation.drive(
-          Tween<double>(begin: 1.1, end: 1.0).chain(CurveTween(curve: curve)),
+          Tween<double>(begin: 0.9, end: 1.0).chain(CurveTween(curve: curve)),
         );
         final reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
@@ -201,14 +199,11 @@ _pushToChatView({required ChatModel cacheChatModel, required MessageModel messag
           opacity: animation.status == AnimationStatus.reverse ? reverseFadeAnimation : fadeAnimation,
           child: SlideTransition(
             position: offsetAnimation,
-            child: Transform.scale(
-              scaleY: scaleAnimation.value,
-              child: child,
-            ),
+            child: child,
           ),
         );
       },
-      transitionDuration: const Duration(milliseconds: 350),
+      transitionDuration: const Duration(milliseconds: 250),
       reverseTransitionDuration: const Duration(milliseconds: 200),
     ),
   );
