@@ -38,7 +38,7 @@ class StatusListTile extends StatelessWidget {
       padding: margin ?? EdgeInsets.zero,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.1)),
+        overlayColor: WidgetStatePropertyAll(Colors.white.withAlpha(25)),
         splashFactory: InkSparkle.constantTurbulenceSeedSplashFactory,
         onTap: () {},
         child: SizedBox(
@@ -48,10 +48,12 @@ class StatusListTile extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [
-                  Container(
-                    width: 120,
-                    height: 160,
-                    decoration: BoxDecoration(color: Colors.grey.withOpacity(0.4), borderRadius: BorderRadius.circular(12)),
+                  DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.grey.withAlpha(100), borderRadius: BorderRadius.circular(12)),
+                    child: const SizedBox(
+                      width: 120,
+                      height: 160,
+                    ),
                   ),
                   Positioned(
                       left: Constants.spaceSmall,

@@ -189,16 +189,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 }
 
-customAppBar({required Color scaffoldBgColor, EdgeInsets? padding, required Widget child}) {
-  final double width = MediaQuery.sizeOf(Get.context!).width;
+customAppBar(BuildContext context, {required Color scaffoldBgColor, EdgeInsets? padding, required Widget child}) {
+  final double topPadding = MediaQuery.paddingOf(Get.context!).top;
+  final double width = MediaQuery.sizeOf(context).width;
+  final double height = MediaQuery.sizeOf(context).height;
   return PreferredSize(
-    preferredSize: Size(width, 64),
+    preferredSize: Size(width, 56),
     child: Container(
         color: scaffoldBgColor,
         width: width,
         height: 64,
-        margin: const EdgeInsets.only(top: kToolbarHeight - 24),
-        padding: padding ?? EdgeInsets.only(left: width > Get.height ? width * 0.05 : 16, right: width > Get.height ? width * 0.05 : 0),
+        margin: EdgeInsets.only(top: topPadding),
+        padding: padding ?? EdgeInsets.only(left: width > height ? width * 0.05 : 16, right: width > height ? width * 0.05 : 0),
         child: child),
   );
 }

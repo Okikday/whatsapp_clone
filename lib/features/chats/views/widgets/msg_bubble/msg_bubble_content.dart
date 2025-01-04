@@ -9,7 +9,9 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dar
 
 class MsgBubbleContent extends StatelessWidget {
   final MessageModel messageModel;
-  const MsgBubbleContent({super.key, required this.messageModel});
+  final bool hasMedia;
+  
+  const MsgBubbleContent({super.key, required this.messageModel, required this.hasMedia});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class MsgBubbleContent extends StatelessWidget {
       children: [
         if (hasTaggedMessage) BuildTaggedMsgWidget(messageModel: messageModel),
         if (hasAttachment) BuildAttachmentWidget(messageModel: messageModel),
-       if(!hasAttachment) Padding(
+       if(!hasAttachment ) Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: CustomWidgets.text(
             context,
@@ -167,42 +169,39 @@ class BuildAttachmentWidget extends StatelessWidget {
     
     if (msgType == MessageType.image) {
       // Return Image Attachment
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: ClipRRect(
-          clipBehavior: Clip.hardEdge,
-          borderRadius: BorderRadius.circular(6),
-          child: InkWell(
-              borderRadius: BorderRadius.circular(6),
-              onTap: () {},
-              child: ImageFiltered(
-                imageFilter: ColorFilter.mode(Colors.black.withAlpha(40), BlendMode.colorBurn),
-                child: CachedNetworkImage(
-                  imageUrl: messageModel.mediaUrl!,
-                  fit: BoxFit.fitWidth,
-                ),
-              )),
-        ),
+      return ClipRRect(
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () {},
+            child: ImageFiltered(
+              imageFilter: ColorFilter.mode(Colors.black.withAlpha(40), BlendMode.colorBurn),
+              child: CachedNetworkImage(
+                imageUrl: messageModel.mediaUrl!,
+                fit: BoxFit.fitWidth,
+              ),
+            )),
       );
     }else if (msgType == MessageType.document) {
-      return const SizedBox(
-        width: 0,
-        height: 0,
+      return SizedBox(
+        
+        child: CustomWidgets.text(context, "Attachment"),
       );
     } else if (msgType == MessageType.video) {
-      return const SizedBox(
-        width: 0,
-        height: 0,
+      return SizedBox(
+        
+        child: CustomWidgets.text(context, "Attachment"),
       );
     } else if (msgType == MessageType.link) {
-      return const SizedBox(
-        width: 0,
-        height: 0,
+      return SizedBox(
+        
+        child: CustomWidgets.text(context, "Attachment"),
       );
     }  else {
-      return const SizedBox(
-        width: 0,
-        height: 0,
+      return SizedBox(
+        
+        child: CustomWidgets.text(context, "Attachment"),
       );
     }
   }

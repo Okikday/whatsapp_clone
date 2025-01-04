@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/themes.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
@@ -15,6 +14,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "WhatsApp Clone",
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,

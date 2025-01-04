@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
@@ -11,7 +10,7 @@ import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_msgs_view.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/chat_msg_box.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
 import 'package:whatsapp_clone/features/home/views/home_view.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
@@ -25,25 +24,26 @@ class ChatView extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
-    final double keyboardHeight = MediaQuery.viewInsetsOf(context).bottom.clamp(4.0, (Get.height / 1.9));
+    final double height = MediaQuery.sizeOf(context).height;
+    final double width = MediaQuery.sizeOf(context).width;
+    final double keyboardHeight = MediaQuery.viewInsetsOf(context).bottom.clamp(4.0, (height / 1.9));
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
           systemNavigationBarColor: scaffoldBgColor, statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark, statusBarColor: scaffoldBgColor),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        extendBody: true,
-        appBar: customAppBar(scaffoldBgColor: scaffoldBgColor, padding: EdgeInsets.zero, child: ChatViewAppBar(chatModel: chatModel, scaffoldBgColor: scaffoldBgColor, isDarkMode: isDarkMode)),
+        appBar: customAppBar(context, scaffoldBgColor: scaffoldBgColor, padding: EdgeInsets.zero, child: ChatViewAppBar(chatModel: chatModel, scaffoldBgColor: scaffoldBgColor, isDarkMode: isDarkMode)),
         body: SizedBox(
-          width: Get.width,
-          height: Get.height,
+          width: MediaQuery.sizeOf(context).width,
+          height: MediaQuery.sizeOf(context).height,
           child: Stack(
             clipBehavior: Clip.hardEdge,
             children: [
               // Chat background
-              ChatMsgsView(isDarkMode: isDarkMode, messageModel: [messageModel, MessageModel.fromMap({...messageModel.toMap(), })],),
+              ChatMsgsView(height: height, width: width, isDarkMode: isDarkMode, messageModel: [messageModel, MessageModel.fromMap({...messageModel.toMap(), })],),
 
-              ChatMsgBox(keyboardHeight: keyboardHeight, isDarkMode: isDarkMode, scaffoldBgColor: scaffoldBgColor)
+              ChatMsgBox(height: height, width: width, keyboardHeight: keyboardHeight, isDarkMode: isDarkMode, scaffoldBgColor: scaffoldBgColor)
             ],
           ),
         ),

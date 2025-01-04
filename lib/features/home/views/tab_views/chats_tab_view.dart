@@ -1,9 +1,7 @@
 import 'dart:developer';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
@@ -12,10 +10,7 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/utilities/formatter.dart';
-import 'package:whatsapp_clone/common/utilities/utilities.dart';
-import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
-import 'package:whatsapp_clone/common/widgets/custom_overlay.dart';
 import 'package:whatsapp_clone/common/widgets/custom_scroll_physics.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chats_ui_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
@@ -23,7 +18,6 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dar
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
-import 'package:whatsapp_clone/features/home/views/home_view.dart';
 import 'package:whatsapp_clone/general/test_data/test_chats_data.dart';
 
 class ChatsTabView extends StatelessWidget {
@@ -183,24 +177,25 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
         );
       },
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const curve = Curves.decelerate;
+        const curve = Curves.easeOut;
         // Offset transition
         final offsetAnimation = animation.drive(
-          Tween(begin: const Offset(0.0, 0.3), end: Offset.zero).chain(CurveTween(curve: curve)),
-        );
-        // Fade transition
-        final fadeAnimation = animation.drive(
-          Tween<double>(begin: 0.9, end: 1.0).chain(CurveTween(curve: curve)),
+          Tween(begin: const Offset(0.0, 0.15), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
         final reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
         );
-        return FadeTransition(
-          opacity: animation.status == AnimationStatus.reverse ? reverseFadeAnimation : fadeAnimation,
-          child: SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          ),
+        if(animation.status == AnimationStatus.reverse){
+          return SlideTransition(
+          position: offsetAnimation,
+          child: FadeTransition(
+            opacity: reverseFadeAnimation,
+            child: child),
+        );
+        }
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
         );
       },
       transitionDuration: const Duration(milliseconds: 250),

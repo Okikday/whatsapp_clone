@@ -82,31 +82,33 @@ class _LoadingDialogState extends State<LoadingDialog> {
         backgroundColor: Colors.transparent,
         child: Align(
           alignment: Alignment.center,
-          child: Container(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               color: widget.boxBgColor ?? Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(36),
             ),
-            width: screenWidth * 0.6,
-            height: screenWidth * 0.4,
-            child: ClipRRect(
-              clipBehavior: Clip.hardEdge,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: CircularProgressIndicator(
-                      strokeCap: StrokeCap.round,
-                      color: widget.progressIndicatorColor,
+            child: SizedBox(
+              width: screenWidth * 0.6,
+              height: screenWidth * 0.4,
+              child: ClipRRect(
+                clipBehavior: Clip.hardEdge,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      child: CircularProgressIndicator(
+                        strokeCap: StrokeCap.round,
+                        color: widget.progressIndicatorColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                    child: CustomWidgets.text(context, widget.msg ?? loadingMessages[msgIndex]),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                      child: CustomWidgets.text(context, widget.msg ?? loadingMessages[msgIndex]),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -67,17 +67,19 @@ class ChatListTile extends StatelessWidget {
                   onClick: () {
                     if(onTapProfile != null) onTapProfile!();
                   },
-                  child: Container(
+                  child: SizedBox(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: profilePhoto != null
-                          ? DecorationImage(
-                              image: CachedNetworkImageProvider(profilePhoto!),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: profilePhoto != null
+                            ? DecorationImage(
+                                image: CachedNetworkImageProvider(profilePhoto!),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
                     ),
                   ),
                 ),

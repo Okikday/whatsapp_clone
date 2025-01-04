@@ -1,10 +1,6 @@
-import 'dart:developer';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
@@ -79,6 +75,10 @@ class MsgBubble extends StatelessWidget {
     final animControl = ValueNotifier<Control>(Control.play);
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
+    final bool isJustImgOverlay = hasMedia &&
+                  MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text &&
+                  (messageModel.mediaCaption == null || (messageModel.mediaCaption != null && messageModel.mediaCaption!.isEmpty));
+
 
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
@@ -123,15 +123,16 @@ class MsgBubble extends StatelessWidget {
                               BubblePainter(isSender: isSender, backgroundColor: value ?? Colors.transparent, showTail: isFirstMsg, canRepaint: true),
                           painter: BubblePainter(isSender: isSender, backgroundColor: bgColor ?? WhatsAppColors.accent, showTail: isFirstMsg),
                           child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.8, minWidth: 40),
+                            constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.8, minWidth: 20),
                             child: Padding(
                                 padding: EdgeInsets.only(
-                                    left: 6,
-                                    right: 6,
-                                    top: 6,
-                                    bottom: hasMedia && (messageModel.mediaCaption == null || messageModel.mediaCaption!.isEmpty) ? 6 : 16),
+                                    left: 4,
+                                    right: 4,
+                                    top: 4,
+                                    bottom: isJustImgOverlay ? 4 : 16),
                                 child: MsgBubbleContent(
                                   messageModel: messageModel,
+                                  hasMedia: hasMedia,
                                 )),
                           ),
                         );
@@ -140,42 +141,8 @@ class MsgBubble extends StatelessWidget {
               ),
 
               // Overlay of Date part
-              //Messed up code, fix tomorrow
-              if (!hasMedia &&
-                  MessageTypeExtension.fromInt(messageModel.mediaType) == MessageType.text &&
-                  (messageModel.mediaCaption == null || (messageModel.mediaCaption != null && messageModel.mediaCaption!.isEmpty)))
-                Positioned.fill(
-                  right: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 6 : 8,
-                  bottom: 2,
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(width: 6),
-                          // Shows time message was sent
-                          CustomWidgets.text(context, DateFormat.jm().format(messageModel.sentAt),
-                              fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white70),
-
-                          if (isSender)
-                            const SizedBox(
-                              width: 2,
-                            ),
-
-                          // Shows message delivered and sort
-                          if (isSender)
-                            MsgBubbleFunctions.getMsgStatusIcon(messageModel.seenAt != null
-                                ? MsgStatus.read
-                                : messageModel.deliveredAt != null
-                                    ? MsgStatus.delivered
-                                    : MsgStatus.offline),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                statusIconWidget(context, messageModel, isSender, isJustImgOverlay: isJustImgOverlay)
+              
             ],
           ),
         ),
@@ -255,4 +222,82 @@ class BubblePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return canRepaint;
   }
+}
+
+Widget statusIconWidget(context, messageModel, isSender, {required bool isJustImgOverlay}) {
+
+  if(isJustImgOverlay){
+    return Positioned.fill(
+    right: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 6 : 8,
+    bottom: 6,
+    child: Align(
+      alignment: Alignment.bottomRight,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset.zero,
+                spreadRadius: 2,
+                blurRadius: 8,
+              )
+            ]
+          ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 2, 2, 0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 2,
+            children: [
+              // Shows time message was sent
+              CustomWidgets.text(context, DateFormat.jm().format(messageModel.sentAt), fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white70),
+                
+              // Shows message delivered and sort
+              if (isSender)
+                MsgBubbleFunctions.getMsgStatusIcon(messageModel.seenAt != null
+                    ? MsgStatus.read
+                    : messageModel.deliveredAt != null
+                        ? MsgStatus.delivered
+                        : MsgStatus.offline),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+  }
+
+  if(!isJustImgOverlay){
+    return Positioned.fill(
+    right: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 6 : 8,
+    bottom: 2,
+    child: Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(8, 2, isSender ? 2 : 0, 0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 2,
+          children: [
+            CustomWidgets.text(context, DateFormat.jm().format(messageModel.sentAt), fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white70),
+
+            if(!isSender) const SizedBox(width: 2),
+
+            // Shows message delivered and sort
+            if (isSender)
+              MsgBubbleFunctions.getMsgStatusIcon(messageModel.seenAt != null
+                  ? MsgStatus.read
+                  : messageModel.deliveredAt != null
+                      ? MsgStatus.delivered
+                      : MsgStatus.offline),
+          ],
+        ),
+      ),
+    ),
+  );
+  }
+  return const SizedBox();
+  
 }

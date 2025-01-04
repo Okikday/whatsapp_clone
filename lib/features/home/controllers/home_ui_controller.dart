@@ -63,6 +63,7 @@ class HomeUiController extends GetxController {
 
   setChatSelectionAppBar({BuildContext? context}){
     _setCurrHomeAppBar(customAppBar(
+      homeContext.value ?? Get.context!, 
             scaffoldBgColor: Theme.of(context ?? Get.context!).scaffoldBackgroundColor,
             padding: EdgeInsets.only(left: Get.width > Get.height ? Get.width * 0.05 : 8, right: Get.width > Get.height ? Get.width * 0.05 : 0),
             child: const ChatSelectionAppBarChild()));
@@ -70,7 +71,7 @@ class HomeUiController extends GetxController {
 
   void updateHomeAppBar({BuildContext? context}) {
     if (chatTilesSelected.isEmpty) {
-      _setCurrHomeAppBar(customAppBar(scaffoldBgColor: Theme.of(context ?? Get.context!).scaffoldBackgroundColor, child: const NormalAppBarChild()));
+      _setCurrHomeAppBar(customAppBar(homeContext.value ?? Get.context!, scaffoldBgColor: Theme.of(context ?? Get.context!).scaffoldBackgroundColor, child: const NormalAppBarChild()));
     }
     if(chatTilesSelected.isNotEmpty){
       setChatSelectionAppBar(context: homeContext.value);
