@@ -1,5 +1,5 @@
 
-import 'dart:ui';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -36,25 +36,10 @@ class ChatMsgBox extends StatelessWidget {
       left: 0,
       right: 0,
       
-      child: Container(
-        clipBehavior: Clip.hardEdge,
-                width: width,
-                padding: EdgeInsets.fromLTRB(4, 2, 4, 4,),
-                // transform: Matrix4.translationValues(0, -(height - 200), 0),
-                alignment: Alignment.bottomLeft,
-                decoration: BoxDecoration(),
-          //       decoration: BoxDecoration(
-          //         color: isDarkMode ? Colors.black.withAlpha(242) : WhatsAppColors.seaShell,
-          //         image: DecorationImage(image: AssetImage(ImagesStrings.chatBackground),
-          //           repeat: ImageRepeat.repeatY,
-          //         alignment: Alignment.topLeft,
-          //         scale: 1.3,
-          //         filterQuality: FilterQuality.high,
-          //         colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.gray : WhatsAppColors.linen, BlendMode.srcIn),
-          //         fit: BoxFit.none)
-          // ), 
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+      child: SizedBox(
+        width: width,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 2, 4, 4,),
           child: Obx(
             () => Row(
               children: [
@@ -73,9 +58,17 @@ class ChatMsgBox extends StatelessWidget {
                           child: SizedBox(
                             width: 120,
                             height: currChatViewController.messageBarHeight.value,
-                            child: MsgInputBar(isDarkMode: isDarkMode,)))),
+                            
+                            child: MsgInputBar(isDarkMode: isDarkMode, 
+                            callbackFunction: (args, constraints){
+                                //nativeTextInputController.updateArguments({'inputBoxHeight': constraints.maxHeight });
+                                // currChatViewController.setMessageBarHeight(args!.inputBoxHeight == null ? 48.0 : args.maxHeight!.toDouble());
+                                log("padding: ${args!.contentPadding}");
+                              },
+                            ),),
+                            )),
                 ),
-                _sendOrMicButton()
+                ChatMsgBoxFunctions.sendOrMicButton(currChatViewController, isDarkMode, scaffoldBgColor)
               ],
             ),
           ),
@@ -83,86 +76,79 @@ class ChatMsgBox extends StatelessWidget {
       ),
     );
   }
-
-  Widget _sendOrMicButton() {
-    final bool isMsgInputEmpty = currChatViewController.messageInput.isEmpty;
-
-    return GestureDetector(
-      onTapDown: (details) => currChatViewController.setIsMicTappedDown(true),
-      onTapUp: (details) => currChatViewController.setIsMicTappedDown(false),
-      onTapCancel: () => currChatViewController.setIsMicTappedDown(false),
-      child: AnimatedScale(
-          scale: isMsgInputEmpty
-              ? currChatViewController.isMicTappedDown.value
-                  ? 1.25
-                  : 1
-              : 1,
-          duration: const Duration(milliseconds: 100),
-          child: CircleAvatar(
-              radius: 24,
-              backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
-              child: isMsgInputEmpty
-                  ? Icon(Icons.mic, size: 28, color: scaffoldBgColor)
-                  : Image.asset(
-                      IconStrings.sendIcon,
-                      width: 26,
-                      height: 26,
-                      color: scaffoldBgColor,
-                      colorBlendMode: BlendMode.srcIn,
-                    ))),
-    );
-  }
 }
+
 
 class MsgInputBar extends StatelessWidget {
   final bool isDarkMode;
-  const MsgInputBar({super.key, required this.isDarkMode});
+  final void Function(NativeTextInputModel? args, BoxConstraints constraints)? callbackFunction;
+  const MsgInputBar({super.key, required this.isDarkMode, this.callbackFunction});
 
   @override
   Widget build(BuildContext context) {
-    return CustomNativeTextInput(
-      isEnabled: true,
-      nativeTextInputController: nativeTextInputController,
-      alignInput: Alignment.center,
-      hint: "Message",
-      hintStyle: TextStyle(color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic),
-      backgroundColor: isDarkMode ? WhatsAppColors.arsenic : Colors.white,
-      borderRadius: 24,
-      cursorColor: WhatsAppColors.secondary,
-      highlightColor: Colors.blue,
-      onchanged: (text) {
-        currChatViewController.setMessageInput(text);
-      },
-      contentPadding: currChatViewController.messageBarHeight > 48.0 ? const EdgeInsets.only(bottom: 2) : const EdgeInsets.only(top: 6, bottom: 2),
-      internalArgs: (args) async {
-        final int? lines = args.lines;
-        if (lines != null) {
-          currChatViewController.checkMessageBarHeight(lines, padding: 16);
-        }
-      },
-      inputTextStyle: TextStyle(color: CustomWidgets.text(context, "").style?.color, fontSize: 18),
-      prefixIcon: IconButton(
-        onPressed: () {},
-        icon: Image.asset(
-          IconStrings.stickersIcon,
-          width: 24,
-          height: 24,
-          color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.arsenic,
-          colorBlendMode: BlendMode.srcIn,
-        ),
-      ),
-      suffixIcon: AnimatedSize(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.decelerate,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ChatMsgBoxFunctions.widgetAttachmentIconButton(isDarkMode: isDarkMode),
-            ChatMsgBoxFunctions.widgetCameraIconButton(isDarkMode: isDarkMode, isVisible: currChatViewController.messageInput.isEmpty ? true : false)
-          ],
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        log("constraints: $constraints");
+        return Obx(
+              ()=> CustomNativeTextInput(
+                    isEnabled: true,
+                    nativeTextInputController: nativeTextInputController,
+                    hint: "Message",
+                    hintStyle: TextStyle(color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic),
+                    backgroundColor: isDarkMode ? WhatsAppColors.arsenic : Colors.white,
+                    borderRadius: 0,
+                    cursorColor: WhatsAppColors.secondary,
+                    highlightColor: Colors.blue,
+                    onchanged: (text) {
+                      currChatViewController.setMessageInput(text);
+                    },
+                    debugBoxColor: Colors.red,
+                    // contentPadding: EdgeInsets.only(
+                    //   top: 10, bottom: 10
+                    //   // top: currChatViewController.messageBarHeight.value > 48.0 ? 2 : 10, bottom: currChatViewController.messageBarHeight.value > 48.0 ? 2 : 10
+                    //   ),
+                    // debugBoxColor: Colors.red,
+                    contentPadding: EdgeInsets.only(
+                      top: 10, bottom: 10
+                      // top: currChatViewController.messageBarHeight.value > 48.0 ? 2 : 10, bottom: currChatViewController.messageBarHeight.value > 48.0 ? 2 : 10
+                      ),
+                    internalArgs: (args) async {
+                      final int? lines = args.lines;
+                      if(callbackFunction != null) callbackFunction!(args, constraints);
+                      if (lines != null) {
+                        final double height = currChatViewController.checkMessageBarHeight(lines,);
+                        // nativeTextInputController.updateArguments({'inputBoxHeight': height });
+                      }
+                      log("inputBoxHeight: ${args.maxHeight}");
+                      
+                      
+                    },
+                    inputTextStyle: TextStyle(color: CustomWidgets.text(context, "").style?.color, fontSize: 18),
+                    prefixIcon: IconButton(
+                      onPressed: () {},
+                      icon: Image.asset(
+                        IconStrings.stickersIcon,
+                        width: 24,
+                        height: 24,
+                        color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.arsenic,
+                        colorBlendMode: BlendMode.srcIn,
+                      ),
+                    ),
+                    suffixIcon: AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.decelerate,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ChatMsgBoxFunctions.widgetAttachmentIconButton(isDarkMode: isDarkMode),
+                          ChatMsgBoxFunctions.widgetCameraIconButton(isDarkMode: isDarkMode, isVisible: currChatViewController.messageInput.isEmpty ? true : false)
+                        ],
+                      ),
+                    ),
+                  ),
+            );
+      }
     );
   }
 }

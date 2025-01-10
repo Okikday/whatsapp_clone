@@ -1,11 +1,12 @@
-import 'dart:ui';
+import 'dart:developer';
 
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_animations/simple_animations.dart';
-import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
@@ -15,6 +16,7 @@ class MsgBubble extends StatelessWidget {
   final MessageModel messageModel;
   final bool isFirstMsg; // Whether this is the first message in a group
   final Color? bgColor;
+  final Color? taggedMsgColor;
   final bool isSender; // Whether the message is from the sender
   final bool isSelected;
   final void Function()? onLongPressed;
@@ -24,6 +26,7 @@ class MsgBubble extends StatelessWidget {
     required this.messageModel,
     this.isFirstMsg = false,
     this.bgColor,
+    this.taggedMsgColor,
     required this.isSender,
     this.isSelected = false,
     this.onLongPressed,
@@ -35,6 +38,7 @@ class MsgBubble extends StatelessWidget {
     required MessageModel messageModel,
     bool isFirstMsg = false,
     Color? bgColor,
+    Color? taggedMsgColor,
     bool isSelected = false,
     void Function()? onLongPressed,
   }) {
@@ -43,6 +47,7 @@ class MsgBubble extends StatelessWidget {
       messageModel: messageModel,
       isFirstMsg: isFirstMsg,
       bgColor: bgColor,
+      taggedMsgColor: taggedMsgColor,
       isSender: false,
       isSelected: isSelected,
       onLongPressed: onLongPressed,
@@ -55,6 +60,7 @@ class MsgBubble extends StatelessWidget {
     required MessageModel messageModel,
     bool isFirstMsg = false,
     Color? bgColor,
+    Color? taggedMsgColor,
     bool isSelected = false,
     void Function()? onLongPressed,
   }) {
@@ -63,6 +69,7 @@ class MsgBubble extends StatelessWidget {
       messageModel: messageModel,
       isFirstMsg: isFirstMsg,
       bgColor: bgColor,
+      taggedMsgColor: taggedMsgColor,
       isSender: true,
       isSelected: isSelected,
       onLongPressed: onLongPressed,
@@ -75,10 +82,29 @@ class MsgBubble extends StatelessWidget {
     final animControl = ValueNotifier<Control>(Control.play);
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
+    final bool hasMediaCaption = messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty;
+    final double msgBubbleWidth = hasMedia ? screenWidth * 0.7 : screenWidth * 0.8;
     final bool isJustImgOverlay = hasMedia &&
-                  MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text &&
-                  (messageModel.mediaCaption == null || (messageModel.mediaCaption != null && messageModel.mediaCaption!.isEmpty));
+        MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text &&
+        (messageModel.mediaCaption == null || (messageModel.mediaCaption != null && messageModel.mediaCaption!.isEmpty));
 
+    final Text messageContent = CustomWidgets.text(
+      context,
+      hasMedia && hasMediaCaption ? messageModel.mediaCaption! : messageModel.content,
+      fontSize: 16,
+      color: Colors.white,
+      align: TextAlign.left,
+      fontWeight: FontWeight.w600,
+    );
+
+    final Text dateContent = CustomWidgets.text(
+      context,
+      DateFormat.jm().format(messageModel.sentAt),
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+      color: Colors.white70,
+    );
+    final double dateContentWidth = UtilitiesFuncs.getTextSize(dateContent.data!, dateContent.style!).width;
 
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
@@ -88,7 +114,6 @@ class MsgBubble extends StatelessWidget {
       child: CustomElevatedButton(
         backgroundColor: isSelected ? Theme.of(context).primaryColor.withAlpha(60) : Colors.transparent,
         borderRadius: 0,
-        contentPadding: EdgeInsets.only(left: isSender ? 0 : 12, right: isSender ? 12 : 0, top: isFirstMsg ? 4 : 2, bottom: 2),
         overlayColor: Theme.of(context).primaryColor.withAlpha(40),
         pixelWidth: MediaQuery.sizeOf(context).width,
         onClick: () {},
@@ -97,53 +122,45 @@ class MsgBubble extends StatelessWidget {
         },
         child: Align(
           alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
-          child: Stack(
-            clipBehavior: Clip.hardEdge,
-            children: [
-              // Whole Message box container
-              GestureDetector(
-                onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(splashColor, animControl),
-                onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
-                onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
-                onLongPress: () {
-                  if (onLongPressed != null) onLongPressed!();
-                },
-                child: ValueListenableBuilder<Color>(
-                  valueListenable: splashColor,
-                  builder: (context, value, child) => CustomAnimationBuilder(
-                      control: animControl.value,
-                      duration: const Duration(milliseconds: 150),
-                      tween: ColorTween(
-                        begin: Colors.transparent,
-                        end: splashColor.value,
-                      ),
-                      builder: (context, value, child) {
-                        return CustomPaint(
-                          foregroundPainter:
-                              BubblePainter(isSender: isSender, backgroundColor: value ?? Colors.transparent, showTail: isFirstMsg, canRepaint: true),
-                          painter: BubblePainter(isSender: isSender, backgroundColor: bgColor ?? WhatsAppColors.accent, showTail: isFirstMsg),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.8, minWidth: 20),
-                            child: Padding(
-                                padding: EdgeInsets.only(
-                                    left: 4,
-                                    right: 4,
-                                    top: 4,
-                                    bottom: isJustImgOverlay ? 4 : 16),
-                                child: MsgBubbleContent(
-                                  messageModel: messageModel,
-                                  hasMedia: hasMedia,
-                                )),
-                          ),
-                        );
-                      }),
+          child: ValueListenableBuilder<Color>(
+            valueListenable: splashColor,
+            builder: (context, value, child) => CustomAnimationBuilder(
+                control: animControl.value,
+                duration: const Duration(milliseconds: 150),
+                tween: ColorTween(
+                  begin: Colors.transparent,
+                  end: splashColor.value,
                 ),
-              ),
-
-              // Overlay of Date part
-                statusIconWidget(context, messageModel, isSender, isJustImgOverlay: isJustImgOverlay)
-              
-            ],
+                builder: (context, value, child) {
+                  return GestureDetector(
+                      onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(splashColor, animControl),
+                      onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
+                      onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
+                      onLongPress: () {
+                        if (onLongPressed != null) onLongPressed!();
+                      },
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.85),
+                        child: Bubble(
+                            showNip: true,
+                            stick: true,
+                            nip: isSender ? BubbleNip.rightTop : BubbleNip.leftTop,
+                            nipHeight: 12,
+                            nipWidth: 10,
+                            nipRadius: 2,
+                            padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
+                            margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
+                            radius: const Radius.circular(10),
+                            color: bgColor ?? WhatsAppColors.accent,
+                            child: MsgBubbleContent(
+                                messageModel: messageModel,
+                                hasMedia: hasMedia,
+                                isSender: isSender,
+                                taggedMsgColor: WhatsAppColors.accentCompliment1,
+                                isJustImgOverlay: isJustImgOverlay,
+                                hasMediaCaption: hasMediaCaption)),
+                      ));
+                }),
           ),
         ),
       ),
@@ -157,13 +174,18 @@ hasMedia && (messageModel.mediaCaption == null || messageModel.mediaCaption!.isE
                         ? BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withAlpha(85), blurRadius: 6, spreadRadius: 4, offset: Offset.zero)])
                         */
 
-// CustomPainter for drawing the bubble with color fill
+
+
+
+/*
+
 class BubblePainter extends CustomPainter {
   final bool isSender;
   final Color backgroundColor;
   final bool showTail;
   final bool canRepaint;
-  BubblePainter({this.isSender = false, required this.backgroundColor, required this.showTail, this.canRepaint = false});
+  final bool doesTextHasSpaceLeft;
+  BubblePainter({this.isSender = false, required this.backgroundColor, required this.showTail, this.canRepaint = false, required this.doesTextHasSpaceLeft});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -174,13 +196,14 @@ class BubblePainter extends CustomPainter {
     const double tailHeight = 12.0;
     const double tailWidth = 6.0;
     const double borderRadius = 12.0;
+    final double adjustedHeight = doesTextHasSpaceLeft ? size.height - 12 : size.height;
 
     if (isSender) {
       path.addRRect(RRect.fromLTRBAndCorners(
         0,
         0,
         size.width,
-        size.height,
+        adjustedHeight,
         topLeft: const Radius.circular(borderRadius),
         topRight: Radius.circular(showTail ? 0 : borderRadius),
         bottomLeft: const Radius.circular(borderRadius),
@@ -198,7 +221,7 @@ class BubblePainter extends CustomPainter {
         0,
         0,
         size.width,
-        size.height,
+        adjustedHeight,
         topRight: const Radius.circular(borderRadius),
         topLeft: Radius.circular(showTail ? 0 : borderRadius),
         bottomLeft: const Radius.circular(borderRadius),
@@ -223,81 +246,4 @@ class BubblePainter extends CustomPainter {
     return canRepaint;
   }
 }
-
-Widget statusIconWidget(context, messageModel, isSender, {required bool isJustImgOverlay}) {
-
-  if(isJustImgOverlay){
-    return Positioned.fill(
-    right: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 6 : 8,
-    bottom: 6,
-    child: Align(
-      alignment: Alignment.bottomRight,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                offset: Offset.zero,
-                spreadRadius: 2,
-                blurRadius: 8,
-              )
-            ]
-          ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 2, 2, 0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 2,
-            children: [
-              // Shows time message was sent
-              CustomWidgets.text(context, DateFormat.jm().format(messageModel.sentAt), fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white70),
-                
-              // Shows message delivered and sort
-              if (isSender)
-                MsgBubbleFunctions.getMsgStatusIcon(messageModel.seenAt != null
-                    ? MsgStatus.read
-                    : messageModel.deliveredAt != null
-                        ? MsgStatus.delivered
-                        : MsgStatus.offline),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-  }
-
-  if(!isJustImgOverlay){
-    return Positioned.fill(
-    right: messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty ? 6 : 8,
-    bottom: 2,
-    child: Align(
-      alignment: Alignment.bottomRight,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(8, 2, isSender ? 2 : 0, 0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 2,
-          children: [
-            CustomWidgets.text(context, DateFormat.jm().format(messageModel.sentAt), fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white70),
-
-            if(!isSender) const SizedBox(width: 2),
-
-            // Shows message delivered and sort
-            if (isSender)
-              MsgBubbleFunctions.getMsgStatusIcon(messageModel.seenAt != null
-                  ? MsgStatus.read
-                  : messageModel.deliveredAt != null
-                      ? MsgStatus.delivered
-                      : MsgStatus.offline),
-          ],
-        ),
-      ),
-    ),
-  );
-  }
-  return const SizedBox();
-  
-}
+*/

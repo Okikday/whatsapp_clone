@@ -1,20 +1,20 @@
 package com.example.whatsapp_clone
 
 data class NativeTextInputModel(
-    val hint: String? = null, // Hint text for the EditText
+    val hint: String? = null,
     val label: String? = null,
-    val defaultText: String? = null, // Default text to display in the EditText
-    val fontSize: Float = 16.0f, // Font size for the text
-    val isEnabled: Boolean = true, // Whether the EditText is enabled
+    val defaultText: String? = null,
+    val fontSize: Float = 16.0f,
+    val isEnabled: Boolean = true,
     val minLines: Int? = null,
-    val maxLines: Int? = null, // Maximum number of lines
+    val maxLines: Int? = null,
     val lines: Int? = null,
-    val textAlign: String = "start", // Text alignment ("start", "center", "end")
-    val keyboardType: String = "text", // Input type ("text", "number", etc.)
-    val maxLength: Int? = null, // Maximum length of the text
-    val cursorColor: String = "#FFFFFF", // Cursor color (ARGB)
-    val contentPadding: List<Float>? = null, // Padding as [left, top, right, bottom]
-    val textStyles: List<NativeTextStyle>? = null, // List of styles to apply to text
+    val textAlign: String = "start",
+    val keyboardType: String = "text",
+    val maxLength: Int? = null,
+    val cursorColor: String = "#FFFFFF",
+    val contentPadding: List<Float>? = null,
+    val textStyles: List<NativeTextStyle>? = null,
     val hasFocus: Boolean = false,
     val cursorWidth: Int = 4,
     val cursorHandleColor: String = "#000000",
@@ -26,7 +26,68 @@ data class NativeTextInputModel(
     val highlightColor: String? = "#FFFFFF",
     val fontColor: String? = "#000000",
 ) {
-    // Converts the model to a Map
+    companion object {
+        private val VALID_TEXT_ALIGNMENTS = setOf("start", "center", "end")
+        private val VALID_KEYBOARD_TYPES = setOf(
+            "text", "number", "emailAddress", "phone", "password",
+            "multiline", "url", "datetime", "name", "address", "numberDecimal"
+        )
+
+        fun fromMap(map: Map<String, Any?>): NativeTextInputModel {
+            // Safely convert text styles
+            val convertedTextStyles = (map["textStyles"] as? List<*>)?.mapNotNull { style ->
+                when (style) {
+                    is Map<*, *> -> try {
+                        @Suppress("UNCHECKED_CAST")
+                        NativeTextStyle.fromMap(style as Map<String, Any?>)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    else -> null
+                }
+            }
+
+            // Validate text alignment
+            val textAlign = (map["textAlign"] as? String)?.takeIf {
+                it in VALID_TEXT_ALIGNMENTS
+            } ?: "start"
+
+            // Validate keyboard type
+            val keyboardType = (map["keyboardType"] as? String)?.takeIf {
+                it in VALID_KEYBOARD_TYPES
+            } ?: "text"
+
+            return NativeTextInputModel(
+                hint = map["hint"] as? String,
+                label = map["label"] as? String,
+                defaultText = map["defaultText"] as? String,
+                fontSize = (map["fontSize"] as? Number)?.toFloat() ?: 16.0f,
+                isEnabled = map["isEnabled"] as? Boolean ?: true,
+                minLines = (map["minLines"] as? Number)?.toInt(),
+                maxLines = (map["maxLines"] as? Number)?.toInt(),
+                lines = (map["lines"] as? Number)?.toInt(),
+                textAlign = textAlign,
+                keyboardType = keyboardType,
+                maxLength = (map["maxLength"] as? Number)?.toInt(),
+                cursorColor = map["cursorColor"] as? String ?: "#FFFFFF",
+                contentPadding = (map["contentPadding"] as? List<*>)?.mapNotNull {
+                    (it as? Number)?.toFloat()
+                },
+                textStyles = convertedTextStyles,
+                hasFocus = map["hasFocus"] as? Boolean ?: false,
+                cursorWidth = (map["cursorWidth"] as? Number)?.toInt() ?: 4,
+                cursorHandleColor = map["cursorHandleColor"] as? String ?: "#000000",
+                inputBoxWidth = (map["inputBoxWidth"] as? Number)?.toInt(),
+                inputBoxHeight = (map["inputBoxHeight"] as? Number)?.toInt(),
+                hintTextColor = map["hintTextColor"] as? String ?: "#DDDDDD",
+                minHeight = (map["minHeight"] as? Number)?.toInt(),
+                maxHeight = (map["maxHeight"] as? Number)?.toInt(),
+                highlightColor = map["highlightColor"] as? String ?: "#FFFFFF",
+                fontColor = map["fontColor"] as? String ?: "#000000"
+            )
+        }
+    }
+
     fun toMap(): Map<String, Any?> {
         return mapOf(
             "hint" to hint,
@@ -42,7 +103,7 @@ data class NativeTextInputModel(
             "maxLength" to maxLength,
             "cursorColor" to cursorColor,
             "contentPadding" to contentPadding,
-            "textStyles" to textStyles,
+            "textStyles" to textStyles?.map { it.toMap() },
             "hasFocus" to hasFocus,
             "cursorWidth" to cursorWidth,
             "cursorHandleColor" to cursorHandleColor,
@@ -55,43 +116,6 @@ data class NativeTextInputModel(
             "fontColor" to fontColor
         )
     }
-
-    // Creates a model instance from a Map
-    companion object {
-        fun fromMap(map: Map<String, Any?>): NativeTextInputModel {
-            val convertedTextStyles = (map["textStyles"] as? List<Map<String, Any?>>)?.map { styleMap ->
-                NativeTextStyle.fromMap(styleMap)
-            }
-
-            return NativeTextInputModel(
-                hint = map["hint"] as? String,
-                label = map["label"] as? String,
-                defaultText = map["defaultText"] as? String,
-                fontSize = (map["fontSize"] as? Double ?: 16.0).toFloat(),
-                isEnabled = map["isEnabled"] as? Boolean ?: true,
-                minLines = map["minLines"] as? Int,
-                maxLines = map["maxLines"] as? Int,
-                lines = map["lines"] as? Int,
-                textAlign = map["textAlign"] as? String ?: "start",
-                keyboardType = map["keyboardType"] as? String ?: "text",
-                maxLength = map["maxLength"] as? Int,
-                cursorColor = map["cursorColor"] as? String ?: "#FFFFFF",
-                contentPadding = (map["contentPadding"] as? List<*>)?.map { (it as? Double)?.toFloat() ?: 0f },
-                textStyles = convertedTextStyles,
-                hasFocus = map["hasFocus"] as? Boolean ?: false,
-                cursorWidth = map["cursorWidth"] as? Int ?: 4,
-                cursorHandleColor = map["cursorHandleColor"] as? String ?: "#000000",
-                inputBoxWidth = map["inputBoxWidth"] as? Int,
-                inputBoxHeight = map["inputBoxHeight"] as? Int,
-                hintTextColor = map["hintTextColor"] as? String ?: "#DDDDDD",
-                minHeight = map["minHeight"] as? Int,
-                maxHeight = map["maxHeight"] as? Int,
-                highlightColor = map["highlightColor"] as? String ?: "#FFFFFF",
-                fontColor = map["fontColor"] as? String ?: "#000000",
-            )
-        }
-    }
-
 }
 
 data class NativeTextStyle(

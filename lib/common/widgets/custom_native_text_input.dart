@@ -29,7 +29,7 @@ class CustomNativeTextInput extends StatefulWidget {
   final Color? backgroundColor;
   final BoxBorder? boxBorder;
   final TextAlign? textAlign;
-  final EdgeInsets? contentPadding;
+  final EdgeInsets? inputPadding;
   final int? minLines;
   final int? maxLines;
   final bool? isEnabled;
@@ -46,7 +46,8 @@ class CustomNativeTextInput extends StatefulWidget {
   final int? lines;
   final Color? highlightColor;
   final Color? fontColor;
-  final Alignment alignInput;
+  final Color? debugBoxColor;
+  final EdgeInsets? contentPadding;
   const CustomNativeTextInput(
       {super.key,
       required this.nativeTextInputController,
@@ -66,6 +67,7 @@ class CustomNativeTextInput extends StatefulWidget {
       this.backgroundColor,
       this.boxBorder,
       this.textAlign,
+      this.inputPadding,
       this.contentPadding,
       this.minLines,
       this.maxLines,
@@ -85,7 +87,8 @@ class CustomNativeTextInput extends StatefulWidget {
       this.lines,
       this.highlightColor,
       this.fontColor,
-      this.alignInput = Alignment.center});
+      this.debugBoxColor
+  });
 
   @override
   State<CustomNativeTextInput> createState() => CustomNativeTextInputState();
@@ -202,65 +205,77 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
         width: widget.pixelWidth,
         height: widget.pixelHeight,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.prefixIcon != null) widget.prefixIcon!,
             Expanded(
-              child: Align(
-                alignment: widget.alignInput,
-                child: ClipRRect(
-                  clipBehavior: Clip.hardEdge,
-                  child: SizedBox(
-                    height: widget.maxHeight,
-                    child: Padding(
-                      padding: widget.contentPadding ?? EdgeInsets.zero,
-                      child: PlatformViewLink(
-                        viewType: viewType,
-                        surfaceFactory: (context, controller) {
-                          return AndroidViewSurface(
-                            controller: controller as AndroidViewController,
-                            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-                            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-                          );
-                        },
-                        onCreatePlatformView: (params) {
-                          _channel = MethodChannel('native_text_input_${params.id}'); // Initialize the MethodChannel
-
-                          _channel.setMethodCallHandler((call) async {
-                            final results = await Future.wait([
-                              CustomNativeTextInputFunctions.getText(_channel),
-                              CustomNativeTextInputFunctions.getProperties(_channel),
-                            ]);
-
-                            final String? text = results[0] as String?;
-                            final NativeTextInputModel? properties = results[1] as NativeTextInputModel?;
-
-                            // Handle callbacks only if necessary
-                            if (text != null) widget.onchanged?.call(text);
-                            if (properties != null) widget.internalArgs?.call(properties);
-                            if (call.method == 'onTap') widget.ontap?.call();
-
-                            // Update state only if required
-                            setState(() {
-                              nativeTextInputController.updateArguments({});
-                            });
-                          });
-
-                          return PlatformViewsService.initSurfaceAndroidView(
-                            id: params.id,
-                            viewType: viewType,
-                            layoutDirection: TextDirection.ltr,
-                            creationParams: creationParams,
-                            creationParamsCodec: const StandardMessageCodec(),
-                            onFocus: () {
-                              params.onFocusChanged(true);
-                            },
-                          )
-                            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-                            ..create();
-                        },
+              child: ClipRRect(
+                clipBehavior: Clip.hardEdge,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: widget.inputPadding == null ? 0 : (widget.inputPadding?.top ?? 0),),
+                    Expanded(
+                      child: SizedBox(
+                        height: widget.maxHeight,
+                        child: Padding(
+                          padding: widget.inputPadding ?? EdgeInsets.zero,
+                          child: ColoredBox(
+                            color: widget.debugBoxColor ?? Colors.transparent,
+                            child: PlatformViewLink(
+                              viewType: viewType,
+                              surfaceFactory: (context, controller) {
+                                return AndroidViewSurface(
+                                  controller: controller as AndroidViewController,
+                                  gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+                                  hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+                                );
+                              },
+                              onCreatePlatformView: (params) {
+                                _channel = MethodChannel('native_text_input_${params.id}'); // Initialize the MethodChannel
+                            
+                                _channel.setMethodCallHandler((call) async {
+                                  final results = await Future.wait([
+                                    CustomNativeTextInputFunctions.getText(_channel),
+                                    CustomNativeTextInputFunctions.getProperties(_channel),
+                                  ]);
+                            
+                                  final String? text = results[0] as String?;
+                                  final NativeTextInputModel? properties = results[1] as NativeTextInputModel?;
+                            
+                                  // Handle callbacks only if necessary
+                                  if (text != null) widget.onchanged?.call(text);
+                                  if (properties != null) widget.internalArgs?.call(properties);
+                                  if (call.method == 'onTap') widget.ontap?.call();
+                            
+                                  // Update state only if required
+                                  setState(() {
+                                    nativeTextInputController.updateArguments({});
+                                  });
+                                });
+                            
+                                return PlatformViewsService.initSurfaceAndroidView(
+                                  id: params.id,
+                                  viewType: viewType,
+                                  layoutDirection: TextDirection.ltr,
+                                  creationParams: creationParams,
+                                  creationParamsCodec: const StandardMessageCodec(),
+                                  onFocus: () {
+                                    params.onFocusChanged(true);
+                                  },
+                                )
+                                  ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+                                  ..create();
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+
+                    SizedBox(height: widget.inputPadding == null ? 0 : (widget.inputPadding?.bottom ?? 0),),
+                  ],
                 ),
               ),
             ),

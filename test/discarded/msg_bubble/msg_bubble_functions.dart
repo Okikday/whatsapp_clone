@@ -40,4 +40,31 @@ class MsgBubbleFunctions {
       color: Colors.white70,
     );
   }
+
+  static bool doesTextHasSpaceLeft(
+    BuildContext context, {
+    required bool hasMedia,
+    required String content,
+    required String? mediaCaption,
+    required bool hasMediaCaption,
+    required double msgBubbleWidth,
+    required TextStyle textStyle,
+    double neededSpace = 46.0,
+    double horizontalTextPadding = 6.0,
+  }) {
+
+    double totalTextWidth = UtilitiesFuncs.getTextSize(
+            hasMedia && hasMediaCaption ? mediaCaption! : content, textStyle)
+        .width;
+    if(hasMedia && hasMediaCaption){
+      if(UtilitiesFuncs.getTextSize(mediaCaption!, textStyle).width + neededSpace < msgBubbleWidth) totalTextWidth =  msgBubbleWidth - neededSpace;
+    }
+
+    if (totalTextWidth + neededSpace < msgBubbleWidth) return false;
+    
+    bool doesTextHasSpaceLeft = (msgBubbleWidth - horizontalTextPadding * 2) - (totalTextWidth % (msgBubbleWidth - horizontalTextPadding * 2)) >= neededSpace;
+    
+    
+    return doesTextHasSpaceLeft;
+  }
 }

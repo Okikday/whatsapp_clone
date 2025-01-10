@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 
@@ -28,4 +29,11 @@ class UtilitiesFuncs {
       return Result.error('Error checking system time: $e');
     }
   }
+
+  static Size getTextSize(String text, TextStyle style) => (TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: TextDirection.ltr,
+  )..layout()).size;
+
+
 }

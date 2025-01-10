@@ -57,7 +57,8 @@ class CustomElevatedButton extends StatelessWidget {
             elevation: WidgetStatePropertyAll(elevation),
             shape: WidgetStatePropertyAll(shape ?? RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 24) )),
             side: WidgetStatePropertyAll(side),
-            minimumSize: const WidgetStatePropertyAll(Size(4, 4))
+            minimumSize: const WidgetStatePropertyAll(Size(4, 4)),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: child ?? Center(
             child: CustomWidgets.text(context, label, fontSize: textSize ?? 8, color: textColor ?? Colors.white)
