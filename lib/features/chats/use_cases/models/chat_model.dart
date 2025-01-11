@@ -2,7 +2,7 @@ class ChatModel {
   final String chatId; // Unique ID for the chat (e.g., UUID)
   final String contactId; // ID of the contact
   final String chatName; // Name of the chat (contact's name)
-  final String chatProfilePhoto; // URL or path to the contact's profile photo
+  final String? chatProfilePhoto; // URL or path to the contact's profile photo
   final String lastMsg; // The last message sent or received
   final DateTime lastUpdated; // Timestamp of the last activity in the chat
   final bool isMuted; // Indicates if notifications for this chat are muted
@@ -16,7 +16,7 @@ class ChatModel {
     required this.chatId,
     required this.contactId,
     required this.chatName,
-    required this.chatProfilePhoto,
+    this.chatProfilePhoto,
     required this.lastMsg,
     required this.lastUpdated,
     this.isMuted = false,
@@ -49,7 +49,7 @@ class ChatModel {
       chatId: map['chatId'] as String,
       contactId: map['contactId'] as String,
       chatName: map['chatName'] as String,
-      chatProfilePhoto: map['chatProfilePhoto'] as String,
+      chatProfilePhoto: map['chatProfilePhoto'] as String?,
       lastMsg: map['lastMsg'] as String,
       lastUpdated: DateTime.parse(map['lastUpdated'] as String),
       isMuted: map['isMuted'] as bool? ?? false,
@@ -66,7 +66,7 @@ class ChatModel {
       'chatId': '',
       'contactId': '',
       'chatName': '',
-      'chatProfilePhoto': '',
+      'chatProfilePhoto': null,
       'lastMsg': '',
       'lastUpdated': DateTime.now().toIso8601String(),
       'isMuted': false,

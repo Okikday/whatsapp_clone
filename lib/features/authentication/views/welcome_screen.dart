@@ -11,6 +11,7 @@ import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
+import 'package:whatsapp_clone/features/authentication/views/contact_verification_view.dart';
 import 'package:whatsapp_clone/features/authentication/views/widgets/select_language_bottom_sheet.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
@@ -162,8 +163,7 @@ List<Widget> welcomeScreenWidgets(
                 screenWidth: 100,
                 textSize: Constants.fontSizeSmall + 1,
                 onClick: () {
-                  log("Clicked to new page");
-                  Get.to(() => RoutesNames.contactVerificationView,
+                  Get.to(() => const ContactVerificationView(),
                       transition: Transition.rightToLeft, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);
                 },
               ),

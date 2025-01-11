@@ -109,14 +109,13 @@ class ChatsTabView extends StatelessWidget {
                         width: Get.width,
                         chatName: cacheChatModel.chatName,
                         profilePhoto: cacheChatModel.chatProfilePhoto,
-                        lastUpdated: Formatter.timeAgo(cacheChatModel.lastUpdated),
+                        lastUpdated: Formatter.chatTimeStamp(cacheChatModel.lastUpdated),
                         lastMsg: cacheChatModel.lastMsg,
                         isSelected: chatTilesSelected[index] != null,
                         onTap: () async {
                           if (chatTilesSelected.isEmpty) {
-                            await Future.delayed(const Duration(milliseconds: 175), () {
-                              _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
-                            });
+                            
+                            _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
                           } else {
                             if (chatTilesSelected[index] != null) {
                               homeUiController.removeSelectedChatTile(index);
@@ -142,11 +141,10 @@ class ChatsTabView extends StatelessWidget {
                             }
                           }
                         },
-                      ).animate().fadeIn(begin: 0.4, duration: const Duration(milliseconds: 350));
+                      ).animate().fadeIn(begin: 0.1, duration: const Duration(milliseconds: 350));
                     },
                   );
                 },
-                
               ),
             ),
 
@@ -165,43 +163,46 @@ class ChatsTabView extends StatelessWidget {
   }
 }
 
-
-
-Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) async{
-  navigator?.push(
+Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) async {
+  final ChatView preloadedChatView = ChatView(chatModel: cacheChatModel, messageModel: messageModel,);
+  await Future.delayed(const Duration(milliseconds: 175), () {
+    navigator?.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {
-        return ChatView(
-          chatModel: cacheChatModel,
-          messageModel: messageModel,
-        );
+        return preloadedChatView;
       },
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const curve = Curves.easeOut;
-        // Offset transition
-        final offsetAnimation = animation.drive(
+        const curve = Curves.decelerate;
+        final Animation<Offset> offsetAnimation = animation.drive(
           Tween(begin: const Offset(0.0, 0.15), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
-        final reverseFadeAnimation = animation.drive(
+        final Animation<double> reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
         );
-        if(animation.status == AnimationStatus.reverse){
-          return SlideTransition(
-          position: offsetAnimation,
-          child: FadeTransition(
-            opacity: reverseFadeAnimation,
-            child: child),
+
+        final Animation<double> scaleAnimation = animation.drive(
+          Tween<double>(begin: 1.08, end: 1.0).chain(CurveTween(curve: curve)),
         );
+        if (animation.status == AnimationStatus.reverse) {
+          return ScaleTransition(
+            scale: scaleAnimation,
+            child: SlideTransition(
+              position: offsetAnimation,
+              child: FadeTransition(opacity: reverseFadeAnimation, child: child),
+            ),
+          );
         }
         return SlideTransition(
           position: offsetAnimation,
           child: child,
         );
       },
-      transitionDuration: const Duration(milliseconds: 250),
-      reverseTransitionDuration: const Duration(milliseconds: 200),
+      transitionDuration: const Duration(milliseconds: 300),
+      reverseTransitionDuration: const Duration(milliseconds: 250),
     ),
-  );
+  );                          
+  });
+  
 }
 
 class ChatSelectionAppBarChild extends StatelessWidget {

@@ -205,7 +205,7 @@ class CustomNativeTextInputState extends State<CustomNativeTextInput> {
         width: widget.pixelWidth,
         height: widget.pixelHeight,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (widget.prefixIcon != null) widget.prefixIcon!,
             Expanded(

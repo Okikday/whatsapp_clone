@@ -42,7 +42,7 @@ class LoadingDialog extends StatefulWidget {
   final Color? progressIndicatorColor;
   final Color? boxBgColor;
 
-  const LoadingDialog({super.key, this.canPop = false, this.msg, this.progressIndicatorColor, this.boxBgColor});
+  const LoadingDialog({super.key, this.canPop = false, this.msg, this.progressIndicatorColor, this.boxBgColor,});
 
   @override
   State<LoadingDialog> createState() => _LoadingDialogState();

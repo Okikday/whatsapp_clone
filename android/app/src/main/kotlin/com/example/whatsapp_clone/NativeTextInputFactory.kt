@@ -185,80 +185,64 @@ class NativeTextInputFactory(
                 val parsedCursorColor = Color.parseColor(cursorColor)
                 val parsedHandleColor = Color.parseColor(cursorHandleColor)
 
-                // Create cursor drawable
+                // Cursor Drawable
                 val cursorDrawable = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(parsedCursorColor)
                     setSize(cursorWidth, widget.lineHeight)
                 }
-
-                // Set cursor drawable
                 widget.textCursorDrawable = cursorDrawable
 
-                // Create custom handle drawables
-                val handleSize = 24.dpToPx(widget.context) // You can adjust this size
+                // Handle sizes and radii
+                val handleSize = (24 * widget.context.resources.displayMetrics.density).toInt() // 24dp to px
+                val handleRadius = handleSize / 2f
 
-                // Middle handle (selection) - simple circle
+                // Create the middle (circle) handle
                 val middleHandle = GradientDrawable().apply {
                     shape = GradientDrawable.OVAL
                     setColor(parsedHandleColor)
                     setSize(handleSize, handleSize)
                 }
 
-                // Left and right handles - rounded rectangles
+                // Create the left handle (rounded rectangle)
                 val leftHandle = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(parsedHandleColor)
                     cornerRadii = floatArrayOf(
-                        handleSize.toFloat(), handleSize.toFloat(), // top-left
-                        0f, 0f, // top-right
-                        0f, 0f, // bottom-right
-                        handleSize.toFloat(), handleSize.toFloat() // bottom-left
+                        handleRadius, handleRadius, // Top-left
+                        0f, 0f,                     // Top-right
+                        0f, 0f,                     // Bottom-right
+                        handleRadius, handleRadius  // Bottom-left
                     )
-                    setSize(handleSize, handleSize * 2)
+                    setSize(handleSize / 2, handleSize * 2)
                 }
 
+                // Create the right handle (rounded rectangle)
                 val rightHandle = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(parsedHandleColor)
                     cornerRadii = floatArrayOf(
-                        0f, 0f, // top-left
-                        handleSize.toFloat(), handleSize.toFloat(), // top-right
-                        handleSize.toFloat(), handleSize.toFloat(), // bottom-right
-                        0f, 0f  // bottom-left
+                        0f, 0f,                     // Top-left
+                        handleRadius, handleRadius, // Top-right
+                        handleRadius, handleRadius, // Bottom-right
+                        0f, 0f                      // Bottom-left
                     )
-                    setSize(handleSize, handleSize * 2)
+                    setSize(handleSize / 2, handleSize * 2)
                 }
 
-                // Set the handles
+                // Assign handles to the widget
                 widget.setTextSelectHandle(middleHandle)
                 widget.setTextSelectHandleLeft(leftHandle)
                 widget.setTextSelectHandleRight(rightHandle)
 
-                // Apply cursor tint
+                // Apply tint to cursor
                 widget.textCursorDrawable?.mutate()?.setTint(parsedCursorColor)
 
             } catch (e: Exception) {
-                Log.e("CursorCustomization", "Error customizing cursor: ${e.message}")
-                e.printStackTrace()
+                Log.e("CursorCustomization", "Error customizing cursor: ${e.message}", e)
             }
         }
 
-        // Helper extension function to convert dp to pixels
-        private fun Int.dpToPx(context: Context): Int {
-            return (this * context.resources.displayMetrics.density).toInt()
-        }
-
-        // Extension function to make the usage more convenient
-        fun EditText.customizeCursor(
-            cursorColor: String,
-            cursorWidth: Int = 2.dpToPx(context),
-            cursorHandleColor: String = cursorColor
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                setCursorProperties(this, cursorColor, cursorWidth, cursorHandleColor)
-            }
-        }
 
 
 

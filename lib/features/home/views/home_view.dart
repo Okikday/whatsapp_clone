@@ -4,12 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
+import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/calls_tab_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/chats_tab_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/communities_tab_view.dart';
@@ -190,9 +192,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 }
 
 customAppBar(BuildContext context, {required Color scaffoldBgColor, EdgeInsets? padding, required Widget child}) {
-  final double topPadding = MediaQuery.paddingOf(Get.context!).top;
-  final double width = MediaQuery.sizeOf(context).width;
-  final double height = MediaQuery.sizeOf(context).height;
+  final double topPadding = MediaQuery.paddingOf(Get.context ?? context).top;
+  final double width = MediaQuery.sizeOf(Get.context ?? context).width;
+  final double height = MediaQuery.sizeOf(Get.context ?? context).height;
   return PreferredSize(
     preferredSize: Size(width, 56),
     child: Container(
@@ -256,7 +258,7 @@ class NormalAppBarChild extends StatelessWidget {
                   Future.delayed(const Duration(seconds: 1), () async {
                     await UserAuth().googleSignOut();
                     Get.close(1);
-                    Get.off(() => RoutesNames.welcomeScreen);
+                    Get.off(() => const WelcomeScreen());
                   });
                 }
               },

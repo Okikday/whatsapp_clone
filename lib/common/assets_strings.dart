@@ -33,6 +33,8 @@ class IconStrings{
   static const pinIconOutlined = "$iconPath/byx.png";
   static const archiveIconOutlined = "$iconPath/qd.png";
   static const notificationOffIconOutlined = "$iconPath/bun.png";
+
+  static const searchIconOutlined = "$iconPath/bzq.png";
 }
 
 

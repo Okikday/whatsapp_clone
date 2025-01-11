@@ -48,7 +48,7 @@ class MsgBubbleContent extends StatelessWidget {
               expandWidth: hasMedia ? true : false,
                 textSpan: TextSpan(
                     text: messageModel.content,
-                    style: CustomWidgets.text(context, "").style!.copyWith(
+                    style: CustomWidgets.text(context, "", color: Colors.white).style!.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         )),

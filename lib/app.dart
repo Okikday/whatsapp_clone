@@ -1,6 +1,7 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/timestamped_chat_message.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/themes.dart';
@@ -21,7 +22,7 @@ class App extends StatelessWidget {
       title: "WhatsApp Clone",
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,
-      home:  isUserSignedIn ? RoutesNames.homeView : RoutesNames.welcomeScreen,
+      home:  isUserSignedIn ? RoutesNames.homeView : const WelcomeScreen(),
     );
   }
 }
