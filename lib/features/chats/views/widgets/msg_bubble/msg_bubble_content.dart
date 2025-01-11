@@ -11,7 +11,6 @@ import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_content_functions.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/timestamped_chat_message.dart';
 
 class MsgBubbleContent extends StatelessWidget {

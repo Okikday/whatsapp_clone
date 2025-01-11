@@ -31,6 +31,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toolbar
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.HandlerCompat.postDelayed
 import io.flutter.embedding.engine.systemchannels.TextInputChannel.TextInputType
@@ -46,6 +49,7 @@ import java.util.Objects
 class NativeTextInputFactory(
     private val messenger: BinaryMessenger // Pass BinaryMessenger from Flutter
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun create(context: Context?, id: Int, args: Any?): PlatformView {
         val argsModel: NativeTextInputModel = try {
             NativeTextInputModel.fromMap(args as? Map<String, Any> ?: emptyMap())
@@ -58,6 +62,7 @@ class NativeTextInputFactory(
         return NativeTextInput(context, id, argsModel, messenger)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     class NativeTextInput(
         private val context: Context?,
         private val id: Int,
@@ -128,16 +133,22 @@ class NativeTextInputFactory(
                 )
             }
 
-            _setCursorProperty(this, cursorColor = args.cursorColor, cursorWidth = args.cursorWidth, cursorHandleColor = args.cursorHandleColor)
+            setCursorProperties(this, cursorColor = args.cursorColor, cursorWidth = args.cursorWidth, cursorHandleColor = args.cursorHandleColor)
 
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    // if(!(this.showSoftInputOnFocus)) showSoftInputOnFocus = true
-                    requestFocus()
+                    if (!hasFocus()) {
+                        requestFocus() // Request focus
+                    }
+
+                    // Notify Flutter channel
                     channel.invokeMethod("onTap", null)
+
+                    performClick()
                 }
-                false // Allow default behavior
+                false // Allow default touch behavior
             }
+
 
         }
 
@@ -162,64 +173,93 @@ class NativeTextInputFactory(
         fun colorIntToHexString(color: Int): String{
             return String.format("#%08X", color);
         }
-
-        fun _setCursorProperty(
+        @RequiresApi(Build.VERSION_CODES.Q)
+        fun setCursorProperties(
             widget: EditText,
             cursorColor: String,
             cursorWidth: Int,
             cursorHandleColor: String
         ) {
-            val drawable = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(Color.parseColor(cursorColor)) // Cursor color
-                setSize(cursorWidth, widget.lineHeight) // Cursor width and height
-            }
-
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    // For Android 10 (API 29) and above, set the cursor drawable directly
-                    widget.textCursorDrawable = drawable
-                } else {
-                    // For older versions, use reflection to set the cursor drawable
-                    try {
-                        val editorField = TextView::class.java.getDeclaredField("mEditor")
-                        editorField.isAccessible = true
-                        val editor = editorField.get(widget)
+                // Convert colors to ColorInt
+                val parsedCursorColor = Color.parseColor(cursorColor)
+                val parsedHandleColor = Color.parseColor(cursorHandleColor)
 
-                        val cursorDrawableField = editor::class.java.getDeclaredField("mCursorDrawable")
-                        cursorDrawableField.isAccessible = true
-                        cursorDrawableField.set(editor, arrayOf(drawable, drawable)) // Set both primary and secondary cursors
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                // Create cursor drawable
+                val cursorDrawable = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    setColor(parsedCursorColor)
+                    setSize(cursorWidth, widget.lineHeight)
                 }
 
-                // Set the text selection handle color using reflection for pre-API 29
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    try {
-                        // Primary handle (the draggable handle)
-                        val primaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandle")
-                        primaryHandleField.isAccessible = true
-                        val primaryHandleDrawable = primaryHandleField.get(widget) as Drawable
-                        primaryHandleDrawable.mutate().setTint(Color.parseColor(cursorHandleColor))
+                // Set cursor drawable
+                widget.textCursorDrawable = cursorDrawable
 
-                        // Secondary handle (the other draggable handle)
-                        val secondaryHandleField = TextView::class.java.getDeclaredField("mTextSelectHandleLeft")
-                        secondaryHandleField.isAccessible = true
-                        val secondaryHandleDrawable = secondaryHandleField.get(widget) as Drawable
-                        secondaryHandleDrawable.mutate().setTint(Color.parseColor(cursorHandleColor))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                // Create custom handle drawables
+                val handleSize = 24.dpToPx(widget.context) // You can adjust this size
+
+                // Middle handle (selection) - simple circle
+                val middleHandle = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(parsedHandleColor)
+                    setSize(handleSize, handleSize)
                 }
 
-                // Apply cursor tint if the cursor drawable exists (for any version)
-                widget.textCursorDrawable?.mutate()?.setTint(Color.parseColor(cursorColor))
+                // Left and right handles - rounded rectangles
+                val leftHandle = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    setColor(parsedHandleColor)
+                    cornerRadii = floatArrayOf(
+                        handleSize.toFloat(), handleSize.toFloat(), // top-left
+                        0f, 0f, // top-right
+                        0f, 0f, // bottom-right
+                        handleSize.toFloat(), handleSize.toFloat() // bottom-left
+                    )
+                    setSize(handleSize, handleSize * 2)
+                }
+
+                val rightHandle = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    setColor(parsedHandleColor)
+                    cornerRadii = floatArrayOf(
+                        0f, 0f, // top-left
+                        handleSize.toFloat(), handleSize.toFloat(), // top-right
+                        handleSize.toFloat(), handleSize.toFloat(), // bottom-right
+                        0f, 0f  // bottom-left
+                    )
+                    setSize(handleSize, handleSize * 2)
+                }
+
+                // Set the handles
+                widget.setTextSelectHandle(middleHandle)
+                widget.setTextSelectHandleLeft(leftHandle)
+                widget.setTextSelectHandleRight(rightHandle)
+
+                // Apply cursor tint
+                widget.textCursorDrawable?.mutate()?.setTint(parsedCursorColor)
 
             } catch (e: Exception) {
+                Log.e("CursorCustomization", "Error customizing cursor: ${e.message}")
                 e.printStackTrace()
             }
         }
+
+        // Helper extension function to convert dp to pixels
+        private fun Int.dpToPx(context: Context): Int {
+            return (this * context.resources.displayMetrics.density).toInt()
+        }
+
+        // Extension function to make the usage more convenient
+        fun EditText.customizeCursor(
+            cursorColor: String,
+            cursorWidth: Int = 2.dpToPx(context),
+            cursorHandleColor: String = cursorColor
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                setCursorProperties(this, cursorColor, cursorWidth, cursorHandleColor)
+            }
+        }
+
 
 
         fun styleTexts(
@@ -328,6 +368,7 @@ class NativeTextInputFactory(
 
 
 
+        @RequiresApi(Build.VERSION_CODES.Q)
         fun updateProperties(newState: NativeTextInputModel) {
             if (currentState != newState) {
                 // Only apply changes if the new state is different from the current one
@@ -364,7 +405,7 @@ class NativeTextInputFactory(
                 }
 
                 if(newState.cursorColor != currentState?.cursorColor || newState.cursorHandleColor != currentState?.cursorHandleColor){
-                    _setCursorProperty(editText, cursorColor = newState.cursorColor, cursorWidth = newState.cursorWidth, cursorHandleColor = newState.cursorHandleColor)
+                    setCursorProperties(editText, cursorColor = newState.cursorColor, cursorWidth = newState.cursorWidth, cursorHandleColor = newState.cursorHandleColor)
                 }
                 if(newState.cursorWidth != currentState?.cursorWidth){
                     editText.width = newState.cursorWidth
