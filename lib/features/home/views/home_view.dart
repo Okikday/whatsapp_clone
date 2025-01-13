@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,11 +13,14 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
 import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
+import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/calls_tab_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/chats_tab_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/communities_tab_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/updates_tab_view.dart';
+import 'package:whatsapp_clone/features/home/views/widgets/chat_selection_app_bar_child.dart';
+import 'package:whatsapp_clone/features/home/views/widgets/home_app_bar_child.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 import 'package:whatsapp_clone/common/widgets/loading_dialog.dart';
 
@@ -35,14 +39,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     homeUiController.setHomeBottomNavBarCurrentIndex(0);
     homeUiController.sethomeCameraIconAnimController(AnimationController(vsync: this, duration: const Duration(milliseconds: 250)));
     pageController = PageController(initialPage: homeUiController.homeBottomNavBarCurrentIndex.value);
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      homeUiController.updateHomeAppBar(context: context);
-    });
-  }
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    homeUiController.updateHomeAppBar(context: context);
   }
 
   @override
@@ -63,7 +59,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         return PopScope(
           canPop: stateController.canPop.value,
           onPopInvokedWithResult: (didPop, result) {
-            stateController.clearSelectedChatTiles();
+            if (chatsTabUiController.chatTilesSelected.isNotEmpty) chatsTabUiController.clearSelectedChatTiles();
           },
           child: AnnotatedRegion(
             value: SystemUiOverlayStyle(
@@ -71,17 +67,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
                 statusBarColor: Colors.transparent),
             child: Scaffold(
-              appBar: stateController.currHomeAppBar.value,
+              appBar: CustomAppBarContainer(
+                  scaffoldBgColor: scaffoldBgColor,
+                  child: chatsTabUiController.chatTilesSelected.isEmpty ? const HomeAppBarChild() : const ChatSelectionAppBarChild()),
               bottomNavigationBar: NavigationBar(
                 selectedIndex: stateController.homeBottomNavBarCurrentIndex.value,
                 indicatorColor: isDarkMode ? const Color(0xFF103629) : const Color(0xFFD8FDD2),
                 overlayColor: WidgetStatePropertyAll(const Color(0xFF103629).withAlpha(26)),
                 backgroundColor: scaffoldBgColor,
                 onDestinationSelected: (value) {
-                  stateController.setHomeBottomNavBarCurrentIndex(value);
-                  pageController.jumpToPage(
-                    value,
-                  );
+                  if (value != stateController.homeBottomNavBarCurrentIndex.value) {
+                    stateController.setHomeBottomNavBarCurrentIndex(value);
+                    pageController.jumpToPage(
+                      value,
+                    );
+                  }
                 },
                 destinations: [
                   NavigationDestination(
@@ -169,7 +169,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               body: PageView(
                   controller: pageController,
                   onPageChanged: (value) {
-                    stateController.setHomeBottomNavBarCurrentIndex(value);
+                    if (value != stateController.homeBottomNavBarCurrentIndex.value) stateController.setHomeBottomNavBarCurrentIndex(value);
                   },
                   children: [
                     ChatsTabView(
@@ -187,81 +187,34 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 }
 
-customAppBar(BuildContext context, {required Color scaffoldBgColor, EdgeInsets? padding, required Widget child}) {
-  final double topPadding = MediaQuery.paddingOf(Get.context ?? context).top;
-  final double width = MediaQuery.sizeOf(Get.context ?? context).width;
-  final double height = MediaQuery.sizeOf(Get.context ?? context).height;
-  return PreferredSize(
-    preferredSize: Size(width, 56),
-    child: Container(
-        color: scaffoldBgColor,
-        width: width,
-        height: 64,
-        margin: EdgeInsets.only(top: topPadding),
-        padding: padding ?? EdgeInsets.only(left: width > height ? width * 0.05 : 16, right: width > height ? width * 0.05 : 0),
-        child: child),
-  );
-}
+class CustomAppBarContainer extends StatelessWidget implements PreferredSizeWidget {
+  final Color scaffoldBgColor;
+  final EdgeInsets? padding;
+  final Widget child;
+  const CustomAppBarContainer({super.key, required this.scaffoldBgColor, this.padding, required this.child});
 
-class NormalAppBarChild extends StatelessWidget {
-  const NormalAppBarChild({super.key,});
+  @override
+  Size get preferredSize {
+    return Size(appUiState.deviceWidth.value, 56);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    return Obx(
-      () {
-        final HomeUiController stateController = homeUiController;
-        final int stateCurrentIndex = stateController.homeBottomNavBarCurrentIndex.value;
-        return Row(
-          children: [
-            CustomWidgets.text(context, AppConstants.homeTabTitles[stateCurrentIndex], fontSize: stateCurrentIndex == 0 ? 24 : 22, fontWeight: FontWeight.w600, color: stateCurrentIndex == 0 ? isDarkMode ? Colors.white : WhatsAppColors.primary : null),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Animate(
-                  controller: stateController.homeCameraIconAnimController.value,
-                  effects: stateController.homeCamIconAnimCtrlEffects,
-                  child: IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        IconStrings.cameraIconHome,
-                        width: 24,
-                        height: 24,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                        colorBlendMode: BlendMode.srcIn,
-                      )),
-                ),
-              ),
-            ),
-            Visibility(
-                visible: stateCurrentIndex == 1 || stateCurrentIndex == 3,
-                child: IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.search,
-                      size: 24,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    )).animate().flipH(duration: const Duration(milliseconds: 150)).fadeIn(duration: const Duration(milliseconds: 150))),
-            CustomPopupMenuButton(
-              menuItems: const ["Sign out"],
-              onSelected: (value) async {
-                if (value == "Sign out") {
-                  Get.dialog(
-                    const LoadingDialog(
-                      msg: "Signing out",
-                    ),
-                  );
-                  Future.delayed(const Duration(seconds: 1), () async {
-                    await UserAuth().googleSignOut();
-                    Get.close(1);
-                    Get.off(() => const WelcomeScreen());
-                  });
-                }
-              },
-            )
-          ],
-        );
-      },
+    final double width = appUiState.deviceWidth.value;
+    final double height = appUiState.deviceHeight.value;
+    final double topPadding = MediaQuery.paddingOf(context).top;
+    return ColoredBox(
+      color: scaffoldBgColor,
+      child: Padding(
+        padding: EdgeInsets.only(top: topPadding),
+        child: SizedBox(
+            width: width,
+            height: 64,
+            child: Padding(
+              padding: padding ?? EdgeInsets.only(left: width > height ? width * 0.05 : 16, right: width > height ? width * 0.05 : 0),
+              child: child,
+            )),
+      ),
     );
   }
 }

@@ -12,8 +12,6 @@ class UpdatesTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final EdgeInsets generalPadding = EdgeInsets.symmetric(horizontal: Get.width > Get.height ? Get.width * 0.05 : 16);
     return CustomScrollView(
       slivers: [

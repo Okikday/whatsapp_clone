@@ -150,8 +150,7 @@ class SendOrMicButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isMsgInputEmpty = currChatViewController.messageInput.value.isEmpty;
 
-    return Obx(
-      () => GestureDetector(
+    return GestureDetector(
         onTapDown: (details) => currChatViewController.setIsMicTappedDown(true),
         onTapUp: (details) => currChatViewController.setIsMicTappedDown(false),
         onTapCancel: () => currChatViewController.setIsMicTappedDown(false),
@@ -174,7 +173,6 @@ class SendOrMicButtonWidget extends StatelessWidget {
                         color: scaffoldBgColor,
                         colorBlendMode: BlendMode.srcIn,
                       ))),
-      ),
-    );
+      );
   }
 }

@@ -61,7 +61,7 @@ class CustomElevatedButton extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: child ?? Center(
-            child: CustomWidgets.text(context, label, fontSize: textSize ?? 8, color: textColor ?? Colors.white)
+            child: CustomWidgets.text(context, label ?? "", fontSize: textSize ?? 8, color: textColor ?? Colors.white)
           ),
           ),
     );

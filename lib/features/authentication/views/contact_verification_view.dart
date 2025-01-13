@@ -82,7 +82,7 @@ class ContactVerificationView extends StatelessWidget {
                               screenWidth: 70,
                               isEnabled: false,
                               defaultText: "Nigeria",
-                              inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                              inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                               contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                               textAlign: TextAlign.center,
                               suffixIcon: const Icon(

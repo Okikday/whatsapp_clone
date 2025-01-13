@@ -83,28 +83,9 @@ class MsgBubble extends StatelessWidget {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
     final bool hasMediaCaption = messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty;
-    final double msgBubbleWidth = hasMedia ? screenWidth * 0.7 : screenWidth * 0.8;
     final bool isJustImgOverlay = hasMedia &&
         MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text &&
         (messageModel.mediaCaption == null || (messageModel.mediaCaption != null && messageModel.mediaCaption!.isEmpty));
-
-    final Text messageContent = CustomWidgets.text(
-      context,
-      hasMedia && hasMediaCaption ? messageModel.mediaCaption! : messageModel.content,
-      fontSize: 16,
-      color: Colors.white,
-      align: TextAlign.left,
-      fontWeight: FontWeight.w600,
-    );
-
-    final Text dateContent = CustomWidgets.text(
-      context,
-      DateFormat.jm().format(messageModel.sentAt),
-      fontSize: 11,
-      fontWeight: FontWeight.w500,
-      color: Colors.white70,
-    );
-    final double dateContentWidth = UtilitiesFuncs.getTextSize(dateContent.data!, dateContent.style!).width;
 
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,

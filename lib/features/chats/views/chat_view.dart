@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -23,17 +25,17 @@ final CustomNativeTextInputController nativeTextInputController = CustomNativeTe
 class ChatView extends StatelessWidget {
   final ChatModel chatModel;
   final MessageModel messageModel;
-  final ChatMsgBox? chatMsgBox;
-  const ChatView({super.key, required this.chatModel, required this.messageModel, this.chatMsgBox});
+  const ChatView({super.key, required this.chatModel, required this.messageModel,});
 
   @override
   Widget build(BuildContext context) {
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
+
     return Obx(() {
       final double width = appUiState.deviceWidth.value;
       final double height = appUiState.deviceHeight.value;
       final bool isDarkMode = appUiState.isDarkMode.value;
-
+      log("width: $width");
       return AnnotatedRegion(
         value: SystemUiOverlayStyle(
             systemNavigationBarColor: scaffoldBgColor,
@@ -41,18 +43,19 @@ class ChatView extends StatelessWidget {
             statusBarColor: scaffoldBgColor),
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: customAppBar(context,
-              scaffoldBgColor: scaffoldBgColor,
-              padding: EdgeInsets.zero,
-              child: ChatViewAppBar(
+          backgroundColor: scaffoldBgColor,
+          appBar: CustomAppBarContainer(scaffoldBgColor: scaffoldBgColor, padding: EdgeInsets.zero, child: ChatViewAppBar(
                 chatModel: chatModel,
                 scaffoldBgColor: scaffoldBgColor,
                 isDarkMode: isDarkMode,
-                onTapProfile: () {
-                  final ProfileView preloadedProfileView = ProfileView(isDarkMode: isDarkMode, width: width, height: height, chatModel: chatModel);
-                  Future.delayed(const Duration(milliseconds: 175), () => Get.to(() => preloadedProfileView, transition: Transition.rightToLeftWithFade));
+                onTapProfile: () async{
+                  final ProfileView preloadedProfileView = ProfileView(chatModel: chatModel);
+                  Future.delayed(const Duration(milliseconds: 150),
+                  () => Get.to(() => preloadedProfileView, transition: Transition.rightToLeftWithFade)
+                  );
+                  
                 },
-              )),
+              )) as PreferredSizeWidget,
           body: SizedBox(
             width: MediaQuery.sizeOf(context).width,
             height: MediaQuery.sizeOf(context).height,
@@ -66,14 +69,13 @@ class ChatView extends StatelessWidget {
                   isDarkMode: isDarkMode,
                   messageModel: [
                     messageModel,
-                    MessageModel.fromMap({
-                      ...messageModel.toMap(),
-                    })
+                    messageModel,
+                    messageModel,
                   ],
                 ),
 
                 // Precached chat message box
-                chatMsgBox ?? ChatMsgBox(scaffoldBgColor: scaffoldBgColor),
+                ChatMsgBox(scaffoldBgColor: scaffoldBgColor, ),
               ],
             ),
           ),

@@ -11,7 +11,7 @@ class MsgBubbleContentFunctions {
     required DateTime? seenAt,
     required DateTime? deliveredAt,
   }) {
-    final Text dateText = CustomWidgets.text(
+    final CustomText dateText = CustomWidgets.text(
       context,
       date,
       fontSize: 11,

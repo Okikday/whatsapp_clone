@@ -106,7 +106,7 @@ class ChatListTile extends StatelessWidget {
                           const SizedBox(
                             width: 12,
                           ),
-                          CustomWidgets.text(context, lastUpdated, color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
+                          CustomWidgets.text(context, lastUpdated ?? "", color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
                         ],
                       ),
                     ),

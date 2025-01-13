@@ -18,6 +18,7 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dar
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
+import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 
@@ -105,7 +106,7 @@ class ChatsTabView extends StatelessWidget {
                   final ChatModel cacheChatModel = chatModels[index];
                   return Obx(
                     () {
-                      final Map<int, int?> chatTilesSelected = homeUiController.chatTilesSelected;
+                      final Map<int, int?> chatTilesSelected = chatsTabUiController.chatTilesSelected;
                       return ChatListTile(
                         width: Get.width,
                         chatName: cacheChatModel.chatName,
@@ -119,26 +120,26 @@ class ChatsTabView extends StatelessWidget {
                             _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
                           } else {
                             if (chatTilesSelected[index] != null) {
-                              homeUiController.removeSelectedChatTile(index);
+                              chatsTabUiController.removeSelectedChatTile(index);
                             } else {
-                              homeUiController.selectChatTile(index);
+                              chatsTabUiController.selectChatTile(index);
                             }
                           }
                         },
                         onLongPress: () {
                           if (chatTilesSelected[index] != null) {
-                            homeUiController.removeSelectedChatTile(index);
+                            chatsTabUiController.removeSelectedChatTile(index);
                           } else {
-                            homeUiController.selectChatTile(index);
+                            chatsTabUiController.selectChatTile(index);
                           }
                         },
                         onTapProfile: () {
                           if (chatTilesSelected.isEmpty) {
                           } else {
                             if (chatTilesSelected[index] != null) {
-                              homeUiController.removeSelectedChatTile(index);
+                              chatsTabUiController.removeSelectedChatTile(index);
                             } else {
-                              homeUiController.selectChatTile(index);
+                              chatsTabUiController.selectChatTile(index);
                             }
                           }
                         },
@@ -165,9 +166,7 @@ class ChatsTabView extends StatelessWidget {
 }
 
 Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) async {
-
-  final ChatMsgBox chatMsgBox = ChatMsgBox(scaffoldBgColor: Theme.of(Get.context!).scaffoldBackgroundColor);
-  final ChatView preloadedChatView = ChatView(chatModel: cacheChatModel, messageModel: messageModel, chatMsgBox: chatMsgBox);
+  final ChatView preloadedChatView = ChatView(chatModel: cacheChatModel, messageModel: messageModel,);
   await Future.delayed(const Duration(milliseconds: 200));
   navigator?.push(
     PageRouteBuilder(
@@ -194,46 +193,10 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
           child: child,
         );
       },
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 400),
       reverseTransitionDuration: const Duration(milliseconds: 250),
     ),
   );                          
     
   
-}
-
-class ChatSelectionAppBarChild extends StatelessWidget {
-  const ChatSelectionAppBarChild({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final Color getCurrIconColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
-    return Row(
-      children: [
-        BackButton(
-          color: getCurrIconColor,
-        ),
-        Expanded(
-            child: Obx(() => CustomWidgets.text(context, homeUiController.chatTilesSelected.length.toString(), fontSize: 18, fontWeight: FontWeight.w500))),
-        IconButton(
-            onPressed: () {},
-            icon: Image.asset(
-              IconStrings.pinIconOutlined,
-              width: 24,
-              height: 24,
-              color: getCurrIconColor,
-              colorBlendMode: BlendMode.srcIn,
-            )),
-        IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.delete,
-              color: getCurrIconColor,
-            )),
-        IconButton(onPressed: () {}, icon: Icon(Icons.notifications_off_outlined, color: getCurrIconColor)),
-        IconButton(onPressed: () {}, icon: Icon(Icons.archive_outlined, color: getCurrIconColor)),
-        IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, color: getCurrIconColor))
-      ],
-    ).animate().slideX(begin: -0.1, end: 0, duration: const Duration(milliseconds: 200)).fadeIn(duration: const Duration(milliseconds: 200));
-  }
 }
