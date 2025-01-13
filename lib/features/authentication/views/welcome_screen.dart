@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
@@ -34,20 +35,24 @@ class WelcomeScreen extends StatelessWidget {
             )
           ],
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: Get.height > Get.width ? Get.width * 0.05 : Get.height * 0.05),
-          child: Get.width > Get.height
-              ? Row(
-                  children: welcomeScreenWidgets(
-                    context,
-                  ),
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: welcomeScreenWidgets(
-                    context,
-                  ),
-                ),
+        body: Obx(
+          () {
+            final bool isDarkMode = appUiState.isDarkMode.value;
+            final double width = appUiState.deviceWidth.value;
+            final double height = appUiState.deviceHeight.value;
+            
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: height > width ? Get.width * 0.05 : height * 0.05),
+              child: Get.width > Get.height
+                  ? Row(
+                      children: welcomeScreenWidgets(context, isDarkMode),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: welcomeScreenWidgets(context, isDarkMode),
+                    ),
+            );
+          },
         ),
       ),
     );
@@ -56,8 +61,8 @@ class WelcomeScreen extends StatelessWidget {
 
 List<Widget> welcomeScreenWidgets(
   BuildContext context,
+  bool isDarkMode,
 ) {
-  final bool isDarkMode = Get.theme.brightness == Brightness.dark;
   return [
     SizedBox(
         height: Get.height > Get.width ? Get.height * 0.4 : Get.width * 0.5,
@@ -126,10 +131,7 @@ List<Widget> welcomeScreenWidgets(
                 },
                 child: IntrinsicWidth(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

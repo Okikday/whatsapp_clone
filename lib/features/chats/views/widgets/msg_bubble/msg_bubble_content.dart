@@ -109,7 +109,7 @@ class _BuildTaggedMsgWidgetState extends State<BuildTaggedMsgWidget> {
         clipBehavior: Clip.hardEdge,
         borderRadius: BorderRadius.circular(12),
         child: CustomElevatedButton(
-          key: _widgetKey, // Assign the GlobalKey to the widget
+          key: _widgetKey,
           backgroundColor: widget.taggedMsgColor,
           borderRadius: 0,
           overlayColor: Colors.white24,

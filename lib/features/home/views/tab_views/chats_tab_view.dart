@@ -17,8 +17,9 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
-import 'package:whatsapp_clone/general/test_data/test_chats_data.dart';
+import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 
 class ChatsTabView extends StatelessWidget {
   final List<ChatModel> chatModels;
@@ -111,10 +112,10 @@ class ChatsTabView extends StatelessWidget {
                         profilePhoto: cacheChatModel.chatProfilePhoto,
                         lastUpdated: Formatter.chatTimeStamp(cacheChatModel.lastUpdated),
                         lastMsg: cacheChatModel.lastMsg,
+                        isDarkMode: isDarkMode,
                         isSelected: chatTilesSelected[index] != null,
                         onTap: () async {
                           if (chatTilesSelected.isEmpty) {
-                            
                             _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
                           } else {
                             if (chatTilesSelected[index] != null) {
@@ -164,32 +165,28 @@ class ChatsTabView extends StatelessWidget {
 }
 
 Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) async {
-  final ChatView preloadedChatView = ChatView(chatModel: cacheChatModel, messageModel: messageModel,);
-  await Future.delayed(const Duration(milliseconds: 175), () {
-    navigator?.push(
+
+  final ChatMsgBox chatMsgBox = ChatMsgBox(scaffoldBgColor: Theme.of(Get.context!).scaffoldBackgroundColor);
+  final ChatView preloadedChatView = ChatView(chatModel: cacheChatModel, messageModel: messageModel, chatMsgBox: chatMsgBox);
+  await Future.delayed(const Duration(milliseconds: 200));
+  navigator?.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {
         return preloadedChatView;
       },
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const curve = Curves.decelerate;
+        const curve = Curves.easeOutQuad;
         final Animation<Offset> offsetAnimation = animation.drive(
           Tween(begin: const Offset(0.0, 0.15), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
         final Animation<double> reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
         );
-
-        final Animation<double> scaleAnimation = animation.drive(
-          Tween<double>(begin: 1.08, end: 1.0).chain(CurveTween(curve: curve)),
-        );
+        
         if (animation.status == AnimationStatus.reverse) {
-          return ScaleTransition(
-            scale: scaleAnimation,
-            child: SlideTransition(
-              position: offsetAnimation,
-              child: FadeTransition(opacity: reverseFadeAnimation, child: child),
-            ),
+          return SlideTransition(
+            position: offsetAnimation,
+            child: FadeTransition(opacity: reverseFadeAnimation, child: child),
           );
         }
         return SlideTransition(
@@ -201,7 +198,7 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
       reverseTransitionDuration: const Duration(milliseconds: 250),
     ),
   );                          
-  });
+    
   
 }
 

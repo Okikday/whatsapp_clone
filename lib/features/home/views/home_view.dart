@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:heroine/heroine.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
@@ -17,9 +17,8 @@ import 'package:whatsapp_clone/features/home/views/tab_views/chats_tab_view.dart
 import 'package:whatsapp_clone/features/home/views/tab_views/communities_tab_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/updates_tab_view.dart';
-import 'package:whatsapp_clone/general/test_data/test_chats_data.dart';
-import 'package:whatsapp_clone/general/widgets/loading_dialog.dart';
-import 'package:whatsapp_clone/routes_names.dart';
+import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
+import 'package:whatsapp_clone/common/widgets/loading_dialog.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -37,7 +36,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     homeUiController.sethomeCameraIconAnimController(AnimationController(vsync: this, duration: const Duration(milliseconds: 250)));
     pageController = PageController(initialPage: homeUiController.homeBottomNavBarCurrentIndex.value);
     WidgetsBinding.instance.addPostFrameCallback((_){
-      homeUiController.updateHomeContext(context);
       homeUiController.updateHomeAppBar(context: context);
     });
   }
@@ -55,15 +53,13 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    homeUiController.setIsDarkMode(Theme.of(context).brightness == Brightness.dark);
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
     WidgetsBinding.instance.addPostFrameCallback((_) => homeUiController.homeCameraIconAnimController.value!.forward(from: 0));
-    homeUiController.updateHomeContext(context);
 
     return Obx(
       () {
         final HomeUiController stateController = homeUiController;
-        final bool isDarkMode = stateController.isDarkMode.value;
+        final bool isDarkMode = appUiState.isDarkMode.value;
         return PopScope(
           canPop: stateController.canPop.value,
           onPopInvokedWithResult: (didPop, result) {

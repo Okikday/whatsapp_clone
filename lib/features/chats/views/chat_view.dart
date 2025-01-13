@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:heroine/heroine.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
@@ -14,6 +15,7 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dar
 import 'package:whatsapp_clone/features/chats/views/chat_msgs_view.dart';
 import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
+import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/home_view.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
@@ -21,43 +23,44 @@ final CustomNativeTextInputController nativeTextInputController = CustomNativeTe
 class ChatView extends StatelessWidget {
   final ChatModel chatModel;
   final MessageModel messageModel;
-  const ChatView({super.key, required this.chatModel, required this.messageModel});
+  final ChatMsgBox? chatMsgBox;
+  const ChatView({super.key, required this.chatModel, required this.messageModel, this.chatMsgBox});
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
-    final double height = MediaQuery.sizeOf(context).height;
-    final double width = MediaQuery.sizeOf(context).width;
-    final double keyboardHeight = MediaQuery.viewInsetsOf(context).bottom.clamp(4.0, (height / 1.9));
+    return Obx(() {
+      final double width = appUiState.deviceWidth.value;
+      final double height = appUiState.deviceHeight.value;
+      final bool isDarkMode = appUiState.isDarkMode.value;
 
-    return AnnotatedRegion(
-      value: SystemUiOverlayStyle(
-          systemNavigationBarColor: scaffoldBgColor, statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark, statusBarColor: scaffoldBgColor),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: customAppBar(context,
-            scaffoldBgColor: scaffoldBgColor,
-            padding: EdgeInsets.zero,
-            child: ChatViewAppBar(
-              chatModel: chatModel,
+      return AnnotatedRegion(
+        value: SystemUiOverlayStyle(
+            systemNavigationBarColor: scaffoldBgColor,
+            statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+            statusBarColor: scaffoldBgColor),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: customAppBar(context,
               scaffoldBgColor: scaffoldBgColor,
-              isDarkMode: isDarkMode,
-              onTapProfile: () {
-                final ProfileView preloadedProfileView = ProfileView(isDarkMode: isDarkMode, width: width, height: height, chatModel: chatModel);
-                Future.delayed(const Duration(milliseconds: 175), ()=> Get.to(() => preloadedProfileView,
-                transition: Transition.rightToLeftWithFade
-                ));
-              },
-            )),
-        body: SizedBox(
-          width: MediaQuery.sizeOf(context).width,
-          height: MediaQuery.sizeOf(context).height,
-          child: Stack(
-            clipBehavior: Clip.hardEdge,
-            children: [
-              // Chat background
-              ChatMsgsView(
+              padding: EdgeInsets.zero,
+              child: ChatViewAppBar(
+                chatModel: chatModel,
+                scaffoldBgColor: scaffoldBgColor,
+                isDarkMode: isDarkMode,
+                onTapProfile: () {
+                  final ProfileView preloadedProfileView = ProfileView(isDarkMode: isDarkMode, width: width, height: height, chatModel: chatModel);
+                  Future.delayed(const Duration(milliseconds: 175), () => Get.to(() => preloadedProfileView, transition: Transition.rightToLeftWithFade));
+                },
+              )),
+          body: SizedBox(
+            width: MediaQuery.sizeOf(context).width,
+            height: MediaQuery.sizeOf(context).height,
+            child: Stack(
+              clipBehavior: Clip.hardEdge,
+              children: [
+                // Chat background
+                ChatMsgsView(
                   height: height,
                   width: width,
                   isDarkMode: isDarkMode,
@@ -67,14 +70,16 @@ class ChatView extends StatelessWidget {
                       ...messageModel.toMap(),
                     })
                   ],
-                  keyboardHeight: keyboardHeight),
+                ),
 
-              ChatMsgBox(height: height, width: width, keyboardHeight: keyboardHeight, isDarkMode: isDarkMode, scaffoldBgColor: scaffoldBgColor)
-            ],
+                // Precached chat message box
+                chatMsgBox ?? ChatMsgBox(scaffoldBgColor: scaffoldBgColor),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 

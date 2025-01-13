@@ -22,6 +22,8 @@ class ChatListTile extends StatelessWidget {
   final void Function()? onLongPress;
   final void Function()? onTapProfile;
   final bool isSelected;
+
+  final bool isDarkMode;
   const ChatListTile(
       {super.key,
       required this.width,
@@ -35,12 +37,13 @@ class ChatListTile extends StatelessWidget {
       this.isTyping = false,
       this.onLongPress,
       this.isSelected = false,
-      this.onTapProfile
+      this.onTapProfile,
+      
+      required this.isDarkMode,
       });
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ColoredBox(
       color: isSelected ? WhatsAppColors.primary.withAlpha(50) : Colors.transparent,
       child: InkWell(

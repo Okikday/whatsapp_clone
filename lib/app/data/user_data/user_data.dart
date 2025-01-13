@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:whatsapp_clone/app/data/hive_data/hive_data.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
-import 'package:whatsapp_clone/general/data/hive_data/hive_data.dart';
 
 class UserDataFunctions {
   static const String _path = "user_data";

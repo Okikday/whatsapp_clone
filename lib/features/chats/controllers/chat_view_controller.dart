@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
 
 final ChatViewController currChatViewController = Get.put<ChatViewController>(ChatViewController());
 
@@ -11,16 +13,15 @@ class ChatViewController extends GetxController {
 
   RxDouble messageBarHeight = 48.0.obs;
   RxBool isMicTappedDown = false.obs;
-
-  @override
-  onInit(){
-    super.onInit();
-    precacheImage(const ExactAssetImage(SvgStrings.msgBubbleCornerLeft, ), Get.context!);
-    precacheImage(const ExactAssetImage(SvgStrings.msgBubbleCornerRight, ), Get.context!);
-  }
+  RxDouble cacheKeyboardHeight = 0.0.obs;
+  Timer? debounceTimer;
 
   setMessageInput(String value) => messageInput.value = value;
   setIsMicTappedDown(bool value) => isMicTappedDown.value = value;
+  
+  
+
+
 
   double checkMessageBarHeight(int numberOfLines, {double fontSize = 18.0, double lineSpacing = 4.0}) {
   const double minHeight = 48.0;

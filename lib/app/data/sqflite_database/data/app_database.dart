@@ -1,5 +1,5 @@
-import 'package:whatsapp_clone/general/data/sqflite_database/data/db_strings.dart';
-import 'package:whatsapp_clone/general/data/sqflite_database/sqflite_database.dart';
+import 'package:whatsapp_clone/app/data/sqflite_database/data/db_strings.dart';
+import 'package:whatsapp_clone/app/data/sqflite_database/sqflite_database.dart';
 
 class AppDatabase {
   AppDatabase._init();
