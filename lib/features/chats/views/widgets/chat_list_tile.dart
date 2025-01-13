@@ -1,12 +1,8 @@
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 
 class ChatListTile extends StatelessWidget {

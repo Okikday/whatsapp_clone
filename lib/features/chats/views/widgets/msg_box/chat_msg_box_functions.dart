@@ -1,10 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
-import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 
 class ChatMsgBoxFunctions {
   static Widget widgetAttachmentIconButton({

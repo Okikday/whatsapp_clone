@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/features/authentication/views/contact_verification_view.dart';
 import 'package:whatsapp_clone/features/authentication/views/widgets/select_language_bottom_sheet.dart';
-import 'package:whatsapp_clone/routes_names.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

@@ -1,9 +1,6 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:simple_animations/animation_builder/custom_animation_builder.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 

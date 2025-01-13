@@ -1,18 +1,11 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
-import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
-import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
-import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
-import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/calls_tab_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/chats_tab_view.dart';
@@ -22,7 +15,6 @@ import 'package:whatsapp_clone/features/home/views/tab_views/updates_tab_view.da
 import 'package:whatsapp_clone/features/home/views/widgets/chat_selection_app_bar_child.dart';
 import 'package:whatsapp_clone/features/home/views/widgets/home_app_bar_child.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
-import 'package:whatsapp_clone/common/widgets/loading_dialog.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});

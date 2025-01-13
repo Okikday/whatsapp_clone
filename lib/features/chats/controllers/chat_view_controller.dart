@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:whatsapp_clone/common/assets_strings.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
 
 final ChatViewController currChatViewController = Get.put<ChatViewController>(ChatViewController());
 

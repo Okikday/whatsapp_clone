@@ -1,13 +1,10 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
-import 'package:whatsapp_clone/features/chats/controllers/chats_ui_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble.dart';
 

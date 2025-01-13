@@ -1,14 +1,9 @@
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
 
 class MsgBubbleContent extends StatelessWidget {

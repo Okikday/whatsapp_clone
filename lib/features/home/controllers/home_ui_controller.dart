@@ -1,9 +1,6 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 
 final HomeUiController homeUiController = Get.put<HomeUiController>(HomeUiController());

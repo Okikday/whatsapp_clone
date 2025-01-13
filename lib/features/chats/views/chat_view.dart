@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/constants.dart';
@@ -17,7 +16,6 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dar
 import 'package:whatsapp_clone/features/chats/views/chat_msgs_view.dart';
 import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
-import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/home_view.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();

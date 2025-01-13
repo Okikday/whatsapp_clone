@@ -5,7 +5,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
-import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
@@ -17,9 +16,7 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
-import 'package:whatsapp_clone/features/home/controllers/home_ui_controller.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 
 class ChatsTabView extends StatelessWidget {
@@ -174,7 +171,7 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
         return preloadedChatView;
       },
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const curve = Curves.easeOutQuad;
+        const curve = Curves.easeOutCubic;
         final Animation<Offset> offsetAnimation = animation.drive(
           Tween(begin: const Offset(0.0, 0.15), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
@@ -193,7 +190,7 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
           child: child,
         );
       },
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 350),
       reverseTransitionDuration: const Duration(milliseconds: 250),
     ),
   );                          
