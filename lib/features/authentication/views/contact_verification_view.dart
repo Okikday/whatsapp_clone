@@ -123,10 +123,9 @@ class ContactVerificationView extends StatelessWidget {
                                   screenWidth: 45,
                                   hint: "Phone number",
                                   maxLines: 1,
-                                  cursorColor: CustomWidgets.text(
-                                    context,
+                                  cursorColor: const CustomText(
                                     "",
-                                  ).style!.color!,
+                                  ).effectiveStyle(context).color ?? Colors.green,
                                   inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                                   contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                                   border: underlineInputBorder,

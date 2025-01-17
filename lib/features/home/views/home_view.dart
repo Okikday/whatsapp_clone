@@ -183,11 +183,12 @@ class CustomAppBarContainer extends StatelessWidget implements PreferredSizeWidg
   final Color scaffoldBgColor;
   final EdgeInsets? padding;
   final Widget child;
-  const CustomAppBarContainer({super.key, required this.scaffoldBgColor, this.padding, required this.child});
+  final double appBarHeight;
+  const CustomAppBarContainer({super.key, required this.scaffoldBgColor, this.padding, required this.child, this.appBarHeight = 56});
 
   @override
   Size get preferredSize {
-    return Size(appUiState.deviceWidth.value, 56);
+    return Size(appUiState.deviceWidth.value, appBarHeight);
   }
 
   @override
@@ -201,7 +202,7 @@ class CustomAppBarContainer extends StatelessWidget implements PreferredSizeWidg
         padding: EdgeInsets.only(top: topPadding),
         child: SizedBox(
             width: width,
-            height: 64,
+            height: appBarHeight,
             child: Padding(
               padding: padding ?? EdgeInsets.only(left: width > height ? width * 0.05 : 16, right: width > height ? width * 0.05 : 0),
               child: child,

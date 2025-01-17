@@ -27,49 +27,37 @@ class ChatMsgBox extends StatelessWidget {
           currChatViewController.cacheKeyboardHeight.value = newHeight;
         }
       });
-      return Positioned(
-        bottom: 0,
-        left: 0,
-        right: 0,
-        child: Column(
+      final double keyboardHeight = appUiState.viewInsets.value.bottom;
+      return SizedBox(
+        height: currChatViewController.messageBarHeight.value + ( keyboardHeight < 40 ? 0 : keyboardHeight + 6),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: appUiState.isDarkMode.value ? WhatsAppColors.arsenic.withAlpha(40) : WhatsAppColors.seaShell.withAlpha(40),
-                              offset: const Offset(0, 1),
-                              blurRadius: BlurEffect.neutralBlur,
-                              blurStyle: BlurStyle.inner)
-                        ], borderRadius: BorderRadius.circular(24)),
-                        child: SizedBox(
-                          width: 120,
-                          height: currChatViewController.messageBarHeight.value,
-                          child: MsgInputBar(
-                            isDarkMode: appUiState.isDarkMode.value,
-                            // callbackFunction: (args, constraints){
-                            //     log("padding: ${args!.contentPadding}");
-                            //   },
-                          ),
-                        ),
-                      )),
-                ),
-                SendOrMicButtonWidget(isDarkMode: appUiState.isDarkMode.value, scaffoldBgColor: scaffoldBgColor)
-              ],
+            Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.only(right: 4, top: 2),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          color: appUiState.isDarkMode.value ? WhatsAppColors.arsenic.withAlpha(40) : WhatsAppColors.seaShell.withAlpha(40),
+                          offset: const Offset(0, 1),
+                          blurRadius: BlurEffect.neutralBlur,
+                          blurStyle: BlurStyle.inner)
+                    ], borderRadius: BorderRadius.circular(24)),
+                    child: SizedBox(
+                      width: 120,
+                      height: currChatViewController.messageBarHeight.value,
+                      child: MsgInputBar(
+                        isDarkMode: appUiState.isDarkMode.value,
+                        // callbackFunction: (args, constraints){
+                        //     log("padding: ${args!.contentPadding}");
+                        //   },
+                      ),
+                    ),
+                  )),
             ),
-            Obx(() {
-              final double keyboardHeight = appUiState.viewInsets.value.bottom;
-              return SizedBox(
-                height: keyboardHeight < 40 ? 0 : keyboardHeight + 4,
-              );
-            })
+            SendOrMicButtonWidget(isDarkMode: appUiState.isDarkMode.value, scaffoldBgColor: scaffoldBgColor)
           ],
         ),
       );

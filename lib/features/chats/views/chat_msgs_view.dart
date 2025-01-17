@@ -17,47 +17,20 @@ class ChatMsgsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: AnimatedSize(
-        duration: const Duration(milliseconds: 200),
-        
-        
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-      
-            color: isDarkMode ? Colors.black.withAlpha(242) : WhatsAppColors.seaShell,
-            image: DecorationImage(
-                image: const AssetImage(
-                  ImagesStrings.chatBackground,
-                ),
-                repeat: ImageRepeat.repeat,
-                alignment: Alignment.topLeft,
-                scale: 1.3,
-                filterQuality: FilterQuality.high,
-                colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.linen, BlendMode.srcIn),
-                fit: BoxFit.none)
-      
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
+    return Expanded(
+      child: SizedBox(
+        width: width,
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          
+          
+          child: ListView.builder(
                     padding: const EdgeInsets.only(top: 12,),
                     itemCount: messageModel.length,
                     itemBuilder: (context, index) {
                       final MessageModel currMsgModel = messageModel[index];
                       return MsgBubble.receiver(messageModel: currMsgModel, isFirstMsg: true,);
                     }),
-              ),
-          
-              Obx(() {
-                final double keyboardHeight = appUiState.viewInsets.value.bottom;
-                return SizedBox(height: currChatViewController.messageBarHeight.value + (keyboardHeight < 40 ? 0 : keyboardHeight) + 8,);
-              })
-            ],
-          ),
         ),
       ),
     );

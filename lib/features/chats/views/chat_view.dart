@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
+import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
@@ -56,25 +57,40 @@ class ChatView extends StatelessWidget {
               )) as PreferredSizeWidget,
           body: SizedBox(
             width: MediaQuery.sizeOf(context).width,
-            height: MediaQuery.sizeOf(context).height,
-            child: Stack(
-              clipBehavior: Clip.hardEdge,
-              children: [
-                // Chat background
-                ChatMsgsView(
-                  height: height,
-                  width: width,
-                  isDarkMode: isDarkMode,
-                  messageModel: [
-                    messageModel,
-                    messageModel,
-                    messageModel,
-                  ],
-                ),
-
-                // Precached chat message box
-                ChatMsgBox(scaffoldBgColor: scaffoldBgColor, ),
-              ],
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+        
+              color: isDarkMode ? Colors.black.withAlpha(242) : WhatsAppColors.seaShell,
+              image: DecorationImage(
+                  image: const AssetImage(
+                    ImagesStrings.chatBackground,
+                  ),
+                  repeat: ImageRepeat.repeat,
+                  alignment: Alignment.topLeft,
+                  scale: 1.3,
+                  filterQuality: FilterQuality.high,
+                  colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.linen, BlendMode.srcIn),
+                  fit: BoxFit.none)
+        
+            ),
+              child: Column(
+                children: [
+                  // Chat background
+                  ChatMsgsView(
+                    height: height,
+                    width: width,
+                    isDarkMode: isDarkMode,
+                    messageModel: [
+                      messageModel,
+                      messageModel,
+                      messageModel,
+                    ],
+                  ),
+              
+                  // Precached chat message box
+                  ChatMsgBox(scaffoldBgColor: scaffoldBgColor, ),
+                ],
+              ),
             ),
           ),
         ),
