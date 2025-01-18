@@ -22,8 +22,6 @@ class ChatMsgsView extends StatelessWidget {
         width: width,
         child: AnimatedSize(
           duration: const Duration(milliseconds: 200),
-          
-          
           child: ListView.builder(
                     padding: const EdgeInsets.only(top: 12,),
                     itemCount: messageModel.length,

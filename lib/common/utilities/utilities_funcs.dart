@@ -30,10 +30,37 @@ class UtilitiesFuncs {
     }
   }
 
-  static Size getTextSize(String text, TextStyle style) => (TextPainter(
+  static Size getTextSize(String text, TextStyle style, {int? maxLines, double maxWidth = double.infinity}) => (TextPainter(
     text: TextSpan(text: text, style: style),
     textDirection: TextDirection.ltr,
-  )..layout()).size;
+    maxLines: maxLines
+  )..layout(maxWidth: maxWidth)).size;
 
+/// Function to calculate text size and number of lines.
+static int getTextLines(
+  String text,
+  TextStyle style, {
+  int? maxLines,
+  double maxWidth = double.infinity,
+}) {
+  final textPainter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: TextDirection.ltr,
+    maxLines: maxLines,
+  )..layout(maxWidth: maxWidth);
+
+  // Get the size of the text
+  final textSize = textPainter.size;
+
+  // Calculate the height of a single line
+  final lineHeight = style.height != null
+      ? style.fontSize! * style.height!
+      : style.fontSize!;
+
+  // Calculate the number of lines
+  final numLines = (textSize.height / lineHeight).ceil();
+
+  return numLines;
+}
 
 }

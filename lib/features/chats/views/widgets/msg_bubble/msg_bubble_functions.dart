@@ -16,7 +16,7 @@ class MsgBubbleFunctions {
     log("Tapped up on message bubble");
   }
 
-  static Icon getMsgStatusIcon(MsgStatus status) {
+  static Icon getMsgStatusIcon(MsgStatus status, {double? size}) {
     final IconData icon = status == MsgStatus.read
         ? Icons.done_all
         : status == MsgStatus.delivered
@@ -29,7 +29,7 @@ class MsgBubbleFunctions {
 
     return Icon(
       icon,
-      size: 16,
+      size: size,
       color: Colors.white70,
     );
   }

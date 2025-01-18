@@ -173,7 +173,7 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const curve = Curves.easeOutCubic;
         final Animation<Offset> offsetAnimation = animation.drive(
-          Tween(begin: const Offset(0.0, 0.15), end: Offset.zero).chain(CurveTween(curve: curve)),
+          Tween(begin: const Offset(0.0, kToolbarHeight), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
         final Animation<double> reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),

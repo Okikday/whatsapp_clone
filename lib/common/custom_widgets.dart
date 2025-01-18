@@ -174,7 +174,7 @@ class CustomText extends StatelessWidget{
             : (invertColor ? Colors.white : Colors.black));
     if (darkColor != null && isDarkMode) resolvedColor = darkColor!;
 
-    return (style ?? const TextStyle()).copyWith(
+    return style ?? TextStyle(
       color: resolvedColor,
       fontSize: fontSize + adjustSize,
       fontFamily: fontFamily,
@@ -186,8 +186,7 @@ class CustomText extends StatelessWidget{
       height: height,
       letterSpacing: letterSpacing,
       wordSpacing: wordSpacing,
-      decorationStyle: decorationStyle,
-    );
+      decorationStyle: decorationStyle,);
   }
 
   @override

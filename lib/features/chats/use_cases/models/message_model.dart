@@ -7,7 +7,6 @@ class MessageModel {
   final String content;
   final String? taggedMessageID;
   final String? mediaUrl; // URL for media like images, videos, etc.
-  final String? mediaCaption; // Caption for media (e.g., image caption)
   final int mediaType; // Use an integer to represent MessageType
   final DateTime sentAt;
   final DateTime? deliveredAt;
@@ -25,7 +24,6 @@ class MessageModel {
     required this.content,
     this.taggedMessageID,
     this.mediaUrl,
-    this.mediaCaption,
     required this.mediaType,
     required this.sentAt,
     this.deliveredAt,
@@ -45,7 +43,6 @@ class MessageModel {
       'content': content,
       'taggedMessageID': taggedMessageID,
       'mediaUrl': mediaUrl,
-      'mediaCaption': mediaCaption,
       'mediaType': mediaType,
       'sentAt': sentAt.toIso8601String(),
       'deliveredAt': deliveredAt?.toIso8601String(),
@@ -67,7 +64,6 @@ class MessageModel {
       content: map['content'],
       taggedMessageID: map['taggedMessageID'] as String?,
       mediaUrl: map['mediaUrl'] as String?,
-      mediaCaption: map['mediaCaption'] as String?,
       mediaType: map['mediaType'],
       sentAt: DateTime.parse(map['sentAt']),
       deliveredAt: map['deliveredAt'] != null ? DateTime.parse(map['deliveredAt'] as String) : null,
@@ -88,7 +84,6 @@ class MessageModel {
     'content': '', // Default empty string
     'taggedMessageID': null,
     'mediaUrl': null, // Default null for optional fields
-    'mediaCaption': null, // Default null for optional fields
     'mediaType': 0, // Default 0 for MessageType
     'sentAt': DateTime.now().toIso8601String(), // Default to the current timestamp
     'deliveredAt': null, // Default null for optional fields

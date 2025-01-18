@@ -56,6 +56,7 @@ class ProfileView extends StatelessWidget {
                   floating: false,
                   pinned: true,
                   automaticallyImplyLeading: false,
+                  backgroundColor: scaffoldBgColor,
                   surfaceTintColor: Colors.transparent,
                   flexibleSpace: ValueListenableBuilder<double>(
                     valueListenable: scrollOffsetNotifier,
