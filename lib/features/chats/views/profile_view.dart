@@ -24,7 +24,7 @@ class ProfileView extends StatelessWidget {
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
     final ScrollController scrollController = PrimaryScrollController.of(context);
     scrollController.addListener(() => scrollOffsetNotifier.value = scrollController.offset);
-    log("Build profile view");
+    // log("Build profile view");
 
     return Scaffold(
       backgroundColor: scaffoldBgColor,
@@ -61,7 +61,7 @@ class ProfileView extends StatelessWidget {
                     valueListenable: scrollOffsetNotifier,
                     builder: (context, value, child) {
                       final double reductionWidth = (value/maxHeight * (width/2));
-                      log("$reductionWidth");
+                      // log("$reductionWidth");
                       return FlexibleSpaceBar(
                         titlePadding: EdgeInsets.only(top: statusBarHeight),
                         expandedTitleScale: 1.0,

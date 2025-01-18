@@ -29,7 +29,7 @@ class ChatMsgsView extends StatelessWidget {
                     itemCount: messageModel.length,
                     itemBuilder: (context, index) {
                       final MessageModel currMsgModel = messageModel[index];
-                      return MsgBubble.receiver(messageModel: currMsgModel, isFirstMsg: true,);
+                      return MsgBubble.sender(messageModel: currMsgModel, isFirstMsg: true,);
                     }),
         ),
       ),

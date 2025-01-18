@@ -1,22 +1,19 @@
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:simple_animations/animation_builder/custom_animation_builder.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 
 class MsgBubbleFunctions {
-  static void onTapDownMsgBubble(ValueNotifier<Color> splashColor, ValueNotifier<Control> animControl, {Color? color}) {
-    splashColor.value = color ?? Colors.white.withAlpha(40);
-    animControl.value = Control.playFromStart;
+  static void onTapDownMsgBubble() {
+    // OnTapDownMsgBubble
+    log("Tapped down on message bubble");
   }
 
   static void onTapUpMsgBubble(
-    ValueNotifier<Color> splashColor,
-    ValueNotifier<Control> animControl,
   ) {
-    Future.delayed(const Duration(milliseconds: 150), () {
-      splashColor.value = Colors.transparent;
-      animControl.value = Control.playFromStart;
-    });
+    log("Tapped up on message bubble");
   }
 
   static Icon getMsgStatusIcon(MsgStatus status) {

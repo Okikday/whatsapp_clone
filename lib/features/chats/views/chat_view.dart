@@ -87,7 +87,6 @@ class ChatView extends StatelessWidget {
                     ],
                   ),
               
-                  // Precached chat message box
                   ChatMsgBox(scaffoldBgColor: scaffoldBgColor, ),
                 ],
               ),

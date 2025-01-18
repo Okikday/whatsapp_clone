@@ -460,6 +460,7 @@ class TestChatsData {
       'readAt': DateTime.now().subtract(const Duration(minutes: 5)).toIso8601String(),
       'isStarred': 0,
       'isDeleted': 0,
+      'taggedMessageID': "This is a tagged message."
     },
     {
       'id': 2,
@@ -476,6 +477,7 @@ class TestChatsData {
       'readAt': null,
       'isStarred': 0,
       'isDeleted': 0,
+      'taggedMessageID': "Hello"
     },
     {
       'id': 3,
@@ -492,6 +494,7 @@ class TestChatsData {
       'readAt': null,
       'isStarred': 1,
       'isDeleted': 0,
+      'taggedMessageID': "How are you feeling?"
     },
     {
       'id': 4,
@@ -507,6 +510,7 @@ class TestChatsData {
       'readAt': DateTime.now().subtract(const Duration(days: 2, hours: 22)).toIso8601String(),
       'isStarred': 0,
       'isDeleted': 0,
+      'taggedMessageID': "Hello boss"
     },
     {
       'id': 5,
@@ -523,6 +527,7 @@ class TestChatsData {
       'readAt': DateTime.now().subtract(const Duration(hours: 4)).toIso8601String(),
       'isStarred': 0,
       'isDeleted': 0,
+      'taggedMessageID': "I'm just testing."
     },
     {
       'id': 6,
@@ -539,6 +544,7 @@ class TestChatsData {
       'readAt': DateTime.now().subtract(const Duration(days: 3, hours: 22)).toIso8601String(),
       'isStarred': 0,
       'isDeleted': 0,
+      'taggedMessageID': "How've you been?\nGlad to have met you today tbh"
     },
     {
       'id': 7,

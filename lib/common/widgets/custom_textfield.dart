@@ -206,7 +206,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
       borderRadius: BorderRadius.circular(borderRadius),
       borderSide: const BorderSide(
         color: Colors.grey,
-        width: 1.5,
+        width: 0,
       ),
     );
   }

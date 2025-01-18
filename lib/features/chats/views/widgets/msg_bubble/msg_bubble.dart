@@ -1,7 +1,8 @@
-
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:simple_animations/simple_animations.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
@@ -74,20 +75,11 @@ class MsgBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final splashColor = ValueNotifier<Color>(Colors.transparent);
-    final animControl = ValueNotifier<Control>(Control.play);
-    final double screenWidth = MediaQuery.sizeOf(context).width;
-    final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
-    final bool hasMediaCaption = messageModel.mediaCaption != null && messageModel.mediaCaption!.isNotEmpty;
-    final bool isJustImgOverlay = hasMedia &&
-        MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text &&
-        (messageModel.mediaCaption == null || (messageModel.mediaCaption != null && messageModel.mediaCaption!.isEmpty));
-
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
-      onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(splashColor, animControl),
-      onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
-      onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
+      onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(),
+      onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(),
+      onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(),
       child: CustomElevatedButton(
         backgroundColor: isSelected ? Theme.of(context).primaryColor.withAlpha(60) : Colors.transparent,
         borderRadius: 0,
@@ -99,46 +91,40 @@ class MsgBubble extends StatelessWidget {
         },
         child: Align(
           alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
-          child: ValueListenableBuilder<Color>(
-            valueListenable: splashColor,
-            builder: (context, value, child) => CustomAnimationBuilder(
-                control: animControl.value,
-                duration: const Duration(milliseconds: 150),
-                tween: ColorTween(
-                  begin: Colors.transparent,
-                  end: splashColor.value,
-                ),
-                builder: (context, value, child) {
-                  return GestureDetector(
-                      onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(splashColor, animControl),
-                      onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
-                      onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(splashColor, animControl),
-                      onLongPress: () {
-                        if (onLongPressed != null) onLongPressed!();
-                      },
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: hasMedia ? screenWidth * 0.7 : screenWidth * 0.85),
-                        child: Bubble(
-                            showNip: true,
-                            stick: true,
-                            nip: isSender ? BubbleNip.rightTop : BubbleNip.leftTop,
-                            nipHeight: 12,
-                            nipWidth: 10,
-                            nipRadius: 2,
-                            padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
-                            margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
-                            radius: const Radius.circular(10),
-                            color: bgColor ?? WhatsAppColors.accent,
-                            child: MsgBubbleContent(
-                                messageModel: messageModel,
-                                hasMedia: hasMedia,
-                                isSender: isSender,
-                                taggedMsgColor: WhatsAppColors.accentCompliment1,
-                                isJustImgOverlay: isJustImgOverlay,
-                                hasMediaCaption: hasMediaCaption)),
-                      ));
-                }),
-          ),
+          child: GestureDetector(
+              onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(),
+              onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(),
+              onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(),
+              onLongPress: () {
+                if (onLongPressed != null) onLongPressed!();
+              },
+              child: Obx(
+                () {
+                  final double width = appUiState.deviceWidth.value;
+                  // final double height = appUiState.deviceHeight.value;
+                  final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
+                  
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: hasMedia ? width * 0.7 : width * 0.85),
+                    child: Bubble(
+                        showNip: true,
+                        stick: true,
+                        nip: isSender ? BubbleNip.rightTop : BubbleNip.leftTop,
+                        nipHeight: 12,
+                        nipWidth: 10,
+                        nipRadius: 2,
+                        padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
+                        margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
+                        radius: const Radius.circular(10),
+                        color: bgColor ?? WhatsAppColors.accent,
+                        child: MsgBubbleContent(
+                            messageModel: messageModel,
+                            hasMedia: hasMedia,
+                            isSender: isSender,
+                            taggedMsgColor: WhatsAppColors.accentCompliment1,)),
+                  );
+                },
+              )),
         ),
       ),
     );
