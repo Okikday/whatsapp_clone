@@ -16,6 +16,8 @@ import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/controlle
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_content_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/timestamped_chat_message.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/widgets/build_attachment_widget.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/widgets/build_tagged_msg_widget.dart';
 
 class MsgBubbleContent extends StatelessWidget {
   final MessageModel messageModel;
@@ -59,6 +61,7 @@ class MsgBubbleContent extends StatelessWidget {
       children: [
         if (hasTaggedMessage)
           BuildTaggedMsgWidget(
+            taggedUserName: "Someone",
             taggedMsgContent: messageModel.content,
             hasMedia: false,
             mediaUrl: messageModel.mediaUrl,
@@ -67,7 +70,8 @@ class MsgBubbleContent extends StatelessWidget {
           ),
         if (hasAttachment)
           BuildAttachmentWidget(
-            messageModel: messageModel,
+            msgType: MessageTypeExtension.fromInt(messageModel.mediaType),
+            mediaUrl: messageModel.mediaUrl!,
             isSender: isSender,
             isJustImgOverlay: isJustImgOverlay,
           ),
@@ -99,158 +103,6 @@ class MsgBubbleContent extends StatelessWidget {
           ),
       ],
     );
-  }
-}
-
-class BuildTaggedMsgWidget extends StatelessWidget {
-  final Color accentColor;
-  final Color taggedMsgColor;
-  final double width;
-  final String taggedUserName;
-  final bool hasMedia;
-  final String taggedMsgContent;
-  final String? mediaUrl;
-  const BuildTaggedMsgWidget({
-    super.key,
-    this.accentColor = const Color(0xFFA791F9),
-    required this.taggedMsgColor,
-    required this.width,
-    this.taggedUserName = "Someone", 
-    required this.hasMedia, 
-    required this.taggedMsgContent,
-    this.mediaUrl
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle taggedMsgStyle = TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      color: Colors.white.withAlpha(125),
-      height: 1.0,
-      overflow: TextOverflow.ellipsis
-    );
-    final TextStyle taggedUserNameStyle = TextStyle(
-      fontSize: 15,
-      fontWeight: FontWeight.w600,
-      color: accentColor,
-      overflow: TextOverflow.clip,
-    );
-    
-    final double msgContentWidth = hasMedia ? width * 0.6 : width - 12;
-    final double height = (taggedUserNameStyle.fontSize ?? 15) + (UtilitiesFuncs.getTextLines(taggedMsgContent, taggedMsgStyle, maxWidth: msgContentWidth) * 18) + 18;
-    // final double height = UtilitiesFuncs.getTextSize()
-    final Image taggedImage = Image.asset(ImagesStrings.imgPlaceholder, height: height,);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: CustomElevatedButton(
-        backgroundColor: WhatsAppColors.accentCompliment1,
-        borderRadius: 12,
-        pixelWidth: width,
-        pixelHeight: height,
-        contentPadding: const EdgeInsets.only(bottom: 2),
-        onClick: () { },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            spacing: 8,
-            children: [
-              ColoredBox(
-                color: accentColor,
-                child: SizedBox(
-                  width: 4,
-                  height: height,
-                ),
-              ),
-              Expanded(
-                child: SizedBox(
-                  width: msgContentWidth,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 2, top: 2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CustomText(
-                          taggedUserName,
-                          style: taggedUserNameStyle,
-                        ),
-                        SizedBox(
-                          width: msgContentWidth,
-                          child: CustomText(
-                          taggedMsgContent,
-                          style: taggedMsgStyle,
-                          maxLines: 3,
-                          
-                        ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-             if(hasMedia) FittedBox(child: taggedImage)
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BuildAttachmentWidget extends StatelessWidget {
-  final MessageModel messageModel;
-  final bool isSender;
-  final bool isJustImgOverlay;
-  const BuildAttachmentWidget({super.key, required this.messageModel, required this.isSender, required this.isJustImgOverlay});
-
-  @override
-  Widget build(BuildContext context) {
-    final MessageType msgType = MessageTypeExtension.fromInt(messageModel.mediaType);
-
-    if (msgType == MessageType.image) {
-      // Return Image Attachment
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(width: 6, color: Colors.black26),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(0.5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () {},
-                  child: CachedNetworkImage(
-                    imageUrl: messageModel.mediaUrl!,
-                    fit: BoxFit.fitWidth,
-                    memCacheWidth: (appUiState.deviceWidth.value * 0.7).truncate(),
-                  )),
-            ),
-          ),
-        ),
-      );
-    } else if (msgType == MessageType.document) {
-      return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
-      );
-    } else if (msgType == MessageType.video) {
-      return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
-      );
-    } else if (msgType == MessageType.link) {
-      return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
-      );
-    } else {
-      return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
-      );
-    }
   }
 }
 

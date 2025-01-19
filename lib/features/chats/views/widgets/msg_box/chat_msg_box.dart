@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -6,6 +8,8 @@ import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
@@ -33,7 +37,6 @@ class ChatMsgBox extends StatelessWidget {
         height: currChatViewController.messageBarHeight.value + ( keyboardHeight < 40 ? 0 : keyboardHeight + 6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
               child: Padding(
@@ -75,6 +78,7 @@ class MsgInputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle inputTextStyle = TextStyle(color: const CustomText( "").style?.color, fontSize: 18);
     return Obx(
       () => CustomTextfield(
         isEnabled: true,
@@ -85,8 +89,10 @@ class MsgInputBar extends StatelessWidget {
         cursorColor: WhatsAppColors.secondary,
         onchanged: (text) {
           currChatViewController.setMessageInput(text);
+          currChatViewController.checkMessageBarHeight(
+              UtilitiesFuncs.getTextLines(text, inputTextStyle, maxWidth: appUiState.deviceWidth.value - 168) - 1,
+            );
         },
-        contentPadding: const EdgeInsets.only(top: 2, bottom: 10),
         // inputPadding: EdgeInsets.only(
         //     top: currChatViewController.messageBarHeight.value > 48.0 ? 2 : 4.5, bottom: currChatViewController.messageBarHeight.value > 48.0 ? 2 : 0),
         // internalArgs: (args) async {
@@ -99,7 +105,7 @@ class MsgInputBar extends StatelessWidget {
         //     // nativeTextInputController.updateArguments({'inputBoxHeight': height });
         //   }
         // },
-        inputTextStyle: TextStyle(color: CustomWidgets.text(context, "").style?.color, fontSize: 18),
+        inputTextStyle: inputTextStyle,
         prefixIcon: IconButton(
           onPressed: () {},
           icon: Image.asset(

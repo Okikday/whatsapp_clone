@@ -252,7 +252,7 @@ class ProfileView extends StatelessWidget {
                       children: [
                         ProfileListTile(
                           leading: const Icon(
-                            FontAwesomeIcons.lock,
+                            FontAwesomeIcons.userLock,
                             size: 22,
                           ),
                           title: "Encryption",
@@ -271,7 +271,7 @@ class ProfileView extends StatelessWidget {
                         ),
                         ProfileListTile(
                           leading: const Icon(
-                            FontAwesomeIcons.compass,
+                            FontAwesomeIcons.lock,
                             size: 22,
                           ),
                           title: "Chat lock",

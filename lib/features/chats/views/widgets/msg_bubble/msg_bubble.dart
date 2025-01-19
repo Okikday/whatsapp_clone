@@ -116,12 +116,12 @@ class MsgBubble extends StatelessWidget {
                         padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
                         margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
                         radius: const Radius.circular(10),
-                        color: bgColor ?? WhatsAppColors.accent,
+                        color: bgColor ?? (isSender ? WhatsAppColors.accent : WhatsAppColors.arsenic),
                         child: MsgBubbleContent(
                             messageModel: messageModel,
                             hasMedia: hasMedia,
                             isSender: isSender,
-                            taggedMsgColor: WhatsAppColors.accentCompliment1,)),
+                            taggedMsgColor: isSender ? WhatsAppColors.accentCompliment1 : const Color(0xFF1C2329),)),
                   );
                 },
               )),
