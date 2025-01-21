@@ -6,6 +6,7 @@ final ChatsTabUiController chatsTabUiController = Get.put<ChatsTabUiController>(
 
 class ChatsTabUiController extends GetxController{
   RxMap<int, int?> chatTilesSelected = <int, int?>{}.obs;
+  RxBool isChatViewActive = false.obs;
   
   @override
   onInit(){
@@ -25,4 +26,5 @@ class ChatsTabUiController extends GetxController{
   void selectChatTile(int index) => chatTilesSelected[index] = index;
   void removeSelectedChatTile(int index) => chatTilesSelected[index] != null ? chatTilesSelected.remove(index) : () {};
   void clearSelectedChatTiles() => chatTilesSelected.clear();
+  void setIsChatViewActive(bool value) => isChatViewActive.value = value;
 }

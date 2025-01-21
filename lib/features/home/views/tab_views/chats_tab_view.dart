@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:simple_animations/simple_animations.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
@@ -114,7 +115,10 @@ class ChatsTabView extends StatelessWidget {
                         isSelected: chatTilesSelected[index] != null,
                         onTap: () async {
                           if (chatTilesSelected.isEmpty) {
-                            _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]));
+                            if(!chatsTabUiController.isChatViewActive.value){
+                              chatsTabUiController.setIsChatViewActive(true);
+                            _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]), height: appUiState.deviceHeight.value);
+                            }
                           } else {
                             if (chatTilesSelected[index] != null) {
                               chatsTabUiController.removeSelectedChatTile(index);
@@ -162,9 +166,9 @@ class ChatsTabView extends StatelessWidget {
   }
 }
 
-Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel}) async {
+Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel, required double height}) async {
   final ChatView preloadedChatView = ChatView(chatModel: cacheChatModel, messageModel: messageModel,);
-  await Future.delayed(const Duration(milliseconds: 200));
+  await Future.delayed(const Duration(milliseconds: 250));
   navigator?.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -173,7 +177,7 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const curve = Curves.easeOutCubic;
         final Animation<Offset> offsetAnimation = animation.drive(
-          Tween(begin: const Offset(0.0, kToolbarHeight), end: Offset.zero).chain(CurveTween(curve: curve)),
+          Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve)),
         );
         final Animation<double> reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),

@@ -3,8 +3,6 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 
-final ChatViewController currChatViewController = Get.put<ChatViewController>(ChatViewController());
-
 class ChatViewController extends GetxController {
   RxString messageInput = "".obs;
 
@@ -12,6 +10,13 @@ class ChatViewController extends GetxController {
   RxBool isMicTappedDown = false.obs;
   RxDouble cacheKeyboardHeight = 0.0.obs;
   Timer? debounceTimer;
+
+  @override
+  void onInit(){
+    super.onInit();
+    messageInput.value = '';
+  }
+
 
   setMessageInput(String value) => messageInput.value = value;
   setIsMicTappedDown(bool value) => isMicTappedDown.value = value;

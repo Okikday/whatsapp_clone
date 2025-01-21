@@ -18,9 +18,11 @@ import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box
 
 class ChatMsgBox extends StatelessWidget {
   final Color scaffoldBgColor;
+  final ChatViewController currChatViewController;
   const ChatMsgBox({
     super.key,
     required this.scaffoldBgColor,
+    required this.currChatViewController
   });
 
   @override
@@ -54,6 +56,7 @@ class ChatMsgBox extends StatelessWidget {
                       height: currChatViewController.messageBarHeight.value,
                       child: MsgInputBar(
                         isDarkMode: appUiState.isDarkMode.value,
+                        currChatViewController: currChatViewController,
                         // callbackFunction: (args, constraints){
                         //     log("padding: ${args!.contentPadding}");
                         //   },
@@ -61,7 +64,7 @@ class ChatMsgBox extends StatelessWidget {
                     ),
                   )),
             ),
-            SendOrMicButtonWidget(isDarkMode: appUiState.isDarkMode.value, scaffoldBgColor: scaffoldBgColor)
+            SendOrMicButtonWidget(isDarkMode: appUiState.isDarkMode.value, scaffoldBgColor: scaffoldBgColor, currChatViewController: currChatViewController,)
           ],
         ),
       );
@@ -74,7 +77,8 @@ class MsgInputBar extends StatelessWidget {
   final void Function(
     NativeTextInputModel? args,
   )? callbackFunction;
-  const MsgInputBar({super.key, required this.isDarkMode, this.callbackFunction});
+  final ChatViewController currChatViewController;
+  const MsgInputBar({super.key, required this.isDarkMode, this.callbackFunction, required this.currChatViewController});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +141,8 @@ class MsgInputBar extends StatelessWidget {
 class SendOrMicButtonWidget extends StatelessWidget {
   final bool isDarkMode;
   final Color scaffoldBgColor;
-  const SendOrMicButtonWidget({super.key, required this.isDarkMode, required this.scaffoldBgColor});
+  final ChatViewController currChatViewController;
+  const SendOrMicButtonWidget({super.key, required this.isDarkMode, required this.scaffoldBgColor, required this.currChatViewController});
 
   @override
   Widget build(BuildContext context) {

@@ -5,12 +5,19 @@ class WhatsAppColors {
   static const Color primary = Color(0xFF1DAB61); // WhatsApp Green
   static const Color secondary = Color(0xFF21C063); // Lighter Green
   static const Color accent = Color(0xFF15603F); // Darker Green
-  static const Color accentCompliment1 = Color(0xFF124333); // Darker Green compliment
+  // static const Color accentCompliment1 = Color(0xFF124333); // Darker Green compliment
   static const Color background = Color(0xFFFFFFFF); // Chat Background
 
   // Message Bubble Colors
-  static const Color messageSent = Color(0xFFDFF8C8); // Sent Message Bubble
-  static const Color messageReceived = Colors.white; // Received Message Bubble
+  static const Color msgSent = Color(0xFFD8FDD2); // Sent Message Bubble
+  static const Color msgReceived = Color(0XFFFFFFFF); // Received Message Bubble
+  static const Color msgSentDark = Color(0xFF15603F);
+  static const Color msgReceivedDark = Color(0xFF1F272A);
+
+  static const Color taggedMsgSent = Color(0xFFD5F3CF);
+  static const Color taggedMsgReceived = Color(0xFFF6F5F3);
+  static const Color taggedMsgSentDark = Color(0xFF124333);
+  static const Color taggedMsgReceivedDark = Color(0xFF1C2329);
 
   // Status Bar and AppBar Colors
   static const Color statusBar = Color(0xFF075E54);

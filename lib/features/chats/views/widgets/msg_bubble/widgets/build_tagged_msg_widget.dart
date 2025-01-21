@@ -13,6 +13,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
   final bool hasMedia;
   final String taggedMsgContent;
   final String? mediaUrl;
+  final bool isDarkMode;
   const BuildTaggedMsgWidget({
     super.key,
     this.accentColor = const Color(0xFFA791F9),
@@ -21,16 +22,16 @@ class BuildTaggedMsgWidget extends StatelessWidget {
     required this.taggedUserName, 
     required this.hasMedia, 
     required this.taggedMsgContent,
-    this.mediaUrl
+    this.mediaUrl,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle taggedMsgStyle = TextStyle(
+    const TextStyle taggedMsgStyle = TextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.w500,
-      color: Colors.white.withAlpha(125),
       height: 1.0,
+      color: WhatsAppColors.battleshipGrey,
       overflow: TextOverflow.ellipsis
     );
     final TextStyle taggedUserNameStyle = TextStyle(
@@ -51,6 +52,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
         borderRadius: 12,
         pixelWidth: width,
         pixelHeight: height,
+        overlayColor: WhatsAppColors.primary.withAlpha(20),
         contentPadding: const EdgeInsets.only(bottom: 2),
         onClick: () { },
         child: ClipRRect(

@@ -37,7 +37,6 @@ class MsgBubbleContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextStyle msgContentStyle = const CustomText("").effectiveStyle(context).copyWith(
           fontSize: 16,
-          fontWeight: FontWeight.w500,
         );
     final bool hasTaggedMessage = messageModel.taggedMessageID != null && messageModel.taggedMessageID!.isNotEmpty;
     final bool hasAttachment =
@@ -54,6 +53,7 @@ class MsgBubbleContent extends StatelessWidget {
     final double sentAtWidth = MsgBubbleContentFunctions().calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 4;
     double taggedMsgWidth = hasMedia ? appUiState.deviceWidth * 0.7 : sentAtWidth + UtilitiesFuncs.getTextSize(messageModel.content, msgContentStyle, maxLines: 1).width + 12.0;
     if (hasMedia) taggedMsgWidth = appUiState.deviceWidth.value * 0.7;
+    final bool isDarkMode = appUiState.isDarkMode.value;
     // Log size on build
 
     return Column(
@@ -66,6 +66,7 @@ class MsgBubbleContent extends StatelessWidget {
             hasMedia: false,
             mediaUrl: messageModel.mediaUrl,
             taggedMsgColor: taggedMsgColor,
+            isDarkMode: isDarkMode,
             width: taggedMsgWidth,
           ),
         if (hasAttachment)
