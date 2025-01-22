@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
@@ -86,9 +87,7 @@ class ChatView extends StatelessWidget {
                       height: height,
                       width: width,
                       isDarkMode: isDarkMode,
-                      messageModel: [
-                        messageModel,
-                        messageModel,
+                      messageModels: [
                         messageModel,
                       ],
                     ),
@@ -142,7 +141,7 @@ class ChatViewAppBar extends StatelessWidget {
                       Icons.arrow_back_rounded,
                     )),
               ),
-              Hero(
+              Heroine(
                 tag: "profilePhoto",
                 child: CircleAvatar(
                   radius: 18,

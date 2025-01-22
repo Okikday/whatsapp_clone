@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
@@ -311,7 +312,7 @@ class ProfilePhotoAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
+    return Heroine(
       tag: "profilePhoto",
       child: SizedBox(
         width: size,

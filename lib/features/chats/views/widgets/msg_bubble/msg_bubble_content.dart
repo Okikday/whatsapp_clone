@@ -24,6 +24,7 @@ class MsgBubbleContent extends StatelessWidget {
   final bool hasMedia;
   final bool isSender;
   final Color taggedMsgColor;
+  final String messageId;
 
   const MsgBubbleContent({
     super.key,
@@ -31,10 +32,13 @@ class MsgBubbleContent extends StatelessWidget {
     required this.hasMedia,
     required this.isSender,
     required this.taggedMsgColor,
+    required this.messageId
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = appUiState.isDarkMode.value;
+    final Color sentAtTextColor = isSender ? (isDarkMode ? const Color(0xFF93B28F) : WhatsAppColors.gray) : isDarkMode ? WhatsAppColors.gray : WhatsAppColors.gray;
     final TextStyle msgContentStyle = const CustomText("").effectiveStyle(context).copyWith(
           fontSize: 16,
         );
@@ -44,17 +48,16 @@ class MsgBubbleContent extends StatelessWidget {
     final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
     final bool hasMediaCaption = hasMedia && messageModel.content.isNotEmpty;
     final bool isJustImgOverlay = hasMedia && MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text && !hasMediaCaption;
-    const TextStyle sentAtStyle = TextStyle(
+    final TextStyle sentAtStyle = TextStyle(
       fontSize: 10,
       fontWeight: FontWeight.w500,
-      color: Colors.white70,
+      color: sentAtTextColor,
     );
     final String dateText = DateFormat.jm().format(messageModel.sentAt);
-    final double sentAtWidth = MsgBubbleContentFunctions().calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 4;
+    final double sentAtWidth = MsgBubbleContentFunctions().calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 6;
     double taggedMsgWidth = hasMedia ? appUiState.deviceWidth * 0.7 : sentAtWidth + UtilitiesFuncs.getTextSize(messageModel.content, msgContentStyle, maxLines: 1).width + 12.0;
     if (hasMedia) taggedMsgWidth = appUiState.deviceWidth.value * 0.7;
-    final bool isDarkMode = appUiState.isDarkMode.value;
-    // Log size on build
+    
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -73,8 +76,10 @@ class MsgBubbleContent extends StatelessWidget {
           BuildAttachmentWidget(
             msgType: MessageTypeExtension.fromInt(messageModel.mediaType),
             mediaUrl: messageModel.mediaUrl!,
+            messageId: messageModel.messageId,
             isSender: isSender,
             isJustImgOverlay: isJustImgOverlay,
+            chatName: "Someone",
           ),
         if (messageModel.content.isNotEmpty || hasMediaCaption)
           Padding(
@@ -89,7 +94,7 @@ class MsgBubbleContent extends StatelessWidget {
               sentAt: Padding(
                 padding: const EdgeInsets.only(
                   top: 4,
-                  left: 4,
+                  left: 6,
                 ),
                 child: BuildTimeStampWidget(
                   date: dateText,
@@ -98,6 +103,7 @@ class MsgBubbleContent extends StatelessWidget {
                   seenAt: messageModel.seenAt,
                   sentAtWidth: sentAtWidth,
                   sentAtStyle: sentAtStyle,
+                  iconColor: sentAtTextColor,
                 ),
               ),
             ),
@@ -115,6 +121,7 @@ class BuildTimeStampWidget extends StatelessWidget {
   final TextStyle sentAtStyle;
   final double sentAtWidth;
   final double iconSize;
+  final Color iconColor;
   const BuildTimeStampWidget(
       {super.key,
       required this.date,
@@ -123,7 +130,9 @@ class BuildTimeStampWidget extends StatelessWidget {
       this.deliveredAt,
       required this.sentAtWidth,
       this.iconSize = 16,
-      required this.sentAtStyle});
+      required this.sentAtStyle, 
+      required this.iconColor,
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +156,7 @@ class BuildTimeStampWidget extends StatelessWidget {
                       : deliveredAt != null
                           ? MsgStatus.delivered
                           : MsgStatus.offline,
-                  size: iconSize)
+                  size: iconSize, iconColor: iconColor)
           ],
         ),
       );

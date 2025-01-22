@@ -45,7 +45,8 @@ class BuildTaggedMsgWidget extends StatelessWidget {
     final double height = (taggedUserNameStyle.fontSize ?? 15) + (UtilitiesFuncs.getTextLines(taggedMsgContent, taggedMsgStyle, maxWidth: msgContentWidth) * 18) + 18;
     // final double height = UtilitiesFuncs.getTextSize()
     final Image taggedImage = Image.asset(ImagesStrings.imgPlaceholder, height: height,);
-    return Padding(
+    if(taggedMsgContent.isNotEmpty){
+      return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: CustomElevatedButton(
         backgroundColor: taggedMsgColor,
@@ -101,5 +102,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
         ),
       ),
     );
+    }
+    return const SizedBox();
   }
 }

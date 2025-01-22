@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
@@ -10,14 +11,14 @@ class ChatSelectionAppBarChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color getCurrIconColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
+    final Color getCurrIconColor = appUiState.isDarkMode.value ? Colors.white : Colors.black;
     return Row(
       children: [
         BackButton(
           color: getCurrIconColor,
         ),
         Expanded(
-            child: Obx(() => CustomWidgets.text(context, chatsTabUiController.chatTilesSelected.length.toString(), fontSize: 18, fontWeight: FontWeight.w500))),
+            child: Obx(() => CustomText(chatsTabUiController.chatTilesSelected.length.toString(), fontSize: 18, fontWeight: FontWeight.w500))),
         IconButton(
             onPressed: () {},
             icon: Image.asset(

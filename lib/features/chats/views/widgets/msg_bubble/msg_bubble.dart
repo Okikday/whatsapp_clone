@@ -111,7 +111,7 @@ class MsgBubble extends StatelessWidget {
                     child: Bubble(
                         showNip: true,
                         stick: true,
-                        nip: isSender ? BubbleNip.rightTop : BubbleNip.leftTop,
+                        nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
                         nipHeight: 12,
                         nipWidth: 10,
                         nipRadius: 2,
@@ -123,6 +123,7 @@ class MsgBubble extends StatelessWidget {
                             messageModel: messageModel,
                             hasMedia: hasMedia,
                             isSender: isSender,
+                            messageId: messageModel.messageId,
                             taggedMsgColor: taggedMsgColor,)),
                   );
                 },

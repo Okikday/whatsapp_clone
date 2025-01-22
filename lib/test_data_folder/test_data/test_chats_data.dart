@@ -535,7 +535,7 @@ class TestChatsData {
       'chatId': '6',
       'senderId': '106',
       'receiverId': '206',
-      'content': 'Let’s catch up this weekend!',
+      'content': '',
       'mediaUrl': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
       'mediaCaption': 'Dinner plans?',
       'mediaType': 1, // Image message

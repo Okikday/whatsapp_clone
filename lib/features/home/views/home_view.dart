@@ -61,6 +61,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             child: Scaffold(
               appBar: CustomAppBarContainer(
                   scaffoldBgColor: scaffoldBgColor,
+                  padding: chatsTabUiController.chatTilesSelected.isEmpty ? null : EdgeInsets.zero,
                   child: chatsTabUiController.chatTilesSelected.isEmpty ? const HomeAppBarChild() : const ChatSelectionAppBarChild()),
               bottomNavigationBar: NavigationBar(
                 selectedIndex: stateController.homeBottomNavBarCurrentIndex.value,

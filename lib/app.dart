@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart';
 import 'package:whatsapp_clone/common/themes.dart';
 import 'package:whatsapp_clone/routes_names.dart';
@@ -19,6 +20,7 @@ class App extends StatelessWidget {
       title: "WhatsApp Clone",
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,
+      navigatorObservers: [HeroineController()],
       home:  isUserSignedIn ? RoutesNames.homeView : const WelcomeScreen(),
     );
   }

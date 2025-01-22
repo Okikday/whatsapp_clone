@@ -26,13 +26,13 @@ class ChatsTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     chatUiController.overscrollOffset.value = 0;
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) => chatUiController.onChatListsNotification(notification),
       child: PlayAnimationBuilder(
         duration: const Duration(milliseconds: 100),
-        tween: Tween(begin: 0.03, end: 0.0),
+        tween: Tween(begin: 0.01, end: 0.0),
         builder: (context, value, child) {
           return AnimatedSlide(
             offset: Offset(0, value),
@@ -40,126 +40,128 @@ class ChatsTabView extends StatelessWidget {
             child: child,
           );
         },
-        child: CustomScrollView(
-          physics: CustomScrollPhysics.android(),
-          slivers: [
-            // Chats filters section that slides from the bottom
-            SliverToBoxAdapter(
-              child: GestureDetector(
-                onTap: () {
-                  log("Tapped on sliding filter!");
-                },
-                child: Obx(
-                  () {
-                    final double overscrollOffset = chatUiController.overscrollOffset.value;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      height: overscrollOffset.clamp(0.0, filterTileHeight),
-                      child: Transform.translate(
-                        offset: Offset(0, -overscrollOffset.clamp(0.0, filterTileHeight)),
+        child: Obx(
+          () {
+            final bool isDarkMode = appUiState.isDarkMode.value;
+            final double overscrollOffset = chatUiController.overscrollOffset.value;
+
+            return CustomScrollView(
+            physics: CustomScrollPhysics.android(),
+            slivers: [
+              // Chats filters section that slides from the bottom
+              SliverToBoxAdapter(
+                child: GestureDetector(
+                  onTap: () {
+                    log("Tapped on sliding filter!");
+                  },
+                  child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        height: overscrollOffset.clamp(0.0, filterTileHeight),
                         child: Transform.translate(
-                          offset: Offset(0, overscrollOffset.clamp(0, overscrollOffset.clamp(0.0, filterTileHeight))),
-                          child: ColoredBox(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            child: SizedBox(
-                              width: Get.width,
-                              height: filterTileHeight,
-                              child: ListView.builder(
-                                itemCount: AppConstants.defaultChatsFilters.length,
-                                padding: EdgeInsets.zero,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                                    child: CustomElevatedButton(
-                                      backgroundColor: isDarkMode ? const Color(0xFF103629) : const Color(0xFFD8FDD2),
-                                      borderRadius: 16,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                                      textSize: 12,
-                                      textColor: WhatsAppColors.secondary,
-                                      label: AppConstants.defaultChatsFilters[index],
-                                    ),
-                                  );
-                                },
+                          offset: Offset(0, -overscrollOffset.clamp(0.0, filterTileHeight)),
+                          child: Transform.translate(
+                            offset: Offset(0, overscrollOffset.clamp(0, overscrollOffset.clamp(0.0, filterTileHeight))),
+                            child: ColoredBox(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              child: SizedBox(
+                                width: Get.width,
+                                height: filterTileHeight,
+                                child: ListView.builder(
+                                  itemCount: AppConstants.defaultChatsFilters.length,
+                                  padding: EdgeInsets.zero,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                                      child: CustomElevatedButton(
+                                        backgroundColor: isDarkMode ? const Color(0xFF103629) : const Color(0xFFD8FDD2),
+                                        borderRadius: 16,
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                                        textSize: 12,
+                                        textColor: WhatsAppColors.secondary,
+                                        label: AppConstants.defaultChatsFilters[index],
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
+                ),
+              ),
+              // List of Chats
+              const SliverToBoxAdapter(
+                child: SizedBox(
+                  height: Constants.spaceSmall,
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  childCount: chatModels.length, // Example number of chats
+                  (context, index) {
+                    final ChatModel cacheChatModel = chatModels[index];
+                    return Obx(
+                      () {
+                        final Map<int, int?> chatTilesSelected = chatsTabUiController.chatTilesSelected;
+                        return ChatListTile(
+                          width: Get.width,
+                          chatName: cacheChatModel.chatName,
+                          profilePhoto: cacheChatModel.chatProfilePhoto,
+                          lastUpdated: Formatter.chatTimeStamp(cacheChatModel.lastUpdated),
+                          lastMsg: cacheChatModel.lastMsg,
+                          isDarkMode: isDarkMode,
+                          isSelected: chatTilesSelected[index] != null,
+                          onTap: () async {
+                            if (chatTilesSelected.isEmpty) {
+                              if(!chatsTabUiController.isChatViewActive.value){
+                                chatsTabUiController.setIsChatViewActive(true);
+                              _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]), height: appUiState.deviceHeight.value);
+                              }
+                            } else {
+                              if (chatTilesSelected[index] != null) {
+                                chatsTabUiController.removeSelectedChatTile(index);
+                              } else {
+                                chatsTabUiController.selectChatTile(index);
+                              }
+                            }
+                          },
+                          onLongPress: () {
+                            if (chatTilesSelected[index] != null) {
+                              chatsTabUiController.removeSelectedChatTile(index);
+                            } else {
+                              chatsTabUiController.selectChatTile(index);
+                            }
+                          },
+                          onTapProfile: () {
+                            if (chatTilesSelected.isEmpty) {
+                            } else {
+                              if (chatTilesSelected[index] != null) {
+                                chatsTabUiController.removeSelectedChatTile(index);
+                              } else {
+                                chatsTabUiController.selectChatTile(index);
+                              }
+                            }
+                          },
+                        ).animate().fadeIn(begin: 0.1, duration: const Duration(milliseconds: 350));
+                      },
                     );
                   },
                 ),
               ),
-            ),
-            // List of Chats
-            const SliverToBoxAdapter(
-              child: SizedBox(
-                height: Constants.spaceSmall,
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                childCount: chatModels.length, // Example number of chats
-                (context, index) {
-                  final ChatModel cacheChatModel = chatModels[index];
-                  return Obx(
-                    () {
-                      final Map<int, int?> chatTilesSelected = chatsTabUiController.chatTilesSelected;
-                      return ChatListTile(
-                        width: Get.width,
-                        chatName: cacheChatModel.chatName,
-                        profilePhoto: cacheChatModel.chatProfilePhoto,
-                        lastUpdated: Formatter.chatTimeStamp(cacheChatModel.lastUpdated),
-                        lastMsg: cacheChatModel.lastMsg,
-                        isDarkMode: isDarkMode,
-                        isSelected: chatTilesSelected[index] != null,
-                        onTap: () async {
-                          if (chatTilesSelected.isEmpty) {
-                            if(!chatsTabUiController.isChatViewActive.value){
-                              chatsTabUiController.setIsChatViewActive(true);
-                            _pushToChatView(cacheChatModel: cacheChatModel, messageModel: MessageModel.fromMap(TestChatsData.messageList[index]), height: appUiState.deviceHeight.value);
-                            }
-                          } else {
-                            if (chatTilesSelected[index] != null) {
-                              chatsTabUiController.removeSelectedChatTile(index);
-                            } else {
-                              chatsTabUiController.selectChatTile(index);
-                            }
-                          }
-                        },
-                        onLongPress: () {
-                          if (chatTilesSelected[index] != null) {
-                            chatsTabUiController.removeSelectedChatTile(index);
-                          } else {
-                            chatsTabUiController.selectChatTile(index);
-                          }
-                        },
-                        onTapProfile: () {
-                          if (chatTilesSelected.isEmpty) {
-                          } else {
-                            if (chatTilesSelected[index] != null) {
-                              chatsTabUiController.removeSelectedChatTile(index);
-                            } else {
-                              chatsTabUiController.selectChatTile(index);
-                            }
-                          }
-                        },
-                      ).animate().fadeIn(begin: 0.1, duration: const Duration(milliseconds: 350));
-                    },
-                  );
-                },
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: SizedBox(
-                  height: 32,
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: CustomWidgets.text(context, "Your personal messages will be end-to-end encrypted",
-                          align: TextAlign.center, color: WhatsAppColors.secondary))),
-            )
-          ],
+          
+              SliverToBoxAdapter(
+                child: SizedBox(
+                    height: 32,
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: CustomWidgets.text(context, "Your personal messages will be end-to-end encrypted",
+                            align: TextAlign.center, color: WhatsAppColors.secondary))),
+              )
+            ],
+          );
+          },
         ),
       ),
     );
@@ -182,11 +184,16 @@ Future<void> _pushToChatView({required ChatModel cacheChatModel, required Messag
         final Animation<double> reverseFadeAnimation = animation.drive(
           Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
         );
+        final Animation<double> scaleAnimation = animation.drive(
+          Tween<double>(begin: 1.05, end: 1.0).chain(CurveTween(curve: curve)),
+        );
         
         if (animation.status == AnimationStatus.reverse) {
           return SlideTransition(
             position: offsetAnimation,
-            child: FadeTransition(opacity: reverseFadeAnimation, child: child),
+            child: ScaleTransition(
+              scale: scaleAnimation,
+              child: FadeTransition(opacity: reverseFadeAnimation, child: child)),
           );
         }
         return SlideTransition(
