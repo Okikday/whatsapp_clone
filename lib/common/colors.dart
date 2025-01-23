@@ -45,4 +45,6 @@ class WhatsAppColors {
   static const Color battleshipGrey = Color(0xFF8D9598);
   static const Color gray = Color(0xFF5D6267);
   static const Color darkGray = Color(0xFF1B2024);
+
+  static const Color emerald = Color(0xFF1FC063);
 }

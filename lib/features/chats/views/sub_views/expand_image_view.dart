@@ -5,7 +5,7 @@ import 'package:heroine/heroine.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/features/home/views/home_view.dart';
+import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 
 class ExpandImageView extends StatelessWidget {
   final String imageUrl;

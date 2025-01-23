@@ -22,6 +22,7 @@ import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/home_view.dart';
+import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
 

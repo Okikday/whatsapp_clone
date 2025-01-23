@@ -9,9 +9,12 @@ class CustomOverlay {
 
   /// Show an overlay with a custom child.
   void showOverlay({
-    required Widget child,
+    required Widget Function(BuildContext, void Function(VoidCallback)) builder,
+    Alignment alignment = Alignment.topLeft,
     bool dismissible = true,
-    HitTestBehavior hitTestBehavior = HitTestBehavior.opaque,
+    BoxConstraints? constraints,
+    Color? overlayBgColor,
+    Size? size,
   }) {
     // Remove any existing overlay
     if (_overlayEntry != null) {
@@ -20,16 +23,46 @@ class CustomOverlay {
 
     // Create the overlay entry
     _overlayEntry = OverlayEntry(
-      canSizeOverlay: true,
       builder: (context) {
-        return child;
+        return Material(
+          type: MaterialType.transparency,
+          color: overlayBgColor ?? Colors.black.withValues(alpha: 0.3),
+          child: Stack(
+            children: [
+              if (dismissible)
+                Positioned.fill(
+                  child: GestureDetector(
+                    onTap: removeOverlay,
+                    behavior: HitTestBehavior.opaque,
+                  ),
+                ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: size?.width,
+                  height: size?.height,
+                  child: AnimatedAlign(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInCubic,
+                    alignment: alignment,
+                    child: StatefulBuilder(
+                      builder: (context, setState) {
+                        return builder(context, setState);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
 
     // Insert the overlay entry
-    try {
+    try{
       Overlay.of(context).insert(_overlayEntry!);
-    } catch (e) {
+    }catch(e){
       log("Unable to add Overlay: $e");
     }
   }

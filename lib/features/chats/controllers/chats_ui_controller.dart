@@ -9,6 +9,7 @@ final ChatsUiController chatUiController = Get.put<ChatsUiController>(ChatsUiCon
 class ChatsUiController extends GetxController {
   RxDouble overscrollOffset = 0.0.obs;
 
+  setOverscrollOffset(double value) => overscrollOffset.value = value;
   onChatListsNotification(Notification notification) {
     if (notification is OverscrollNotification) {
       final double overScroll = notification.overscroll;

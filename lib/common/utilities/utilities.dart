@@ -27,6 +27,40 @@ class Utilities {
       return null;
     }
   }
+
+  static PageRouteBuilder customPageRouteBuilder({
+  required double height,
+  required Widget child,
+}) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return child;
+    },
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const curve = Curves.easeOutCubic;
+      final Animation<Offset> offsetAnimation = animation.drive(
+        Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve)),
+      );
+      final Animation<double> reverseFadeAnimation = animation.drive(
+        Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+      );
+
+      if (animation.status == AnimationStatus.reverse) {
+        return SlideTransition(
+          position: offsetAnimation,
+          child: FadeTransition(opacity: reverseFadeAnimation, child: child),
+        );
+      }
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 350),
+    reverseTransitionDuration: const Duration(milliseconds: 250),
+  );
+}
+
 }
 
 /// A class representing a result that can be either a success or a failure.

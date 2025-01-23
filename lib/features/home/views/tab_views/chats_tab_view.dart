@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -7,10 +9,12 @@ import 'package:heroine/heroine.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
+import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/utilities/formatter.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_overlay.dart';
 import 'package:whatsapp_clone/common/widgets/custom_scroll_physics.dart';
@@ -27,7 +31,8 @@ class ChatsTabView extends StatelessWidget {
   const ChatsTabView({super.key, required this.chatModels});
   @override
   Widget build(BuildContext context) {
-    chatUiController.overscrollOffset.value = 0;
+    chatUiController.setOverscrollOffset(0.0);
+    final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) => chatUiController.onChatListsNotification(notification),
@@ -47,7 +52,6 @@ class ChatsTabView extends StatelessWidget {
             final double overscrollOffset = chatUiController.overscrollOffset.value;
             final double width = appUiState.deviceWidth.value;
             final double height = appUiState.deviceHeight.value;
-
             return CustomScrollView(
               physics: CustomScrollPhysics.android(),
               slivers: [
@@ -65,7 +69,7 @@ class ChatsTabView extends StatelessWidget {
                         child: Transform.translate(
                           offset: Offset(0, overscrollOffset.clamp(0, overscrollOffset.clamp(0.0, filterTileHeight))),
                           child: ColoredBox(
-                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: scaffoldBgColor,
                             child: SizedBox(
                               width: Get.width,
                               height: filterTileHeight,
@@ -109,21 +113,24 @@ class ChatsTabView extends StatelessWidget {
                         () {
                           final Map<int, int?> chatTilesSelected = chatsTabUiController.chatTilesSelected;
                           return ChatListTile(
+                            heroTag: cacheChatModel.chatId,
                             width: Get.width,
                             chatName: cacheChatModel.chatName,
                             profilePhoto: cacheChatModel.chatProfilePhoto,
                             lastUpdated: Formatter.chatTimeStamp(cacheChatModel.lastUpdated),
                             lastMsg: cacheChatModel.lastMsg,
                             isDarkMode: isDarkMode,
-                            isSelected: chatTilesSelected[index] != null,
+                            selectedIndex: chatTilesSelected[index],
                             onTap: () async {
                               if (chatTilesSelected.isEmpty) {
                                 if (!chatsTabUiController.isChatViewActive.value) {
                                   chatsTabUiController.setIsChatViewActive(true);
-                                  _pushToChatView(
-                                      cacheChatModel: cacheChatModel,
-                                      messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
-                                      height: appUiState.deviceHeight.value);
+                                  final ChatView preloadedChatView = ChatView(
+                                    chatModel: cacheChatModel,
+                                    messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
+                                  );
+                                  Future.delayed(const Duration(milliseconds: 250),
+                                      () => navigator?.push(Utilities.customPageRouteBuilder(child: preloadedChatView, height: appUiState.deviceHeight.value)));
                                 }
                               } else {
                                 if (chatTilesSelected[index] != null) {
@@ -142,31 +149,11 @@ class ChatsTabView extends StatelessWidget {
                             },
                             onTapProfile: (details) {
                               if (chatTilesSelected.isEmpty) {
-                                final double overlayWidth = height > width ? width * 0.7 : height * 0.7;
-                                // chatsTabUiController.triggerAnimation(Offset(details.localPosition.dx, details.localPosition.dy));
-                                log("details: dx: ${details.globalPosition.dx} dy: ${details.globalPosition.dy}");
-                                CustomOverlay customOverlay = CustomOverlay(context);
-                                customOverlay.showOverlay(
-                                  child: GestureDetector(
+                                final double overlayWidth = height > width ? width * 0.65 : height * 0.65;
 
-                                    onTap: () {
-                                      customOverlay.removeOverlay();
-                                    },
-                                    child: Container(
-                                      constraints: BoxConstraints(maxHeight: height - 200, maxWidth: width - 100),
-                                      color: Colors.red,
-                                      child: Animate(
-                                              //
-                                              child: ClipRRect(
-                                                child: Container(
-                                                  width: overlayWidth,
-                                                  height: overlayWidth,
-                                                  color: Colors.yellow,
-                                                  child: CustomText("data"),
-                                                ),
-                                              )),
-                                    ),
-                                  ),);
+                                navigator?.push(
+                                  profileDialogPageRoute(overlayWidth, cacheChatModel, scaffoldBgColor, index),
+                                );
                               } else {
                                 if (chatTilesSelected[index] != null) {
                                   chatsTabUiController.removeSelectedChatTile(index);
@@ -197,41 +184,129 @@ class ChatsTabView extends StatelessWidget {
       ),
     );
   }
-}
 
-Future<void> _pushToChatView({required ChatModel cacheChatModel, required MessageModel messageModel, required double height}) async {
-  final ChatView preloadedChatView = ChatView(
-    chatModel: cacheChatModel,
-    messageModel: messageModel,
-  );
-  await Future.delayed(const Duration(milliseconds: 250));
-  navigator?.push(
-    PageRouteBuilder(
+  PageRouteBuilder<dynamic> profileDialogPageRoute(double overlayWidth, ChatModel cacheChatModel, Color scaffoldBgColor, int index) {
+    return PageRouteBuilder(
+      opaque: false,
       pageBuilder: (context, animation, secondaryAnimation) {
-        return preloadedChatView;
-      },
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const curve = Curves.easeOutCubic;
-        final Animation<Offset> offsetAnimation = animation.drive(
-          Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve)),
-        );
-        final Animation<double> reverseFadeAnimation = animation.drive(
-          Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
-        );
+        return GestureDetector(
+          onTap: () => navigator?.pop(),
+          child: ColoredBox(
+            color: Colors.black26,
+            child: Align(
+              alignment: Alignment.center,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {},
+                child: SizedBox(
+                  height: overlayWidth + 56,
+                  width: overlayWidth,
+                  child: Heroine(
+                    tag: cacheChatModel.chatId,
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            SizedBox(
+                                width: overlayWidth,
+                                child: CachedNetworkImage(
+                                  imageUrl: cacheChatModel.chatProfilePhoto!,
+                                  fit: BoxFit.fitWidth,
+                                )),
+                            Positioned(
+                                top: 0,
+                                child: SizedBox(
+                                  height: 40,
+                                  width: overlayWidth,
+                                  child: ClipRRect(
+                                    child: BackdropFilter(
+                                        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                                        child: ColoredBox(
+                                            color: Colors.black12,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 4),
+                                              child: Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: CustomText(
+                                                    cacheChatModel.contactId,
+                                                    color: Colors.white,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w500,
+                                                  )),
+                                            ))),
+                                  ),
+                                ))
+                          ],
+                        ),
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            width: overlayWidth,
+                            child: ColoredBox(
+                              color: scaffoldBgColor,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    icon: Image.asset(
+                                      IconStrings.chatIconOutlined,
+                                      width: 24,
+                                      height: 24,
+                                      color: WhatsAppColors.primary,
+                                    ),
+                                    onPressed: () {
+                                      chatsTabUiController.setIsChatViewActive(true);
+                                      final ChatView preloadedChatView = ChatView(
+                                        chatModel: cacheChatModel,
+                                        messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
+                                      );
 
-        if (animation.status == AnimationStatus.reverse) {
-          return SlideTransition(
-            position: offsetAnimation,
-            child: FadeTransition(opacity: reverseFadeAnimation, child: child),
-          );
-        }
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
+                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(child: preloadedChatView, height: appUiState.deviceHeight.value));
+                                      // Future.delayed(
+                                      //     const Duration(milliseconds: 300),
+                                      //     () => navigator?.push(chatViewPageRoute(
+                                      //         cacheChatModel: cacheChatModel,
+                                      //         messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
+                                      //         height: appUiState.deviceHeight.value)));
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Image.asset(
+                                      IconStrings.callsIconOutlined,
+                                      width: 24,
+                                      height: 24,
+                                      color: WhatsAppColors.primary,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                  IconButton(
+                                    icon: Image.asset(
+                                      IconStrings.videoCallIcon,
+                                      width: 24,
+                                      height: 24,
+                                      color: WhatsAppColors.primary,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.info_outline_rounded),
+                                    color: WhatsAppColors.primary,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       },
-      transitionDuration: const Duration(milliseconds: 350),
-      reverseTransitionDuration: const Duration(milliseconds: 250),
-    ),
-  );
+    );
+  }
 }

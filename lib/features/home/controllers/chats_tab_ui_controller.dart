@@ -8,8 +8,7 @@ final ChatsTabUiController chatsTabUiController = Get.put<ChatsTabUiController>(
 class ChatsTabUiController extends GetxController{
   RxMap<int, int?> chatTilesSelected = <int, int?>{}.obs;
   RxBool isChatViewActive = false.obs;
-  final animationOffset = Offset.zero.obs;
-  final isAnimating = false.obs;
+  final Rx<Offset> animationOffset = Offset.zero.obs;
   
   
   
@@ -34,9 +33,6 @@ class ChatsTabUiController extends GetxController{
   void setIsChatViewActive(bool value) => isChatViewActive.value = value;
 
   void startAnimation(Offset tapGlobalPosition) {
-    final screenSize = Get.size;
-    final centerOffset = Offset(screenSize.width/2, screenSize.height/2);
-    animationOffset.value = tapGlobalPosition - centerOffset;
-    isAnimating.value = true;
+    
   }
 }
