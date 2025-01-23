@@ -146,6 +146,7 @@ class SelectContactView extends StatelessWidget {
                   fontSize: 12,
                   color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary,
                   fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {},
               );
