@@ -84,13 +84,16 @@ class MsgInputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextStyle inputTextStyle = TextStyle(color: const CustomText( "").style?.color, fontSize: 18);
     return Obx(
-      () => CustomTextfield(
+      ()=> CustomTextfield(
         isEnabled: true,
         hint: "Message",
         hintStyle: TextStyle(color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic),
         backgroundColor: isDarkMode ? WhatsAppColors.arsenic : Colors.white,
         borderRadius: 24,
         cursorColor: WhatsAppColors.secondary,
+        onTapOutside: () {
+          
+        },
         onchanged: (text) {
           currChatViewController.setMessageInput(text);
           currChatViewController.checkMessageBarHeight(
@@ -146,32 +149,40 @@ class SendOrMicButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isMsgInputEmpty = currChatViewController.messageInput.value.isEmpty;
+    
 
-    return GestureDetector(
-        onTapDown: (details) => currChatViewController.setIsMicTappedDown(true),
-        onTapUp: (details) => currChatViewController.setIsMicTappedDown(false),
-        onTapCancel: () => currChatViewController.setIsMicTappedDown(false),
-        child: AnimatedScale(
-            scale: isMsgInputEmpty
-                ? currChatViewController.isMicTappedDown.value
-                    ? 1.25
-                    : 1
-                : 1,
-            duration: const Duration(milliseconds: 100),
-            child: CircleAvatar(
-                radius: 24,
-                backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
-                child: isMsgInputEmpty
-                    ? Icon(Icons.mic, size: 28, color: scaffoldBgColor)
-                    : Image.asset(
-                        IconStrings.sendIcon,
-                        width: 26,
-                        height: 26,
-                        color: scaffoldBgColor,
-                        colorBlendMode: BlendMode.srcIn,
-                      ))),
-      );
+    return Padding(
+      padding: EdgeInsets.only(top: (currChatViewController.messageBarHeight.value - 48).clamp(0, 140)),
+      child: GestureDetector(
+          onTapDown: (details) => currChatViewController.setIsMicTappedDown(true),
+          onTapUp: (details) => currChatViewController.setIsMicTappedDown(false),
+          onTapCancel: () => currChatViewController.setIsMicTappedDown(false),
+          child: Obx(
+            () {
+              final bool isMsgInputEmpty = currChatViewController.messageInput.value.isEmpty;
+              return AnimatedScale(
+                scale: isMsgInputEmpty
+                    ? currChatViewController.isMicTappedDown.value
+                        ? 1.25
+                        : 1
+                    : 1,
+                duration: const Duration(milliseconds: 100),
+                child: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
+                    child: isMsgInputEmpty
+                        ? Icon(Icons.mic, size: 28, color: scaffoldBgColor)
+                        : Image.asset(
+                            IconStrings.sendIcon,
+                            width: 26,
+                            height: 26,
+                            color: scaffoldBgColor,
+                            colorBlendMode: BlendMode.srcIn,
+                          )));
+            },
+          ),
+        ),
+    );
   }
 }
 

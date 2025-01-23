@@ -9,13 +9,9 @@ class CustomOverlay {
 
   /// Show an overlay with a custom child.
   void showOverlay({
-    required Widget Function(BuildContext, void Function(VoidCallback)) builder,
-    Alignment alignment = Alignment.center,
+    required Widget child,
     bool dismissible = true,
-    EdgeInsets? padding,
-    BoxConstraints? constraints,
-    Color? overlayBgColor,
-    ColoredBox? bgWidget,
+    HitTestBehavior hitTestBehavior = HitTestBehavior.opaque,
   }) {
     // Remove any existing overlay
     if (_overlayEntry != null) {
@@ -24,42 +20,18 @@ class CustomOverlay {
 
     // Create the overlay entry
     _overlayEntry = OverlayEntry(
+      canSizeOverlay: true,
       builder: (context) {
-        return Stack(
-          children: [
-            if (dismissible)
-              GestureDetector(
-                onTap: removeOverlay,
-                behavior: HitTestBehavior.opaque,
-                child: bgWidget ??
-                    ColoredBox(
-                      color: overlayBgColor ??
-                          (Theme.of(context).brightness == Brightness.dark
-                              ? Colors.black.withOpacity(0.5)
-                              : Colors.black.withOpacity(0.3)),
-                    ),
-              ),
-            Align(
-              alignment: alignment,
-              child: Padding(
-                padding: padding ?? EdgeInsets.zero,
-                child: ConstrainedBox(
-                  constraints: constraints ?? const BoxConstraints.tightFor(),
-                  child: StatefulBuilder(
-                    builder: (context, setState) {
-                      return builder(context, setState);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+        return child;
       },
     );
 
     // Insert the overlay entry
-    Overlay.of(context).insert(_overlayEntry!);
+    try {
+      Overlay.of(context).insert(_overlayEntry!);
+    } catch (e) {
+      log("Unable to add Overlay: $e");
+    }
   }
 
   /// Remove the overlay

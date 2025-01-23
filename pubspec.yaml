@@ -45,10 +45,10 @@ dependencies:
   camera: ^0.11.0+2
   image: ^4.5.2
   bubble: ^1.2.1
-  heroine: ^0.1.1
   
 
   path: any
+  heroine: ^0.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

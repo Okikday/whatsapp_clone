@@ -26,7 +26,7 @@ class BuildAttachmentWidget extends StatelessWidget {
         padding: EdgeInsets.only(bottom: isJustImgOverlay ? 0 : 8),
         child: Heroine(
           tag: "msg_bubble_attachment_image$messageId",
-          spring: SimpleSpring.defaultIOS,
+          spring: Spring.snappy,
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: Border.all(width: 6, color: Colors.black26),

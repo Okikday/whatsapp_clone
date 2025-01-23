@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -57,7 +58,7 @@ class ChatView extends StatelessWidget {
                   onTapProfile: () async{
                     final ProfileView preloadedProfileView = ProfileView(chatModel: chatModel);
                     Future.delayed(const Duration(milliseconds: 150),
-                    () => Get.to(() => preloadedProfileView, transition: Transition.rightToLeftWithFade)
+                    () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView))
                     );
                     
                   },

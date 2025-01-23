@@ -1,6 +1,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
@@ -16,7 +17,7 @@ class ChatListTile extends StatelessWidget {
   final bool isTyping;
   final void Function()? onTap;
   final void Function()? onLongPress;
-  final void Function()? onTapProfile;
+  final void Function(TapUpDetails details)? onTapProfile;
   final bool isSelected;
 
   final bool isDarkMode;
@@ -34,7 +35,6 @@ class ChatListTile extends StatelessWidget {
       this.onLongPress,
       this.isSelected = false,
       this.onTapProfile,
-      
       required this.isDarkMode,
       });
 
@@ -58,13 +58,14 @@ class ChatListTile extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16, top: 12, bottom: 12),
             child: Row(
               children: [
-                CustomElevatedButton(
-                  backgroundColor: WhatsAppColors.accent,
-                  pixelWidth: 80,
-                  pixelHeight: 80,
-                  shape: const CircleBorder(),
-                  onClick: () {
-                    if(onTapProfile != null) onTapProfile!();
+                InkWell(
+                  customBorder: const CircleBorder(),
+                 
+                  onTapDown: (details) {
+                    
+                  },
+                  onTapUp: (details) {
+                    if(onTapProfile != null) onTapProfile!(details);
                   },
                   child: SizedBox(
                     width: 80,

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 final ChatsTabUiController chatsTabUiController = Get.put<ChatsTabUiController>(ChatsTabUiController());
@@ -7,6 +8,10 @@ final ChatsTabUiController chatsTabUiController = Get.put<ChatsTabUiController>(
 class ChatsTabUiController extends GetxController{
   RxMap<int, int?> chatTilesSelected = <int, int?>{}.obs;
   RxBool isChatViewActive = false.obs;
+  final animationOffset = Offset.zero.obs;
+  final isAnimating = false.obs;
+  
+  
   
   @override
   onInit(){
@@ -21,10 +26,17 @@ class ChatsTabUiController extends GetxController{
     chatTilesSelected.close();
     super.onClose();
   }
-
+  
   // setChatTilesCount(int index) => chatTilesSelected = List.fi
   void selectChatTile(int index) => chatTilesSelected[index] = index;
   void removeSelectedChatTile(int index) => chatTilesSelected[index] != null ? chatTilesSelected.remove(index) : () {};
   void clearSelectedChatTiles() => chatTilesSelected.clear();
   void setIsChatViewActive(bool value) => isChatViewActive.value = value;
+
+  void startAnimation(Offset tapGlobalPosition) {
+    final screenSize = Get.size;
+    final centerOffset = Offset(screenSize.width/2, screenSize.height/2);
+    animationOffset.value = tapGlobalPosition - centerOffset;
+    isAnimating.value = true;
+  }
 }

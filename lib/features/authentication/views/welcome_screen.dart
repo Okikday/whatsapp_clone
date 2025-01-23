@@ -112,8 +112,8 @@ List<Widget> welcomeScreenWidgets(
               ),
               CustomElevatedButton(
                 elevation: 0,
-                backgroundColor: isDarkMode ? Colors.white.withOpacity(0.1) : const Color(0xFFF7F7FA),
-                overlayColor: isDarkMode ? WhatsAppColors.secondary.withOpacity(0.1) : WhatsAppColors.primary.withOpacity(0.1),
+                backgroundColor: isDarkMode ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFF7F7FA),
+                overlayColor: isDarkMode ? WhatsAppColors.secondary.withValues(alpha: 0.1) : WhatsAppColors.primary.withValues(alpha: 0.1),
                 onClick: () async {
                   if (context.mounted) {
                     await showModalBottomSheet(

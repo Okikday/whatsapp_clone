@@ -168,7 +168,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
           if (widget.ontap != null) widget.ontap!();
         },
         onTapOutside: (e) {
-          focusNode.unfocus();
+          if (widget.onTapOutside == null) focusNode.unfocus();
           if (widget.onTapOutside != null) widget.onTapOutside!();
         },
         style: widget.inputTextStyle ?? const TextStyle(color: Colors.white),
