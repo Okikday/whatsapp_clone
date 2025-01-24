@@ -30,7 +30,6 @@ class StatusListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     const double width = 120;
     const double height = 160;
 
@@ -48,11 +47,13 @@ class StatusListTile extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(color: Colors.grey.withAlpha(100), borderRadius: BorderRadius.circular(12)),
-                    child: const SizedBox(
-                      width: 120,
-                      height: 160,
+                  SizedBox(
+                    width: 120,
+                    height: 160,
+                    child: DecoratedBox(
+                    
+                    decoration: BoxDecoration(color: Colors.grey.withAlpha(100), borderRadius: BorderRadius.circular(12), image: DecorationImage(image: thumbnailURL != null ? Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: thumbnailURL!)! : Utilities.imgProvider(imgsrc: ImageSource.asset,)!, fit: BoxFit.cover, colorFilter: const ColorFilter.mode(Colors.black26, BlendMode.color)),),
+                      
                     ),
                   ),
                   Positioned(

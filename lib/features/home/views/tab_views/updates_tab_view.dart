@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/updates/views/widgets/status_list_tile.dart';
+import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 
 class UpdatesTabView extends StatelessWidget {
   const UpdatesTabView({super.key});
@@ -36,12 +38,15 @@ class UpdatesTabView extends StatelessWidget {
             width: Get.width,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 10,
+                itemCount: TestChatsData.chatList.length,
                 padding: EdgeInsets.only(left: generalPadding.left, right: generalPadding.right),
                 itemBuilder: (context, index) {
+                  final ChatModel cacheChatModel = TestChatsData.chatList[index];
                   return StatusListTile(
                     margin: EdgeInsets.only(left: index == 0 ? 0 : 4, right: index == 10 ? 0 : 4),
-                    title: "Someone $index",
+                    title: cacheChatModel.chatName,
+                    profilePhotoURL: cacheChatModel.chatProfilePhoto,
+                    thumbnailURL: cacheChatModel.chatProfilePhoto,
                   );
                 }),
           ),

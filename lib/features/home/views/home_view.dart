@@ -1,13 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
-import 'package:whatsapp_clone/features/chats/select_contact_view.dart';
+import 'package:whatsapp_clone/features/chats/views/select_contact_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/calls_tab_view.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/chats_tab_view.dart';
@@ -91,10 +92,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   children: [
                     ChatsTabView(
                       chatModels: TestChatsData.chatList,
-                    ),
-                    const UpdatesTabView(),
-                    const CommunitiesTabView(),
-                    const CallsTabView(),
+                    ).animate().scaleXY(begin: 0.99, end: 1, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const UpdatesTabView().animate().fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const CommunitiesTabView().animate().fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const CallsTabView().animate().fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
                   ]),
             ),
           ),
