@@ -22,6 +22,7 @@ import 'package:whatsapp_clone/features/chats/controllers/chats_ui_controller.da
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
+import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
@@ -262,12 +263,7 @@ class ChatsTabView extends StatelessWidget {
                                       );
 
                                       navigator?.pushReplacement(Utilities.customPageRouteBuilder(child: preloadedChatView, height: appUiState.deviceHeight.value));
-                                      // Future.delayed(
-                                      //     const Duration(milliseconds: 300),
-                                      //     () => navigator?.push(chatViewPageRoute(
-                                      //         cacheChatModel: cacheChatModel,
-                                      //         messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
-                                      //         height: appUiState.deviceHeight.value)));
+                                      
                                     },
                                   ),
                                   IconButton(
@@ -289,7 +285,9 @@ class ChatsTabView extends StatelessWidget {
                                     onPressed: () {},
                                   ),
                                   IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                       navigator?.pushReplacement(Utilities.customPageRouteBuilder(child: ProfileView(chatModel: cacheChatModel), height: appUiState.deviceHeight.value));
+                                    },
                                     icon: const Icon(Icons.info_outline_rounded),
                                     color: WhatsAppColors.primary,
                                   )

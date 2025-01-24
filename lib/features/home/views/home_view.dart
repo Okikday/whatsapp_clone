@@ -75,7 +75,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 visible: homeBottomNavBarCurrentIndex != 2,
                 child: FloatingActionButton(
                   onPressed: () {
-                    navigator?.push(Utilities.customPageRouteBuilder(height: deviceHeight, child: const SelectContactView()));
+                    if(homeBottomNavBarCurrentIndex == 0)navigator?.push(Utilities.customPageRouteBuilder(height: deviceHeight, child: const SelectContactView()));
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Icon(
