@@ -19,9 +19,8 @@ import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_msgs_view.dart';
 import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/chat_bubble_selection_app_bar.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box.dart';
-import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
-import 'package:whatsapp_clone/features/home/views/home_view.dart';
 import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 
 final CustomNativeTextInputController nativeTextInputController = CustomNativeTextInputController();
@@ -29,80 +28,91 @@ final CustomNativeTextInputController nativeTextInputController = CustomNativeTe
 class ChatView extends StatelessWidget {
   final ChatModel chatModel;
   final MessageModel messageModel;
-  const ChatView({super.key, required this.chatModel, required this.messageModel,});
+  const ChatView({
+    super.key,
+    required this.chatModel,
+    required this.messageModel,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final ChatViewController currChatViewController = Get.put<ChatViewController>(ChatViewController());
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        chatsTabUiController.setIsChatViewActive(false);
-      },
-      child: Obx(() {
+    return Obx(
+      () {
         final double width = appUiState.deviceWidth.value;
         final double height = appUiState.deviceHeight.value;
         final bool isDarkMode = appUiState.isDarkMode.value;
-        log("width: $width");
-        return AnnotatedRegion(
-          value: SystemUiOverlayStyle(
-              systemNavigationBarColor: scaffoldBgColor,
-              statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
-              statusBarColor: scaffoldBgColor),
-          child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            backgroundColor: scaffoldBgColor,
-            appBar: CustomAppBarContainer(scaffoldBgColor: scaffoldBgColor, padding: EdgeInsets.zero, child: ChatViewAppBar(
-                  chatModel: chatModel,
-                  scaffoldBgColor: scaffoldBgColor,
-                  isDarkMode: isDarkMode,
-                  onTapProfile: () async{
-                    final ProfileView preloadedProfileView = ProfileView(chatModel: chatModel);
-                    Future.delayed(const Duration(milliseconds: 150),
-                    () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView))
-                    );
-                    
-                  },
-                )) as PreferredSizeWidget,
-            body: SizedBox(
-              width: MediaQuery.sizeOf(context).width,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-          
-                color: isDarkMode ? Colors.black.withAlpha(242) : WhatsAppColors.seaShell,
-                image: DecorationImage(
-                    image: const AssetImage(
-                      ImagesStrings.chatBackground,
-                    ),
-                    repeat: ImageRepeat.repeat,
-                    alignment: Alignment.topLeft,
-                    scale: 1.3,
-                    filterQuality: FilterQuality.high,
-                    colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.linen, BlendMode.srcIn),
-                    fit: BoxFit.none)
-          
-              ),
-                child: Column(
-                  children: [
-                    // Chat background
-                    ChatMsgsView(
-                      height: height,
-                      width: width,
-                      isDarkMode: isDarkMode,
-                      messageModels: [
-                        messageModel,
-                      ],
-                    ),
-                
-                    ChatMsgBox(scaffoldBgColor: scaffoldBgColor, currChatViewController: currChatViewController),
-                  ],
+        return PopScope(
+          canPop: chatViewController.allowPagePop.value,
+          onPopInvokedWithResult: (didPop, result) => onPopChatView(),
+          child: AnnotatedRegion(
+            value: SystemUiOverlayStyle(
+                systemNavigationBarColor: scaffoldBgColor,
+                statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+                statusBarColor: scaffoldBgColor),
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              backgroundColor: scaffoldBgColor,
+              appBar: chatViewController.chatsSelected.isEmpty
+                  ? CustomAppBarContainer(
+                      scaffoldBgColor: scaffoldBgColor,
+                      padding: EdgeInsets.zero,
+                      child: ChatViewAppBar(
+                        chatModel: chatModel,
+                        scaffoldBgColor: scaffoldBgColor,
+                        isDarkMode: isDarkMode,
+                        onTapProfile: () async {
+                          final ProfileView preloadedProfileView = ProfileView(chatModel: chatModel);
+                          Future.delayed(
+                              const Duration(milliseconds: 150), () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView)));
+                        },
+                      ))
+                  : CustomAppBarContainer(scaffoldBgColor: scaffoldBgColor, child: const ChatBubbleSelectionAppBar()),
+              body: SizedBox(
+                width: MediaQuery.sizeOf(context).width,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: isDarkMode ? Colors.black.withAlpha(242) : WhatsAppColors.seaShell,
+                      image: DecorationImage(
+                          image: const AssetImage(
+                            ImagesStrings.chatBackground,
+                          ),
+                          repeat: ImageRepeat.repeat,
+                          alignment: Alignment.topLeft,
+                          scale: 1.3,
+                          filterQuality: FilterQuality.high,
+                          colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.linen, BlendMode.srcIn),
+                          fit: BoxFit.none)),
+                  child: Column(
+                    children: [
+                      // Chat background
+                      ChatMsgsView(
+                        height: height,
+                        width: width,
+                        isDarkMode: isDarkMode,
+                        messageModels: [
+                          messageModel,
+                        ],
+                      ),
+
+                      ChatMsgBox(scaffoldBgColor: scaffoldBgColor, currChatViewController: chatViewController),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         );
-      }),
+      },
     );
+  }
+}
+
+void onPopChatView() {
+  if (chatViewController.chatsSelected.isNotEmpty) {
+    chatViewController.clearSelectedChatBubble();
+  } else {
+    chatViewController.setMessageInput('');
   }
 }
 
@@ -131,7 +141,11 @@ class ChatViewAppBar extends StatelessWidget {
           width: 4,
         ),
         GestureDetector(
-          onTap: () => navigator?.pop(),
+          onTap: () async {
+            if (chatViewController.chatsSelected.isEmpty){
+              navigator?.pop();
+            }
+          },
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

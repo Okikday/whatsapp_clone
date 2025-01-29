@@ -8,8 +8,6 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
-import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/sub_views/new_contact_view.dart';
 import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
@@ -89,7 +87,7 @@ class SelectContactView extends StatelessWidget {
                     onPressed: () {},
                   ),
                   onTap: () {
-                    navigator?.push(Utilities.customPageRouteBuilder(height: appUiState.deviceHeight.value, child: const NewContactView()));
+                    navigator?.push(Utilities.customPageRouteBuilder(const NewContactView()));
                   },
                 ),
               ),

@@ -31,7 +31,7 @@ class ChatMsgsView extends StatelessWidget {
                       final MessageModel currMsgModel = mockMessageModels[index];
                       
                       return index == 0 ? 
-                       MsgBubble.receiver(messageModel: currMsgModel, isFirstMsg: true,) : MsgBubble.sender(messageModel: currMsgModel, isFirstMsg: true,);
+                       MsgBubble.receiver(messageModel: currMsgModel, isFirstMsg: true, index: index,) : MsgBubble.sender(messageModel: currMsgModel, isFirstMsg: true, index: index,);
                     }),
         ),
       ),

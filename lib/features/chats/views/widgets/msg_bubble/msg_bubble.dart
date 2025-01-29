@@ -1,12 +1,17 @@
+import 'dart:developer';
+import 'dart:ui';
+
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
+import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_content.dart';
 
 class MsgBubble extends StatelessWidget {
@@ -15,8 +20,7 @@ class MsgBubble extends StatelessWidget {
   final Color? bgColor;
   final Color? taggedMsgColor;
   final bool isSender; // Whether the message is from the sender
-  final bool isSelected;
-  final void Function()? onLongPressed;
+  final int index;
 
   const MsgBubble({
     super.key,
@@ -25,8 +29,7 @@ class MsgBubble extends StatelessWidget {
     this.bgColor,
     this.taggedMsgColor,
     required this.isSender,
-    this.isSelected = false,
-    this.onLongPressed,
+    required this.index,
   });
 
   // Factory constructor for receiver message bubble
@@ -36,8 +39,7 @@ class MsgBubble extends StatelessWidget {
     bool isFirstMsg = false,
     Color? bgColor,
     Color? taggedMsgColor,
-    bool isSelected = false,
-    void Function()? onLongPressed,
+    required int index,
   }) {
     return MsgBubble(
       key: key,
@@ -46,8 +48,7 @@ class MsgBubble extends StatelessWidget {
       bgColor: bgColor,
       taggedMsgColor: taggedMsgColor,
       isSender: false,
-      isSelected: isSelected,
-      onLongPressed: onLongPressed,
+      index: index,
     );
   }
 
@@ -59,7 +60,7 @@ class MsgBubble extends StatelessWidget {
     Color? bgColor,
     Color? taggedMsgColor,
     bool isSelected = false,
-    void Function()? onLongPressed,
+    required int index,
   }) {
     return MsgBubble(
       key: key,
@@ -68,68 +69,78 @@ class MsgBubble extends StatelessWidget {
       bgColor: bgColor,
       taggedMsgColor: taggedMsgColor,
       isSender: true,
-      isSelected: isSelected,
-      onLongPressed: onLongPressed,
+      index: index,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.deferToChild,
-      onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(),
-      onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(),
-      onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(),
-      child: CustomElevatedButton(
-        backgroundColor: isSelected ? Theme.of(context).primaryColor.withAlpha(60) : Colors.transparent,
-        borderRadius: 0,
-        overlayColor: Theme.of(context).primaryColor.withAlpha(40),
-        pixelWidth: MediaQuery.sizeOf(context).width,
-        onClick: () {},
-        onLongClick: () {
-          if (onLongPressed != null) onLongPressed!();
-        },
-        child: Align(
-          alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
-          child: GestureDetector(
-              onTapDown: (details) => MsgBubbleFunctions.onTapDownMsgBubble(),
-              onTapUp: (details) => MsgBubbleFunctions.onTapUpMsgBubble(),
-              onTapCancel: () => MsgBubbleFunctions.onTapUpMsgBubble(),
-              onLongPress: () {
-                if (onLongPressed != null) onLongPressed!();
-              },
-              child: Obx(
-                () {
-                  final double width = appUiState.deviceWidth.value;
-                  // final double height = appUiState.deviceHeight.value;
-                  final bool isDarkMode = appUiState.isDarkMode.value;
-                  final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
-                  final Color bubbleBgColor = isDarkMode ? (isSender ? WhatsAppColors.msgSentDark : WhatsAppColors.msgReceivedDark) : (isSender ? WhatsAppColors.msgSent : WhatsAppColors.msgReceived);
-                  final Color taggedMsgColor = isDarkMode ? (isSender ? WhatsAppColors.taggedMsgSentDark : WhatsAppColors.taggedMsgReceivedDark) : (isSender ? WhatsAppColors.taggedMsgSent : WhatsAppColors.taggedMsgReceived);
-                  return ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: hasMedia ? width * 0.7 : width * 0.85),
-                    child: Bubble(
-                        showNip: true,
-                        stick: true,
-                        nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
-                        nipHeight: 12,
-                        nipWidth: 10,
-                        nipRadius: 2,
-                        padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
-                        margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
-                        radius: const Radius.circular(10),
-                        color: bubbleBgColor,
-                        child: MsgBubbleContent(
-                            messageModel: messageModel,
-                            hasMedia: hasMedia,
-                            isSender: isSender,
-                            messageId: messageModel.messageId,
-                            taggedMsgColor: taggedMsgColor,)),
-                  );
-                },
-              )),
+    return Obx(
+      () {
+        final int? selectedIndex = chatViewController.chatsSelected[index];
+        return SizedBox(
+        width: appUiState.deviceWidth.value,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            overlayColor: WidgetStatePropertyAll(Theme.of(context).primaryColor.withAlpha(40)),
+            splashFactory: NoSplash.splashFactory,
+                  onTap: () {
+                    MsgBubbleFunctions.onTapBubble(index);
+                  },
+                  onLongPress: () {
+                    MsgBubbleFunctions.onLongPress(index);
+                  },
+            child: Container(
+              decoration: BoxDecoration(color: selectedIndex != null ? Theme.of(context).primaryColor.withAlpha(50) : Colors.transparent,),
+              foregroundDecoration: BoxDecoration(color: selectedIndex != null ? Colors.white.withValues(alpha: 0.025) : Colors.transparent),
+              clipBehavior: selectedIndex != null ? Clip.hardEdge : Clip.none,
+              
+              child: BackdropFilter(
+                enabled: selectedIndex != null,
+                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2, tileMode: TileMode.decal),
+                child: Align(
+                  alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Obx(
+                    () {
+                      final double width = appUiState.deviceWidth.value;
+                      // final double height = appUiState.deviceHeight.value;
+                      final bool isDarkMode = appUiState.isDarkMode.value;
+                      final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
+                      final Color bubbleBgColor = isDarkMode ? (isSender ? WhatsAppColors.msgSentDark : WhatsAppColors.msgReceivedDark) : (isSender ? WhatsAppColors.msgSent : WhatsAppColors.msgReceived);
+                      final Color taggedMsgColor = isDarkMode ? (isSender ? WhatsAppColors.taggedMsgSentDark : WhatsAppColors.taggedMsgReceivedDark) : (isSender ? WhatsAppColors.taggedMsgSent : WhatsAppColors.taggedMsgReceived);
+                      
+                      return ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: hasMedia ? width * 0.7 : width * 0.85),
+                        child: Bubble(
+                            showNip: true,
+                            stick: true,
+                            nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
+                            nipHeight: 12,
+                            nipWidth: 10,
+                            nipRadius: 2,
+                            padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
+                            margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
+                            radius: const Radius.circular(10),
+                            color: selectedIndex != null ? bubbleBgColor : bubbleBgColor,
+                            child: MsgBubbleContent(
+                                messageModel: messageModel,
+                                hasMedia: hasMedia,
+                                isSender: isSender,
+                                messageId: messageModel.messageId,
+                                taggedMsgColor: taggedMsgColor,
+                                index: index,
+                                )),
+                      ).animate().fade(begin: 1.0, end: selectedIndex != null ? 0.8 : 1.0, duration: const Duration(milliseconds: 25),);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
-      ),
+              );
+      },
     );
   }
 }

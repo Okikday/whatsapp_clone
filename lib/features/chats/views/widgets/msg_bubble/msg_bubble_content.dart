@@ -12,12 +12,10 @@ import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/controllers/msg_bubble_controller.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_content_functions.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_functions.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/timestamped_chat_message.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/widgets/build_attachment_widget.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/widgets/build_tagged_msg_widget.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/build_attachment_widget.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/build_tagged_msg_widget.dart';
 
 class MsgBubbleContent extends StatelessWidget {
   final MessageModel messageModel;
@@ -25,6 +23,7 @@ class MsgBubbleContent extends StatelessWidget {
   final bool isSender;
   final Color taggedMsgColor;
   final String messageId;
+  final int index;
 
   const MsgBubbleContent({
     super.key,
@@ -32,7 +31,8 @@ class MsgBubbleContent extends StatelessWidget {
     required this.hasMedia,
     required this.isSender,
     required this.taggedMsgColor,
-    required this.messageId
+    required this.messageId,
+    required this.index,
   });
 
   @override
@@ -54,7 +54,7 @@ class MsgBubbleContent extends StatelessWidget {
       color: sentAtTextColor,
     );
     final String dateText = DateFormat.jm().format(messageModel.sentAt);
-    final double sentAtWidth = MsgBubbleContentFunctions().calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 6;
+    final double sentAtWidth = MsgBubbleFunctions.calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 6;
     double taggedMsgWidth = hasMedia ? appUiState.deviceWidth * 0.7 : sentAtWidth + UtilitiesFuncs.getTextSize(messageModel.content, msgContentStyle, maxLines: 1).width + 12.0;
     if (hasMedia) taggedMsgWidth = appUiState.deviceWidth.value * 0.7;
     
@@ -71,6 +71,7 @@ class MsgBubbleContent extends StatelessWidget {
             taggedMsgColor: taggedMsgColor,
             isDarkMode: isDarkMode,
             width: taggedMsgWidth,
+            index: index,
           ),
         if (hasAttachment)
           BuildAttachmentWidget(

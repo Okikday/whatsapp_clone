@@ -78,7 +78,7 @@ class ContactVerificationView extends StatelessWidget {
                           GestureDetector(
                             onTap: () {},
                             child: CustomTextfield(
-                              screenWidth: 70,
+                              pixelWidth: appUiState.deviceWidth.value * 0.75,
                               isEnabled: false,
                               defaultText: "Nigeria",
                               inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
@@ -106,7 +106,7 @@ class ContactVerificationView extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 CustomTextfield(
-                                  screenWidth: 20,
+                                  pixelWidth: appUiState.deviceWidth.value * 0.2,
                                   isEnabled: false,
                                   defaultText: "+ 234",
                                   inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
@@ -120,7 +120,7 @@ class ContactVerificationView extends StatelessWidget {
                                   focusedBorder: underlineInputBorder,
                                 ),
                                 CustomTextfield(
-                                  screenWidth: 45,
+                                  pixelWidth: appUiState.deviceWidth.value * 0.45,
                                   hint: "Phone number",
                                   maxLines: 1,
                                   cursorColor: const CustomText(

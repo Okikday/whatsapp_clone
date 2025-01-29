@@ -18,7 +18,7 @@ import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_overlay.dart';
 import 'package:whatsapp_clone/common/widgets/custom_scroll_physics.dart';
-import 'package:whatsapp_clone/features/chats/controllers/chats_ui_controller.dart';
+import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
@@ -32,11 +32,11 @@ class ChatsTabView extends StatelessWidget {
   const ChatsTabView({super.key, required this.chatModels});
   @override
   Widget build(BuildContext context) {
-    chatUiController.setOverscrollOffset(0.0);
+    chatsTabUiController.setOverscrollOffset(0.0);
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
 
     return NotificationListener<ScrollNotification>(
-      onNotification: (notification) => chatUiController.onChatListsNotification(notification),
+      onNotification: (notification) => chatsTabUiController.onChatListsNotification(notification),
       child: PlayAnimationBuilder(
         duration: const Duration(milliseconds: 100),
         tween: Tween(begin: 0.01, end: 0.0),
@@ -50,7 +50,7 @@ class ChatsTabView extends StatelessWidget {
         child: Obx(
           () {
             final bool isDarkMode = appUiState.isDarkMode.value;
-            final double overscrollOffset = chatUiController.overscrollOffset.value;
+            final double overscrollOffset = chatsTabUiController.overscrollOffset.value;
             final double width = appUiState.deviceWidth.value;
             final double height = appUiState.deviceHeight.value;
             return CustomScrollView(
@@ -124,14 +124,16 @@ class ChatsTabView extends StatelessWidget {
                             selectedIndex: chatTilesSelected[index],
                             onTap: () async {
                               if (chatTilesSelected.isEmpty) {
-                                if (!chatsTabUiController.isChatViewActive.value) {
-                                  chatsTabUiController.setIsChatViewActive(true);
+                                if (chatsTabUiController.allowPagePush.value) {
+                                  chatsTabUiController.setAllowPagePush(false);
                                   final ChatView preloadedChatView = ChatView(
                                     chatModel: cacheChatModel,
                                     messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
                                   );
-                                  Future.delayed(const Duration(milliseconds: 250),
-                                      () => navigator?.push(Utilities.customPageRouteBuilder(child: preloadedChatView, height: appUiState.deviceHeight.value)));
+                                  await Future.delayed(const Duration(milliseconds: 250));
+                                  navigator?.push(Utilities.customPageRouteBuilder(preloadedChatView)).then((onValue) {
+                                    chatsTabUiController.setAllowPagePush(true);
+                                  });
                                 }
                               } else {
                                 if (chatTilesSelected[index] != null) {
@@ -256,14 +258,17 @@ class ChatsTabView extends StatelessWidget {
                                       color: WhatsAppColors.primary,
                                     ),
                                     onPressed: () {
-                                      chatsTabUiController.setIsChatViewActive(true);
+                                      if (chatsTabUiController.allowPagePush.value) {
+                                        chatsTabUiController.setAllowPagePush(false);
                                       final ChatView preloadedChatView = ChatView(
                                         chatModel: cacheChatModel,
                                         messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
                                       );
 
-                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(child: preloadedChatView, height: appUiState.deviceHeight.value));
-                                      
+                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(preloadedChatView)).then((onValue){
+                                        chatsTabUiController.setAllowPagePush(true);
+                                      });
+                                      }
                                     },
                                   ),
                                   IconButton(
@@ -286,7 +291,7 @@ class ChatsTabView extends StatelessWidget {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                       navigator?.pushReplacement(Utilities.customPageRouteBuilder(child: ProfileView(chatModel: cacheChatModel), height: appUiState.deviceHeight.value));
+                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(ProfileView(chatModel: cacheChatModel)));
                                     },
                                     icon: const Icon(Icons.info_outline_rounded),
                                     color: WhatsAppColors.primary,

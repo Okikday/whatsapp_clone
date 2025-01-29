@@ -28,10 +28,7 @@ class Utilities {
     }
   }
 
-  static PageRouteBuilder customPageRouteBuilder({
-  required double height,
-  required Widget child,
-}) {
+  static PageRouteBuilder customPageRouteBuilder(Widget child) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) {
       return child;

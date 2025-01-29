@@ -6,7 +6,6 @@ import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller
 final HomeUiController homeUiController = Get.put<HomeUiController>(HomeUiController());
 
 class HomeUiController extends GetxController {
-  Rx<bool> canPop = false.obs;
   RxInt homeBottomNavBarCurrentIndex = 0.obs;
   Rx<AnimationController?> homeCameraIconAnimController = Rx<AnimationController?>(null);
   
@@ -35,7 +34,7 @@ class HomeUiController extends GetxController {
 
   void setHomeBottomNavBarCurrentIndex(int value) => homeBottomNavBarCurrentIndex.value = value;
   void sethomeCameraIconAnimController(AnimationController value) => homeCameraIconAnimController.value = value;
-  void setCanPop(bool value) => canPop.value = value;
+
 
   
 }

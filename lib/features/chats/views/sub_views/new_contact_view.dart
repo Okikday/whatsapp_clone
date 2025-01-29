@@ -86,7 +86,7 @@ class NewContactView extends StatelessWidget {
                       label: "Last name",
                       maxLines: 1,
                       pixelHeight: 48,
-                      screenWidth: 80,
+                      pixelWidth: appUiState.deviceWidth.value * 0.8,
                       cursorColor: const CustomText(
                             "",
                           ).effectiveStyle(context).color ??

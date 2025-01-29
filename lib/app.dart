@@ -21,6 +21,7 @@ class App extends StatelessWidget {
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,
       navigatorObservers: [HeroineController()],
+      defaultTransition: Transition.zoom,
       home:  isUserSignedIn ? RoutesNames.homeView : const WelcomeScreen(),
     );
   }

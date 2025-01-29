@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/sub_views/expand_image_view.dart';
 
@@ -39,8 +40,10 @@ class BuildAttachmentWidget extends StatelessWidget {
                 child: Material(
                   child: InkWell(
                       borderRadius: BorderRadius.circular(10),
-                      onTap: () {
-                        Get.to(() => ExpandImageView(imageUrl: mediaUrl, messageId: messageId, chatName: chatName, ), transition: Transition.fade);
+                      onTap: chatViewController.chatsSelected.isNotEmpty ? null : () {
+                        if(chatViewController.chatsSelected.isEmpty){
+                          Get.to(() => ExpandImageView(imageUrl: mediaUrl, messageId: messageId, chatName: chatName, ), transition: Transition.fade);
+                        }
                       },
                       child: CachedNetworkImage(
                         imageUrl: mediaUrl,

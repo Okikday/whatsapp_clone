@@ -56,7 +56,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         final double deviceHeight = appUiState.deviceHeight.value;
         final int homeBottomNavBarCurrentIndex = stateController.homeBottomNavBarCurrentIndex.value;
         return PopScope(
-          canPop: stateController.canPop.value,
+          canPop: false,
           onPopInvokedWithResult: (didPop, result) {
             if (chatsTabUiController.chatTilesSelected.isNotEmpty) chatsTabUiController.clearSelectedChatTiles();
           },
@@ -75,7 +75,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 visible: homeBottomNavBarCurrentIndex != 2,
                 child: FloatingActionButton(
                   onPressed: () {
-                    if(homeBottomNavBarCurrentIndex == 0)navigator?.push(Utilities.customPageRouteBuilder(height: deviceHeight, child: const SelectContactView()));
+                    if(homeBottomNavBarCurrentIndex == 0)navigator?.push(Utilities.customPageRouteBuilder(const SelectContactView()));
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Icon(
