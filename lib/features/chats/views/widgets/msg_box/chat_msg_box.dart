@@ -107,7 +107,7 @@ class MsgInputBar extends StatelessWidget {
         prefixIcon: IconButton(
           onPressed: () {},
           icon: Image.asset(
-            IconStrings.stickersIcon,
+            IconStrings.stickers,
             width: 24,
             height: 24,
             color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.arsenic,
@@ -174,7 +174,7 @@ class SendOrMicButtonWidget extends StatelessWidget {
                     child: isMsgInputEmpty
                         ? Icon(Icons.mic, size: 28, color: scaffoldBgColor)
                         : Image.asset(
-                            IconStrings.sendIcon,
+                            IconStrings.send,
                             width: 26,
                             height: 26,
                             color: scaffoldBgColor,

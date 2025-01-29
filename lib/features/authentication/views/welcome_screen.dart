@@ -84,7 +84,7 @@ List<Widget> welcomeScreenWidgets(
         children: [
           Column(
             children: [
-              CustomWidgets.text(context, "Welcome to WhatsApp", fontSize: Constants.fontSizeExtraLarge),
+              CustomText("Welcome to WhatsApp", fontSize: Constants.fontSizeExtraLarge),
               const SizedBox(
                 height: Constants.spaceMedium,
               ),
@@ -141,7 +141,7 @@ List<Widget> welcomeScreenWidgets(
                         const SizedBox(
                           width: Constants.spaceSmall,
                         ),
-                        CustomWidgets.text(context, "English", color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary),
+                        CustomText("English", color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary),
                         const SizedBox(
                           width: Constants.spaceSmall,
                         ),

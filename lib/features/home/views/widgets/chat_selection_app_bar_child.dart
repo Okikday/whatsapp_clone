@@ -25,7 +25,7 @@ class ChatSelectionAppBarChild extends StatelessWidget {
           IconButton(
               onPressed: () {},
               icon: Image.asset(
-                IconStrings.pinIconOutlined,
+                IconStrings.pinOutlined,
                 width: 24,
                 height: 24,
                 color: getCurrIconColor,

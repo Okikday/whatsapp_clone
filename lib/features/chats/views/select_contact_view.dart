@@ -195,7 +195,7 @@ class SelectContactAppBar extends StatelessWidget {
           IconButton(
               onPressed: () {},
               icon: Image.asset(
-                IconStrings.searchIconOutlined,
+                IconStrings.searchOutlined,
                 width: 24,
                 height: 24,
                 color: getCurrIconColor,

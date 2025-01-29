@@ -66,7 +66,7 @@ class NewContactView extends StatelessWidget {
                                 "",
                               ).effectiveStyle(context).color ??
                               Colors.green,
-                          inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                          inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                           contentPadding: const EdgeInsets.only(top: Constants.spaceExtraLarge, left: 8),
                           border: defaultInputBorder,
                           disabledBorder: defaultInputBorder,
@@ -91,7 +91,7 @@ class NewContactView extends StatelessWidget {
                             "",
                           ).effectiveStyle(context).color ??
                           Colors.green,
-                      inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                      inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                       contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                       border: defaultInputBorder,
                       disabledBorder: defaultInputBorder,
@@ -149,7 +149,7 @@ class NewContactView extends StatelessWidget {
                                       "",
                                     ).effectiveStyle(context).color ??
                                     Colors.green,
-                                inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                                 contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                                 border: defaultInputBorder,
                                 disabledBorder: defaultInputBorder,

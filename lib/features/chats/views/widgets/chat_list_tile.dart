@@ -112,8 +112,7 @@ class ChatListTile extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                                child: CustomWidgets.text(
-                              context,
+                                child: CustomText(
                               chatName,
                               align: TextAlign.left,
                               fontSize: 18,
@@ -123,7 +122,7 @@ class ChatListTile extends StatelessWidget {
                             const SizedBox(
                               width: 12,
                             ),
-                            CustomWidgets.text(context, lastUpdated ?? "", color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
+                            CustomText(lastUpdated ?? "", color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
                           ],
                         ),
                       ),
@@ -132,8 +131,7 @@ class ChatListTile extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: SizedBox(
                             height: 28,
-                            child: CustomWidgets.text(
-                              context,
+                            child: CustomText(
                               isTyping ? "Typing..." : lastMsg,
                               overflow: TextOverflow.ellipsis,
                               fontSize: 13,

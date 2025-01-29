@@ -183,8 +183,7 @@ class ChatViewAppBar extends StatelessWidget {
                 },
                 child: Align(
                     alignment: Alignment.centerLeft,
-                    child: CustomWidgets.text(
-                      context,
+                    child: CustomText(
                       chatModel.chatName,
                       fontSize: Constants.fontSizeMedium + 2,
                       fontWeight: FontWeight.w500,
@@ -196,7 +195,7 @@ class ChatViewAppBar extends StatelessWidget {
             style: const ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
             onPressed: () {},
             icon: Image.asset(
-              IconStrings.videoCallIcon,
+              IconStrings.videoCall,
               width: iconSize,
               height: iconSize,
               colorBlendMode: BlendMode.srcIn,
@@ -209,7 +208,7 @@ class ChatViewAppBar extends StatelessWidget {
             style: const ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
             onPressed: () {},
             icon: Image.asset(
-              IconStrings.callsIconOutlined,
+              IconStrings.callsOutlined,
               width: iconSize,
               height: iconSize,
               color: isDarkMode ? Colors.white : Colors.black,

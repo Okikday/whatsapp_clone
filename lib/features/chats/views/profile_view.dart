@@ -107,12 +107,12 @@ class ProfileView extends StatelessWidget {
                 children: [
                   // Name
                   Center(
-                    child: CustomWidgets.text(context, chatModel.chatName, fontSize: 24, fontWeight: FontWeight.w500),
+                    child: CustomText(chatModel.chatName, fontSize: 24, fontWeight: FontWeight.w500),
                   ),
                   
                   // Phone number
                   Center(
-                    child: CustomWidgets.text(context, chatModel.contactId,
+                    child: CustomText(chatModel.contactId,
                         fontSize: 16, fontWeight: FontWeight.w500, color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
                   ),
                   const SizedBox(height: 16),
@@ -123,9 +123,9 @@ class ProfileView extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          ProfileUtilButton(buttonWidth: width * 0.3, title: "Audio", iconString: IconStrings.callsIconOutlined),
-                          ProfileUtilButton(buttonWidth: width * 0.3, title: "Video", iconString: IconStrings.videoCallIcon),
-                          ProfileUtilButton(buttonWidth: width * 0.3, title: "Search", iconString: IconStrings.searchIconOutlined),
+                          ProfileUtilButton(buttonWidth: width * 0.3, title: "Audio", iconString: IconStrings.callsOutlined),
+                          ProfileUtilButton(buttonWidth: width * 0.3, title: "Video", iconString: IconStrings.videoCall),
+                          ProfileUtilButton(buttonWidth: width * 0.3, title: "Search", iconString: IconStrings.searchOutlined),
                         ],
                       ),
                     ),
@@ -149,8 +149,8 @@ class ProfileView extends StatelessWidget {
                           spacing: 4,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomWidgets.text(context, "About", fontWeight: FontWeight.w500, fontSize: 18),
-                            CustomWidgets.text(context, "10 April, 2025", fontWeight: FontWeight.w500, color: altTextColor)
+                            const CustomText("About", fontWeight: FontWeight.w500, fontSize: 18),
+                            CustomText("10 April, 2025", fontWeight: FontWeight.w500, color: altTextColor)
                           ],
                         ),
                       ),
@@ -366,7 +366,7 @@ class ProfileUtilButton extends StatelessWidget {
                 color: isDarkMode ? WhatsAppColors.accent : WhatsAppColors.primary,
                 colorBlendMode: BlendMode.srcIn,
               ),
-              CustomWidgets.text(context, title, fontWeight: FontWeight.w500)
+              CustomText(title, fontWeight: FontWeight.w500)
             ],
           ),
         );

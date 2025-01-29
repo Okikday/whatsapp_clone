@@ -29,16 +29,15 @@ class SelectLanguageBottomSheet extends StatelessWidget {
           child: SizedBox(
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 36,
                   child: Row(
                     children: [
-                      const SizedBox(width: 12),
-                      const CloseButton(),
-                      const SizedBox(width: 12),
+                       SizedBox(width: 12),
+                       CloseButton(),
+                       SizedBox(width: 12),
                       Expanded(
-                        child: CustomWidgets.text(
-                          context,
+                        child: CustomText(
                           "App's Language",
                           align: TextAlign.left,
                           fontSize: Constants.fontSizeMedium,
@@ -58,8 +57,8 @@ class SelectLanguageBottomSheet extends StatelessWidget {
                         leading: customRadioButtons.getRadio(
                           index: index,
                         ),
-                        title: CustomWidgets.text(context, AppConstants.whatsappLanguages.keys.toList()[index]),
-                        subtitle: CustomWidgets.text(context, AppConstants.whatsappLanguages.values.toList()[index], color: WhatsAppColors.darkTextSecondary),
+                        title: CustomText(AppConstants.whatsappLanguages.keys.toList()[index]),
+                        subtitle: CustomText(AppConstants.whatsappLanguages.values.toList()[index], color: WhatsAppColors.darkTextSecondary),
                       );
                     },
                   ),

@@ -63,7 +63,7 @@ class StatusListTile extends StatelessWidget {
                         backgroundColor: Colors.grey,
                         backgroundImage: Utilities.imgProvider(imgsrc: profilePhotoSrc, imgfile: profilePhotoFile, imgurl: profilePhotoURL),
                       )),
-                  Positioned(left: Constants.spaceSmall, bottom: Constants.spaceExtraSmall, child: CustomWidgets.text(context, title))
+                  Positioned(left: Constants.spaceSmall, bottom: Constants.spaceExtraSmall, child: CustomText(title))
                 ],
               ),
         ),

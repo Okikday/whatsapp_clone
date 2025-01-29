@@ -172,12 +172,12 @@ class ChatsTabView extends StatelessWidget {
                   ),
                 ),
 
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: SizedBox(
                       height: 32,
                       child: Align(
                           alignment: Alignment.center,
-                          child: CustomWidgets.text(context, "Your personal messages will be end-to-end encrypted",
+                          child: CustomText("Your personal messages will be end-to-end encrypted",
                               align: TextAlign.center, color: WhatsAppColors.secondary))),
                 )
               ],
@@ -249,10 +249,11 @@ class ChatsTabView extends StatelessWidget {
                               color: scaffoldBgColor,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
                                     icon: Image.asset(
-                                      IconStrings.chatIconOutlined,
+                                      IconStrings.chatOutlined,
                                       width: 24,
                                       height: 24,
                                       color: WhatsAppColors.primary,
@@ -264,7 +265,7 @@ class ChatsTabView extends StatelessWidget {
                                         chatModel: cacheChatModel,
                                         messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
                                       );
-
+                                            
                                       navigator?.pushReplacement(Utilities.customPageRouteBuilder(preloadedChatView)).then((onValue){
                                         chatsTabUiController.setAllowPagePush(true);
                                       });
@@ -273,7 +274,7 @@ class ChatsTabView extends StatelessWidget {
                                   ),
                                   IconButton(
                                     icon: Image.asset(
-                                      IconStrings.callsIconOutlined,
+                                      IconStrings.callsOutlined,
                                       width: 24,
                                       height: 24,
                                       color: WhatsAppColors.primary,
@@ -282,7 +283,7 @@ class ChatsTabView extends StatelessWidget {
                                   ),
                                   IconButton(
                                     icon: Image.asset(
-                                      IconStrings.videoCallIcon,
+                                      IconStrings.videoCall,
                                       width: 24,
                                       height: 24,
                                       color: WhatsAppColors.primary,

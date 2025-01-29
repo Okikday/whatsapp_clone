@@ -6,6 +6,6 @@ class CommunitiesTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: CustomWidgets.text(context, "Communities tab"),);
+    return Center(child: CustomText("Communities tab"),);
   }
 }

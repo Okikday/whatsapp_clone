@@ -25,7 +25,7 @@ class UpdatesTabView extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: generalPadding,
-            child: CustomWidgets.text(context, "Status", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
+            child: CustomText("Status", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
           ),
         ),
         const SliverToBoxAdapter(
@@ -63,7 +63,7 @@ class UpdatesTabView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomWidgets.text(context, "Channels", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
+                CustomText("Channels", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
                 CustomElevatedButton(
                   pixelWidth: 72,
                   contentPadding: const EdgeInsets.all(4),
@@ -71,7 +71,7 @@ class UpdatesTabView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomWidgets.text(context, "Explore", color: Theme.of(context).primaryColor, fontSize: 13),
+                      CustomText("Explore", color: Theme.of(context).primaryColor, fontSize: 13),
                       Icon(FontAwesomeIcons.angleRight, size: 14, color: Theme.of(context).primaryColor)
                     ],
                   ),
@@ -85,7 +85,7 @@ class UpdatesTabView extends StatelessWidget {
         SliverToBoxAdapter(
             child: SizedBox(
           height: 360,
-          child: Center(child: CustomWidgets.text(context, "You haven't joined any Channels yet", color: Colors.grey)),
+          child: Center(child: CustomText("You haven't joined any Channels yet", color: Colors.grey)),
         ))
       ],
     );

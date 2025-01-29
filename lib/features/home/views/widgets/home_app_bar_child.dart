@@ -5,6 +5,7 @@ import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:whatsapp_clone/common/widgets/custom_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/loading_dialog.dart';
 import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
@@ -24,7 +25,7 @@ class HomeAppBarChild extends StatelessWidget {
 
       return Row(
         children: [
-          CustomWidgets.text(context, AppConstants.homeTabTitles[stateCurrentIndex],
+          CustomText(AppConstants.homeTabTitles[stateCurrentIndex],
               fontSize: stateCurrentIndex == 0 ? 24 : 22,
               fontWeight: FontWeight.w600,
               color: stateCurrentIndex == 0
@@ -41,7 +42,7 @@ class HomeAppBarChild extends StatelessWidget {
                 child: IconButton(
                     onPressed: () {},
                     icon: Image.asset(
-                      IconStrings.cameraIconHome,
+                      IconStrings.cameraHome,
                       width: 24,
                       height: 24,
                       color: isDarkMode ? Colors.white : Colors.black,
@@ -59,6 +60,7 @@ class HomeAppBarChild extends StatelessWidget {
                     size: 24,
                     color: isDarkMode ? Colors.white : Colors.black,
                   )).animate().flipH(duration: const Duration(milliseconds: 150)).fadeIn(duration: const Duration(milliseconds: 150))),
+                  
           CustomPopupMenuButton(
             menuItems: const ["Sign out"],
             onSelected: (value) async {
@@ -81,3 +83,22 @@ class HomeAppBarChild extends StatelessWidget {
     });
   }
 }
+
+
+//  CustomPopupMenuButton(
+//             menuItems: const ["Sign out"],
+//             onSelected: (value) async {
+//               if (value == "Sign out") {
+//                 Get.dialog(
+//                   const LoadingDialog(
+//                     msg: "Signing out",
+//                   ),
+//                 );
+//                 Future.delayed(const Duration(seconds: 1), () async {
+//                   await UserAuth().googleSignOut();
+//                   Get.close(1);
+//                   Get.off(() => const WelcomeScreen());
+//                 });
+//               }
+//             },
+//           )

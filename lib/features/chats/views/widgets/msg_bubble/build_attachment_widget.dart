@@ -58,19 +58,19 @@ class BuildAttachmentWidget extends StatelessWidget {
       );
     } else if (msgType == MessageType.document) {
       return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
+        child: CustomText("Attachment"),
       );
     } else if (msgType == MessageType.video) {
       return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
+        child: CustomText("Attachment"),
       );
     } else if (msgType == MessageType.link) {
       return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
+        child: CustomText("Attachment"),
       );
     } else {
       return SizedBox(
-        child: CustomWidgets.text(context, "Attachment"),
+        child: CustomText("Attachment"),
       );
     }
   }

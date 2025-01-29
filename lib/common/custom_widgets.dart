@@ -2,54 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class CustomWidgets {
-  // Utility for Text
-  static CustomText text(
-    BuildContext context,
-    String text, {
-    double fontSize = 12,
-    double adjustSize = 0,
-    Color? color,
-    Color? darkColor,
-    TextAlign? align,
-    bool invertColor = false,
-    TextOverflow? overflow = TextOverflow.visible,
-    String? fontFamily,
-    FontWeight fontWeight = FontWeight.normal,
-    FontStyle fontStyle = FontStyle.normal,
-    TextDecoration textDecoration = TextDecoration.none,
-    Color decorationColor = Colors.black,
-    List<Shadow> shadows = const [],
-    double? height,
-    double? letterSpacing,
-    double? wordSpacing,
-    TextDecorationStyle? decorationStyle,
-    bool? softWrap,
-    int? maxLines,
-  }) {
-    final bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    color ??= isDarkMode ? (invertColor ? Colors.black : Colors.white) : (invertColor ? Colors.white : Colors.black);
-    if (darkColor != null && isDarkMode) color = darkColor;
-
-    return CustomText(
-      text,
-      color: color,
-      fontSize: fontSize + adjustSize,
-      fontFamily: fontFamily,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      textDecoration: textDecoration,
-      decorationColor: decorationColor,
-      shadows: shadows,
-      height: height,
-      letterSpacing: letterSpacing,
-      wordSpacing: wordSpacing,
-      decorationStyle: decorationStyle,
-      align: align ?? TextAlign.start,
-      overflow: overflow,
-      softWrap: softWrap,
-      maxLines: maxLines,
-    );
-  }
+// Utilities for text
 
   // Utility method for RichText with TextSpan
   static RichText richText(

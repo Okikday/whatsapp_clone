@@ -17,19 +17,19 @@ class CallsTabView extends StatelessWidget {
         const SizedBox(height: 12,),
         Padding(
           padding: generalPadding,
-          child: SizedBox(width: Get.width, child: CustomWidgets.text(context, "Favourites", fontSize: Constants.fontSizeMedium, align: TextAlign.left)),
+          child: SizedBox(width: Get.width, child: CustomText("Favourites", fontSize: Constants.fontSizeMedium, align: TextAlign.left)),
         ),
         const SizedBox(height: 16,),
         ListTile(
           
           contentPadding: generalPadding.copyWith(top: 4, bottom: 4),
-          title: CustomWidgets.text(context, "Add Favourite", fontSize: Constants.fontSizeMedium - 1),
+          title: CustomText("Add Favourite", fontSize: Constants.fontSizeMedium - 1),
           leading: CircleAvatar(backgroundColor: WhatsAppColors.secondary, child: Icon(Icons.favorite, color: scaffoldBgColor, size: 24,), ),
           onTap: () {
             
           },
         ),
-        Expanded(child: Center(child: CustomWidgets.text(context, "You have no recent calls"),))
+        Expanded(child: Center(child: CustomText("You have no recent calls"),))
       ],
     );
   }

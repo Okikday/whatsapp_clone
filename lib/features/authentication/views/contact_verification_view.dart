@@ -55,11 +55,11 @@ class ContactVerificationView extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: Get.height > Get.width ? Get.width * 0.05 : Get.height * 0.05),
                       child: Column(
                         children: [
-                          CustomWidgets.text(context, "Enter your phone number", fontSize: Constants.fontSizeLarge),
+                          CustomText("Enter your phone number", fontSize: Constants.fontSizeLarge),
                           const SizedBox(
                             height: Constants.spaceSmall,
                           ),
-                          CustomWidgets.text(context, "WhatsApp will need to verify your phone number. ",
+                          CustomText("WhatsApp will need to verify your phone number. ",
                               fontSize: Constants.fontSizeSmall + 2, align: TextAlign.center),
                           CustomWidgets.richText(context,
                               textSpans: [
@@ -109,7 +109,7 @@ class ContactVerificationView extends StatelessWidget {
                                   pixelWidth: appUiState.deviceWidth.value * 0.2,
                                   isEnabled: false,
                                   defaultText: "+ 234",
-                                  inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                  inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                                   contentPadding: const EdgeInsets.only(
                                     top: Constants.spaceMedium,
                                   ),
@@ -126,7 +126,7 @@ class ContactVerificationView extends StatelessWidget {
                                   cursorColor: const CustomText(
                                     "",
                                   ).effectiveStyle(context).color ?? Colors.green,
-                                  inputTextStyle: CustomWidgets.text(context, "", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                  inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                                   contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
@@ -170,7 +170,7 @@ class ContactVerificationView extends StatelessWidget {
                                       FontAwesomeIcons.google,
                                       color: WhatsAppColors.primary,
                                     ),
-                                    CustomWidgets.text(context, "Use Google", fontSize: 16)
+                                    CustomText("Use Google", fontSize: 16)
                                   ],
                                 ),
                               ),

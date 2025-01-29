@@ -54,7 +54,7 @@ class MsgBubbleContent extends StatelessWidget {
       color: sentAtTextColor,
     );
     final String dateText = DateFormat.jm().format(messageModel.sentAt);
-    final double sentAtWidth = MsgBubbleFunctions.calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 6;
+    final double sentAtWidth = MsgBubbleFunctions.calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 8;
     double taggedMsgWidth = hasMedia ? appUiState.deviceWidth * 0.7 : sentAtWidth + UtilitiesFuncs.getTextSize(messageModel.content, msgContentStyle, maxLines: 1).width + 12.0;
     if (hasMedia) taggedMsgWidth = appUiState.deviceWidth.value * 0.7;
     

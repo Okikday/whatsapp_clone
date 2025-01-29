@@ -105,7 +105,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
                     const SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                      child: CustomWidgets.text(context, widget.msg ?? loadingMessages[msgIndex]),
+                      child: CustomText(widget.msg ?? loadingMessages[msgIndex]),
                     ),
                   ],
                 ),

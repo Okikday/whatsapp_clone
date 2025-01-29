@@ -37,14 +37,14 @@ class HomeNavigationBar extends StatelessWidget {
       destinations: [
         NavigationDestination(
           icon: Image.asset(
-            IconStrings.chatIconOutlined,
+            IconStrings.chatOutlined,
             width: 24,
             height: 24,
             colorBlendMode: BlendMode.srcIn,
             color: isDarkMode ? null : WhatsAppColors.textPrimary,
           ),
           selectedIcon: Image.asset(
-            IconStrings.chatIconFilled,
+            IconStrings.chatFilled,
             width: 24,
             height: 24,
             colorBlendMode: BlendMode.srcIn,
@@ -55,14 +55,14 @@ class HomeNavigationBar extends StatelessWidget {
         ),
         NavigationDestination(
           icon: Image.asset(
-            IconStrings.updatesIconOutlined,
+            IconStrings.updatesOutlined,
             width: 24,
             height: 24,
             colorBlendMode: BlendMode.srcIn,
             color: isDarkMode ? null : WhatsAppColors.textPrimary,
           ),
           selectedIcon: Image.asset(
-            IconStrings.updatesIconFilled,
+            IconStrings.updatesFilled,
             width: 24,
             height: 24,
             colorBlendMode: BlendMode.srcIn,
@@ -73,14 +73,14 @@ class HomeNavigationBar extends StatelessWidget {
         ),
         NavigationDestination(
           icon: Image.asset(
-            IconStrings.communitiesIconOutlined,
+            IconStrings.communitiesOutlined,
             width: 28,
             height: 28,
             colorBlendMode: BlendMode.srcIn,
             color: isDarkMode ? null : WhatsAppColors.textPrimary,
           ),
           selectedIcon: Image.asset(
-            IconStrings.communitiesIconFilled,
+            IconStrings.communitiesFilled,
             width: 28,
             height: 28,
             colorBlendMode: BlendMode.srcIn,
@@ -91,14 +91,14 @@ class HomeNavigationBar extends StatelessWidget {
         ),
         NavigationDestination(
           icon: Image.asset(
-            IconStrings.callsIconOutlined,
+            IconStrings.callsOutlined,
             width: 24,
             height: 24,
             colorBlendMode: BlendMode.srcIn,
             color: isDarkMode ? null : WhatsAppColors.textPrimary,
           ),
           selectedIcon: Image.asset(
-            IconStrings.callsIconFilled,
+            IconStrings.callsFilled,
             width: 24,
             height: 24,
             colorBlendMode: BlendMode.srcIn,
