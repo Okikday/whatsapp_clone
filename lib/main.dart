@@ -12,6 +12,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
   await Hive.initFlutter();
   await HiveData.initHiveData();
   final hiveData = HiveData();

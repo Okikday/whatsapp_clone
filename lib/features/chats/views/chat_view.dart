@@ -158,7 +158,7 @@ class ChatViewAppBar extends StatelessWidget {
                     )),
               ),
               Heroine(
-                tag: "profilePhoto",
+                tag: "${chatModel.chatId}_profile",
                 child: CircleAvatar(
                   radius: 18,
                   backgroundColor: Colors.grey.shade500,
