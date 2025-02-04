@@ -55,11 +55,11 @@ class ContactVerificationView extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: Get.height > Get.width ? Get.width * 0.05 : Get.height * 0.05),
                       child: Column(
                         children: [
-                          CustomText("Enter your phone number", fontSize: Constants.fontSizeLarge),
+                          const CustomText("Enter your phone number", fontSize: Constants.fontSizeLarge),
                           const SizedBox(
                             height: Constants.spaceSmall,
                           ),
-                          CustomText("WhatsApp will need to verify your phone number. ",
+                          const CustomText("WhatsApp will need to verify your phone number. ",
                               fontSize: Constants.fontSizeSmall + 2, align: TextAlign.center),
                           CustomWidgets.richText(context,
                               textSpans: [
@@ -82,7 +82,6 @@ class ContactVerificationView extends StatelessWidget {
                               isEnabled: false,
                               defaultText: "Nigeria",
                               inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                              contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                               textAlign: TextAlign.center,
                               suffixIcon: const Icon(
                                 FontAwesomeIcons.caretDown,
@@ -109,10 +108,7 @@ class ContactVerificationView extends StatelessWidget {
                                   pixelWidth: appUiState.deviceWidth.value * 0.2,
                                   isEnabled: false,
                                   defaultText: "+ 234",
-                                  inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                                  contentPadding: const EdgeInsets.only(
-                                    top: Constants.spaceMedium,
-                                  ),
+                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                                   textAlign: TextAlign.center,
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
@@ -126,8 +122,7 @@ class ContactVerificationView extends StatelessWidget {
                                   cursorColor: const CustomText(
                                     "",
                                   ).effectiveStyle(context).color ?? Colors.green,
-                                  inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                                  contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
+                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
                                   enabledBorder: underlineInputBorder,

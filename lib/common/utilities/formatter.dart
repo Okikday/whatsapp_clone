@@ -42,4 +42,35 @@ class Formatter {
       return DateFormat('dd/MM/yyyy').format(dateTime); // e.g., "10/01/2025"
     }
   }
+
+  String chatDate(DateTime date) {
+    String getDayName(DateTime date) {
+      const List<String> daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      return daysOfWeek[date.weekday - 1];
+    }
+
+    String getMonthName(int month) {
+      const List<String> months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      return months[month - 1];
+    }
+
+    String formatAsDate(DateTime date) {
+      final String monthName = getMonthName(date.month);
+      return "${date.day} $monthName ${date.year}";
+    }
+
+    final now = DateTime.now();
+    final difference = now.difference(date).inDays;
+    final DateTime startOfToday = DateTime(now.year, now.month, now.day);
+
+    if (date.isAfter(startOfToday)) {
+      return "Today";
+    } else if (difference == 1) {
+      return "Yesterday";
+    } else if (difference <= 6) {
+      return getDayName(date);
+    } else {
+      return formatAsDate(date);
+    }
+  }
 }

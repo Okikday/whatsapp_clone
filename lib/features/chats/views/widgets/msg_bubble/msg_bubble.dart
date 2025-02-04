@@ -81,60 +81,55 @@ class MsgBubble extends StatelessWidget {
         return SizedBox(
         width: appUiState.deviceWidth.value,
         child: Material(
-          type: MaterialType.transparency,
+          color: selectedIndex != null ? Theme.of(context).primaryColor.withAlpha(50) : Colors.transparent,
+          surfaceTintColor: selectedIndex != null ? Colors.white : Colors.transparent,
           child: InkWell(
             overlayColor: WidgetStatePropertyAll(Theme.of(context).primaryColor.withAlpha(40)),
-            splashFactory: NoSplash.splashFactory,
                   onTap: () {
                     MsgBubbleFunctions.onTapBubble(index);
                   },
                   onLongPress: () {
                     MsgBubbleFunctions.onLongPress(index);
                   },
-            child: Container(
-              decoration: BoxDecoration(color: selectedIndex != null ? Theme.of(context).primaryColor.withAlpha(50) : Colors.transparent,),
-              foregroundDecoration: BoxDecoration(color: selectedIndex != null ? Colors.white.withValues(alpha: 0.025) : Colors.transparent),
-              clipBehavior: selectedIndex != null ? Clip.hardEdge : Clip.none,
-              
-              child: BackdropFilter(
-                enabled: selectedIndex != null,
-                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2, tileMode: TileMode.decal),
-                child: Align(
-                  alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Obx(
-                    () {
-                      final double width = appUiState.deviceWidth.value;
-                      // final double height = appUiState.deviceHeight.value;
-                      final bool isDarkMode = appUiState.isDarkMode.value;
-                      final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
-                      final Color bubbleBgColor = isDarkMode ? (isSender ? WhatsAppColors.msgSentDark : WhatsAppColors.msgReceivedDark) : (isSender ? WhatsAppColors.msgSent : WhatsAppColors.msgReceived);
-                      final Color taggedMsgColor = isDarkMode ? (isSender ? WhatsAppColors.taggedMsgSentDark : WhatsAppColors.taggedMsgReceivedDark) : (isSender ? WhatsAppColors.taggedMsgSent : WhatsAppColors.taggedMsgReceived);
-                      
-                      return ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: hasMedia ? width * 0.7 : width * 0.85),
-                        child: Bubble(
-                            showNip: true,
-                            stick: true,
-                            nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
-                            nipHeight: 12,
-                            nipWidth: 10,
-                            nipRadius: 2,
-                            padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
-                            margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
-                            radius: const Radius.circular(10),
-                            color: selectedIndex != null ? bubbleBgColor : bubbleBgColor,
-                            child: MsgBubbleContent(
-                                messageModel: messageModel,
-                                hasMedia: hasMedia,
-                                isSender: isSender,
-                                messageId: messageModel.messageId,
-                                taggedMsgColor: taggedMsgColor,
-                                index: index,
-                                )),
-                      ).animate().fade(begin: 1.0, end: selectedIndex != null ? 0.8 : 1.0, duration: const Duration(milliseconds: 25),);
-                    },
-                  ),
-                ),
+            child: AnimatedAlign(
+              duration: Durations.medium3,
+              alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
+              child: Obx(
+                () {
+                  final double width = appUiState.deviceWidth.value;
+                  // final double height = appUiState.deviceHeight.value;
+                  final bool isDarkMode = appUiState.isDarkMode.value;
+                  final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
+                  final Color bubbleBgColor = isDarkMode ? (isSender ? WhatsAppColors.msgSentDark : WhatsAppColors.msgReceivedDark) : (isSender ? WhatsAppColors.msgSent : WhatsAppColors.msgReceived);
+                  final Color taggedMsgColor = isDarkMode ? (isSender ? WhatsAppColors.taggedMsgSentDark : WhatsAppColors.taggedMsgReceivedDark) : (isSender ? WhatsAppColors.taggedMsgSent : WhatsAppColors.taggedMsgReceived);
+                  
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: hasMedia ? width * 0.7 : width * 0.85),
+                    child: Animate(
+                      effects: [FadeEffect(begin: selectedIndex != null ? 0.8 : 1.0, end: selectedIndex != null ? 0.8 : 1.0,)],
+                      child: Bubble(
+                          showNip: true,
+                          stick: true,
+                          nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
+                          nipHeight: 12,
+                          nipWidth: 10,
+                          nipRadius: 2,
+                          padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
+                          margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
+                          radius: const Radius.circular(10),
+                          color: selectedIndex != null ? bubbleBgColor : bubbleBgColor,
+                          shadowColor: isDarkMode ? Colors.white10 : Colors.black12,
+                          child: MsgBubbleContent(
+                              messageModel: messageModel,
+                              hasMedia: hasMedia,
+                              isSender: isSender,
+                              messageId: messageModel.messageId,
+                              taggedMsgColor: taggedMsgColor,
+                              index: index,
+                              )),
+                    ),
+                  );
+                },
               ),
             ),
           ),

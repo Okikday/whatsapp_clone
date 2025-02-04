@@ -69,7 +69,7 @@ class ChatView extends StatelessWidget {
                       ))
                   : CustomAppBarContainer(scaffoldBgColor: scaffoldBgColor, child: const ChatBubbleSelectionAppBar()),
               body: SizedBox(
-                width: MediaQuery.sizeOf(context).width,
+                width: width,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                       color: isDarkMode ? Colors.black.withAlpha(242) : WhatsAppColors.seaShell,
@@ -82,7 +82,8 @@ class ChatView extends StatelessWidget {
                           scale: 1.3,
                           filterQuality: FilterQuality.high,
                           colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.linen, BlendMode.srcIn),
-                          fit: BoxFit.none)),
+                          fit: BoxFit.none
+                          )),
                   child: Column(
                     children: [
                       // Chat background
@@ -113,6 +114,7 @@ void onPopChatView() {
     chatViewController.clearSelectedChatBubble();
   } else {
     chatViewController.setMessageInput('');
+    chatViewController.resetMsgBarHeight();
   }
 }
 

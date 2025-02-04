@@ -11,6 +11,7 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
+import 'package:whatsapp_clone/common/widgets/custom_scroll_physics.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/profile_list_tile.dart';
 
@@ -19,14 +20,15 @@ class ProfileView extends StatelessWidget {
   ProfileView({super.key, required this.chatModel});
 
   final ValueNotifier<double> scrollOffsetNotifier = ValueNotifier(0.0);
+  final ValueNotifier<double> percentScrollNotifier = ValueNotifier(0.0);
 
   @override
   Widget build(BuildContext context) {
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
-    final ScrollController scrollController = PrimaryScrollController.of(context);
-    scrollController.removeListener(() => scrollOffsetNotifier.value = scrollController.offset);
-    scrollController.addListener(() => scrollOffsetNotifier.value = scrollController.offset);
-    // log("Build profile view");
+    // final ScrollController scrollController = PrimaryScrollController.of(context);
+    // scrollController.removeListener(() => scrollOffsetNotifier.value = scrollController.offset);
+    // scrollController.addListener(() => scrollOffsetNotifier.value = scrollController.offset);
+    // // log("Build profile view");
 
     return Scaffold(
       backgroundColor: scaffoldBgColor,
@@ -52,98 +54,95 @@ class ProfileView extends StatelessWidget {
           return SizedBox(
             height: height,
             width: width,
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    expandedHeight: maxHeight,
-                    collapsedHeight: kToolbarHeight,
-                    floating: false,
-                    pinned: true,
-                    automaticallyImplyLeading: false,
-                    backgroundColor: scaffoldBgColor,
-                    surfaceTintColor: Colors.transparent,
-                    flexibleSpace: ValueListenableBuilder<double>(
-                        valueListenable: scrollOffsetNotifier,
-                        builder: (context, value, child) {
-                          final double imageSize = (maxHeight - (scrollOffsetNotifier.value)).clamp(kToolbarHeight - 8, additionalHeight * 2);
-                          final double percentScroll = scrollOffsetNotifier.value.clamp(0, additionalHeight) / additionalHeight;
-                          
-                          return FlexibleSpaceBar(
-                            titlePadding: EdgeInsets.only(top: statusBarHeight),
-                            expandedTitleScale: 1.0,
-                            collapseMode: CollapseMode.pin,
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Hero(tag: "icon_arrow_back", child: SizedBox(width: 48, height: 48, child: BackButton())),
-                                Expanded(
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: AnimatedSize(
-                                        duration: const Duration(milliseconds: 350),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [ 
-                                            AnimatedSize(
-                                              duration: const Duration(milliseconds: 350),
-                                              child: SizedBox(width: ((width - maxHeight - 96)/2) * (1-percentScroll),)),
-                                              
-                                            ProfilePhotoAvatar(
-                                              url: chatModel.chatProfilePhoto,
-                                              size: imageSize,
-                                              heroineTag: "${chatModel.chatId}_profile",
-                                            ),
-
-                                            if(percentScroll >= 0.95)Padding(
-                                              padding: const EdgeInsets.only(left: 12),
-                                              child: CustomText(chatModel.chatName, fontSize: 20, fontWeight: FontWeight.w500,),
-                                            ).animate().slideX(begin: 0.1).fadeIn()
-                                            
-                                          ],
-                                        ),
-                                      ),
-                                    )),
-                            
-                                // if(!innerBoxIsScrolled && reductionWidth < 200) Expanded(
-                                //   child: Align(
-                                //     alignment: Alignment.center,
-                                //     child: AnimatedSize(
-                                //       duration: const Duration(milliseconds: 350),
-                                //       child: Padding(
-                                //         padding: EdgeInsets.only(right: reductionWidth),
-                                //         child: ProfilePhotoAvatar(url: chatModel.chatProfilePhoto, size: (125 - reductionWidth/(width/2) * 125).clamp(35, 125)),
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
-                                // if(innerBoxIsScrolled || reductionWidth >= 200) AnimatedSize(
-                                //   duration: const Duration(milliseconds: 350),
-                                //   child: Align(
-                                //       alignment: Alignment.centerLeft,
-                                //       child: Heroine(
-                                //         tag: "${chatModel.chatId}_profile",
-                                //         child: ProfilePhotoAvatar(url: chatModel.chatProfilePhoto, size: 35,)),
-                                //     ),
-                                // ),
-                                // const SizedBox(width: 8,),
-                                // if(innerBoxIsScrolled || reductionWidth >= 200) Expanded(child: Align(alignment: Alignment.centerLeft, child: CustomText(chatModel.chatName, fontSize: 20, fontWeight: FontWeight.w500,)).animate().slideX(begin: 0.1).fadeIn()),
-                                Hero(tag: "icon_more_vert", child: SizedBox(width: 48, height: 48, child: IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert), )))
-                              ],
-                            ),
-                          );
-                        }),
-                  ),
-                ];
+            child: NotificationListener(
+              onNotification: (notification) {
+                switch (notification) {
+                  case ScrollMetricsNotification():
+                    if (scrollOffsetNotifier.value != notification.metrics.pixels) {
+                      scrollOffsetNotifier.value = notification.metrics.pixels;
+                    }
+                }
+                return true;
               },
-              body: ProfileViewBody(
-                  chatModel: chatModel,
-                  isDarkMode: isDarkMode,
-                  boxDecoration: boxDecoration,
-                  width: width,
-                  altTextColor: altTextColor,
-                  leftPaddedWidth: leftPaddedWidth),
+              child: CustomScrollView(physics: CustomScrollPhysics.android(), slivers: [
+                ValueListenableBuilder<double>(
+                    valueListenable: scrollOffsetNotifier,
+                    builder: (context, scrollOffsetNotifier, child) {
+                      final double imageSize = (maxHeight - (scrollOffsetNotifier)).clamp(kToolbarHeight - 8, additionalHeight * 2);
+                      final double percentScroll = scrollOffsetNotifier.clamp(0, additionalHeight) / additionalHeight;
+                      return SliverAppBar(
+                        expandedHeight: maxHeight,
+                        collapsedHeight: kToolbarHeight,
+                        floating: false,
+                        pinned: true,
+                        automaticallyImplyLeading: false,
+                        backgroundColor: scaffoldBgColor,
+                        surfaceTintColor: Colors.transparent,
+                        shape: percentScroll > 0.98
+                            ? LinearBorder(side: BorderSide(color: isDarkMode ? WhatsAppColors.arsenic : WhatsAppColors.gray), bottom: const LinearBorderEdge())
+                            : null,
+                        flexibleSpace: FlexibleSpaceBar(
+                          titlePadding: EdgeInsets.only(top: statusBarHeight),
+                          expandedTitleScale: 1.0,
+                          collapseMode: CollapseMode.none,
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Hero(tag: "icon_arrow_back", child: SizedBox(width: 48, height: 48, child: BackButton())),
+                              Expanded(
+                                  child: Align(
+                                alignment: Alignment.center,
+                                child: AnimatedSize(
+                                  duration: const Duration(milliseconds: 350),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      AnimatedSize(
+                                          duration: const Duration(milliseconds: 350),
+                                          child: SizedBox(
+                                            width: ((width - maxHeight - 96) / 2) * (1 - percentScroll),
+                                          )),
+                                      ProfilePhotoAvatar(
+                                        url: chatModel.chatProfilePhoto,
+                                        size: imageSize,
+                                        heroineTag: "${chatModel.chatId}_profile",
+                                      ),
+                                      if (percentScroll >= 0.95)
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 12),
+                                          child: CustomText(
+                                            chatModel.chatName,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ).animate().slideX(begin: 0.1).fadeIn()
+                                    ],
+                                  ),
+                                ),
+                              )),
+                              Hero(
+                                  tag: "icon_more_vert",
+                                  child: SizedBox(
+                                      width: 48,
+                                      height: 48,
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.more_vert),
+                                      )))
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                ProfileViewBody(
+                    chatModel: chatModel,
+                    isDarkMode: isDarkMode,
+                    boxDecoration: boxDecoration,
+                    width: width,
+                    altTextColor: altTextColor,
+                    leftPaddedWidth: leftPaddedWidth),
+              ]),
             ),
           );
         },
@@ -172,9 +171,9 @@ class ProfileViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
+    return SliverList(
+        delegate: SliverChildListDelegate.fixed(
+      [
         // Name
         Center(
           child: CustomText(chatModel.chatName, fontSize: 24, fontWeight: FontWeight.w500),
@@ -360,8 +359,48 @@ class ProfileViewBody extends StatelessWidget {
               height: 8,
               width: width,
             )),
+
+        DecoratedBox(
+          decoration: boxDecoration,
+          child: Column(
+            children: [
+              const ProfileListTile(
+                leading: Icon(
+                  FontAwesomeIcons.heart,
+                  size: 22,
+                ),
+                title: "Add to favorites",
+              ),
+              const ProfileListTile(
+                leading: Icon(
+                  FontAwesomeIcons.addressCard,
+                  size: 22,
+                ),
+                title: "Add to list",
+              ),
+              ProfileListTile(
+                leading: const Icon(
+                  FontAwesomeIcons.ban,
+                  size: 22,
+                  color: Colors.red,
+                ),
+                title: "Block ${chatModel.chatName}",
+                titleColor: Colors.red,
+              ),
+              ProfileListTile(
+                leading: const Icon(
+                  FontAwesomeIcons.thumbsDown,
+                  size: 22,
+                  color: Colors.red,
+                ),
+                title: "Report ${chatModel.chatName}",
+                titleColor: Colors.red,
+              ),
+            ],
+          ),
+        ),
       ],
-    );
+    ));
   }
 }
 

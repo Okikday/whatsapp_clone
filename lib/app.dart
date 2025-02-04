@@ -26,17 +26,3 @@ class App extends StatelessWidget {
     );
   }
 }
-
-
-/*
-
-Bubble(
-        showNip: true,
-        stick: true,
-        nip: BubbleNip.leftTop,
-        nipHeight: 12, nipWidth: 10,
-        nipRadius: 2,
-        radius: Radius.circular(12),
-        child: CustomWidgets.text(context, "Hello there", fontSize: 20))
-
-*/

@@ -6,10 +6,11 @@ class ProfileListTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Color? subtitleColor;
+  final Color? titleColor;
   final Widget? trailing;
   final void Function()? onTap;
 
-  const ProfileListTile({super.key, required this.leading, required this.title, this.onTap, this.subtitle, this.subtitleColor, this.trailing});
+  const ProfileListTile({super.key, required this.leading, required this.title, this.onTap, this.subtitle, this.subtitleColor, this.trailing, this.titleColor});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,7 @@ class ProfileListTile extends StatelessWidget {
           title,
           fontSize: 16,
           fontWeight: FontWeight.w500,
+          color: titleColor,
         ),
       ),
       subtitle: subtitle == null

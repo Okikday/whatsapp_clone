@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Automatically disposes focusNode and Controller
-class CustomTextfield extends StatefulWidget{
+class CustomTextfield extends StatefulWidget {
   final String? hint; // Shows hint
   final String? label; // Shows Label
-  final double pixelHeight; // Use pixel height for the normal height
-  final double pixelWidth; // Use pixel width for the normal width
+  final double? pixelHeight; // Use pixel height for the normal height
+  final double? pixelWidth; // Use pixel width for the normal width
   final bool alwaysShowSuffixIcon; // Always show suffix icon if true
   final String defaultText; // Default text for the TextField
   final void Function()? ontap; // Tap action
@@ -17,6 +17,7 @@ class CustomTextfield extends StatefulWidget{
   final TextInputType? keyboardType;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
+  final bool? isDense;
   final bool obscureText; // Toggle for password field
   final TextStyle? labelStyle;
   final TextStyle? hintStyle;
@@ -30,61 +31,62 @@ class CustomTextfield extends StatefulWidget{
   final TextEditingController? controller;
   final TextAlign textAlign;
   final EdgeInsets inputContentPadding;
-  final EdgeInsets contentPadding;
   final FocusNode? focusNode;
   final int? maxLines;
   final bool? isEnabled;
   final Color cursorColor;
   final int? maxLength;
+  final BoxConstraints? constraints;
   final List<TextInputFormatter>? inputFormatters;
   final Function(TextEditingController controller, FocusNode focusNode)? internalArgs;
   final Function(TextEditingController controller, FocusNode focusNode)? dispose2;
 
-  const CustomTextfield(
-      {super.key,
-      this.hint,
-      this.label,
-      this.alwaysShowSuffixIcon = false,
-      this.defaultText = "",
-      this.ontap,
-      this.onTapOutside,
-      this.onchanged,
-      this.onSubmitted,
-      this.onEditingComplete,
-      this.keyboardType,
-      this.suffixIcon,
-      this.prefixIcon,
-      this.pixelHeight = 48,
-      this.pixelWidth = 120,
-      this.obscureText = false,
-      this.hintStyle,
-      this.labelStyle,
-      this.inputTextStyle,
-      this.borderRadius = 8,
-      this.backgroundColor,
-      this.border,
-      this.disabledBorder,
-      this.enabledBorder,
-      this.focusedBorder,
-      this.controller,
-      this.textAlign = TextAlign.start,
-      this.inputContentPadding = EdgeInsets.zero,
-      this.focusNode,
-      this.maxLines,
-      this.isEnabled = true,
-      this.cursorColor = Colors.white,
-      this.maxLength,
-      this.inputFormatters,
-      this.internalArgs,
-      this.dispose2, 
-      this.contentPadding = EdgeInsets.zero,
-    });
+  const CustomTextfield({
+    super.key,
+    this.hint,
+    this.label,
+    this.alwaysShowSuffixIcon = false,
+    this.defaultText = "",
+    this.ontap,
+    this.onTapOutside,
+    this.onchanged,
+    this.onSubmitted,
+    this.onEditingComplete,
+    this.keyboardType,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.pixelHeight,
+    this.pixelWidth,
+    this.obscureText = false,
+    this.hintStyle,
+    this.labelStyle,
+    this.inputTextStyle,
+    this.borderRadius = 8,
+    this.backgroundColor,
+    this.border,
+    this.disabledBorder,
+    this.enabledBorder,
+    this.focusedBorder,
+    this.controller,
+    this.textAlign = TextAlign.start,
+    this.inputContentPadding = EdgeInsets.zero,
+    this.focusNode,
+    this.maxLines,
+    this.isEnabled = true,
+    this.cursorColor = Colors.white,
+    this.maxLength,
+    this.inputFormatters,
+    this.internalArgs,
+    this.dispose2,
+    this.isDense,
+    this.constraints,
+  });
 
   @override
   State<CustomTextfield> createState() => _CustomTextfieldState();
 }
 
-class _CustomTextfieldState extends State<CustomTextfield>{
+class _CustomTextfieldState extends State<CustomTextfield> {
   late TextEditingController controller;
   late FocusNode focusNode;
   bool showSuffixIcon = false;
@@ -118,7 +120,6 @@ class _CustomTextfieldState extends State<CustomTextfield>{
     focusNode.dispose();
     super.dispose();
   }
-  
 
   void refreshSuffixIconState() {
     if (widget.alwaysShowSuffixIcon) {
@@ -133,100 +134,78 @@ class _CustomTextfieldState extends State<CustomTextfield>{
     setState(() {});
   }
 
-  BorderSide resolveTextFieldBorder(){
-    final bool hasFocus = focusNode.hasFocus;
-    final bool? isEnabled = widget.isEnabled;
-    if(!hasFocus){ // Doesn't have focus?
-      if(isEnabled == null || isEnabled){
-        return widget.enabledBorder?.borderSide ?? BorderSide.none;
-      }else{
-        return widget.disabledBorder?.borderSide ?? BorderSide.none;
-      }
-    }
-    if(hasFocus){
-      if(isEnabled == null || isEnabled){
-        widget.focusedBorder?.borderSide ?? BorderSide.none;
-      }
-    }
-    return widget.border?.borderSide ?? BorderSide.none;
-  }
-  
-
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     final bool isDarkMode = mediaQueryData.platformBrightness == Brightness.dark;
 
-    return SizedBox(
-      width: widget.pixelWidth,
-      height: widget.pixelHeight,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.fromBorderSide(resolveTextFieldBorder()),
-          color: widget.backgroundColor ?? (isDarkMode ? Colors.black : Colors.white),
-          borderRadius: BorderRadius.circular(widget.borderRadius)
+    return TextField(
+      enabled: widget.isEnabled,
+      minLines: 1,
+      maxLines: widget.maxLines,
+      textAlign: widget.textAlign,
+      obscureText: widget.obscureText,
+      keyboardType: widget.keyboardType,
+      controller: controller,
+      maxLength: widget.maxLength,
+      focusNode: focusNode,
+      onEditingComplete: () {
+        if (widget.onEditingComplete != null) widget.onEditingComplete!();
+        if (widget.internalArgs != null) widget.internalArgs!(controller, focusNode);
+      },
+      onSubmitted: (value) {
+        if (widget.onSubmitted == null) widget.onSubmitted!(value);
+        if (widget.internalArgs != null) widget.internalArgs!(controller, focusNode);
+      },
+      onChanged: (text) {
+        if (text.isNotEmpty) setState(() => refreshSuffixIconState());
+        if (widget.onchanged != null) widget.onchanged!(text);
+        if (widget.internalArgs != null) widget.internalArgs!(controller, focusNode);
+      },
+      onTap: () {
+        refreshSuffixIconState();
+        if (widget.ontap != null) widget.ontap!();
+        if (widget.internalArgs != null) widget.internalArgs!(controller, focusNode);
+      },
+      onTapOutside: (e) {
+        if (widget.onTapOutside == null) focusNode.unfocus();
+        if (widget.onTapOutside != null) widget.onTapOutside!();
+        if (widget.internalArgs != null && focusNode.hasFocus) widget.internalArgs!(controller, focusNode);
+      },
+      style: widget.inputTextStyle ?? const TextStyle(color: Colors.white),
+      cursorColor: widget.cursorColor,
+      cursorRadius: const Radius.circular(12),
+      inputFormatters: widget.inputFormatters,
+      decoration: InputDecoration(
+        counterText: "",
+        isDense: widget.isDense,
+        hintText: widget.hint,
+        labelText: widget.label,
+        labelStyle: widget.labelStyle ??
+            TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+        hintStyle: widget.hintStyle ??
+            TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+        contentPadding: widget.inputContentPadding,
+        border: widget.border ?? const OutlineInputBorder(),
+        focusedBorder: widget.focusedBorder,
+        enabledBorder: widget.enabledBorder,
+        disabledBorder: widget.disabledBorder,
+        constraints: widget.constraints ?? BoxConstraints.tightForFinite(width: widget.pixelWidth ?? 100, height: widget.pixelHeight ?? 48),
+        filled: widget.backgroundColor == null ? false : true,
+        fillColor: widget.backgroundColor,
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: showSuffixIcon ? widget.suffixIcon! : null,
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 4,
+          minHeight: 4,
         ),
-        child: Padding(
-          padding: widget.contentPadding,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-             if(widget.prefixIcon != null) widget.prefixIcon!,
-             
-              Expanded(
-                child: TextField(
-                  enabled: widget.isEnabled,
-                  maxLines: widget.maxLines,
-                  textAlign: widget.textAlign,
-                  obscureText: widget.obscureText,
-                  keyboardType: widget.keyboardType,
-                  controller: controller,
-                  maxLength: widget.maxLength,
-                  focusNode: focusNode,
-                  onEditingComplete: widget.onEditingComplete,
-                  onSubmitted: (value) => widget.onSubmitted == null ? () {} : widget.onSubmitted!(value),
-                  onChanged: (text) {
-                    setState(() {
-                      if (text.isNotEmpty) {
-                        refreshSuffixIconState();
-                      }
-                    });
-                    if (widget.onchanged != null) {
-                      widget.onchanged!(text);
-                    }
-                  },
-                  onTap: () {
-                    refreshSuffixIconState();
-                    if (widget.ontap != null) widget.ontap!();
-                  },
-                  onTapOutside: (e) {
-                    if (widget.onTapOutside == null) focusNode.unfocus();
-                    if (widget.onTapOutside != null) widget.onTapOutside!();
-                  },
-                  style: widget.inputTextStyle ?? const TextStyle(color: Colors.white),
-                  cursorColor: widget.cursorColor,
-                  cursorRadius: const Radius.circular(12),
-                  inputFormatters: widget.inputFormatters,
-                  decoration: InputDecoration(
-                    counterText: "",
-                    hintText: widget.hint,
-                    labelText: widget.label,
-                    labelStyle: widget.labelStyle ??
-                        TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                    hintStyle: widget.hintStyle ??
-                        TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                    contentPadding: widget.inputContentPadding,
-                    border: UnderlineInputBorder(borderRadius: BorderRadius.circular(0), borderSide: BorderSide.none)
-                  ),
-                ),
-              ),
-             if(widget.suffixIcon != null) showSuffixIcon ? widget.suffixIcon! : const SizedBox()
-            ],
-          ),
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 4,
+          minHeight: 4,
         ),
       ),
     );

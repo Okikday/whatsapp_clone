@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
@@ -41,155 +43,161 @@ class NewContactView extends StatelessWidget {
                 ],
               ),
             )),
-        body: SingleChildScrollView(
-          child: SizedBox(
-            height: appUiState.deviceHeight.value,
-            width: appUiState.deviceWidth.value,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24,),
-                  // First name
-                  Row(
-                    spacing: 24,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Icon(Icons.person_2_outlined, color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary),
-                      Expanded(
-                        child: CustomTextfield(
-                          label: "First name",
-                          maxLines: 1,
-                          pixelHeight: 64,
-                          cursorColor: const CustomText(
-                                "",
-                              ).effectiveStyle(context).color ??
-                              Colors.green,
-                          inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                          contentPadding: const EdgeInsets.only(top: Constants.spaceExtraLarge, left: 8),
-                          border: defaultInputBorder,
-                          disabledBorder: defaultInputBorder,
-                          enabledBorder: defaultInputBorder,
-                          focusedBorder: activeInputBorder,
-                        ),
+        body: SizedBox(
+          height: appUiState.deviceHeight.value,
+          width: appUiState.deviceWidth.value,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: ListView(
+                  children: [
+                    const SizedBox(height: 24,),
+                // First name
+                Row(
+                  spacing: 24,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Icon(Icons.person_2_outlined, color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary),
+                    Expanded(
+                      child: CustomTextfield(
+                        label: "First name",
+                        maxLines: 1,
+                        pixelHeight: 64,
+                        cursorColor: const CustomText(
+                              "",
+                            ).effectiveStyle(context).color ??
+                            Colors.green,
+                        inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                        // contentPadding: const EdgeInsets.only(top: Constants.spaceExtraLarge, left: 8),
+                        border: defaultInputBorder,
+                        disabledBorder: defaultInputBorder,
+                        enabledBorder: defaultInputBorder,
+                        focusedBorder: activeInputBorder,
                       ),
-                    ],
-                  ),
-          
-                  const SizedBox(height: 16,),
-          
-                  // First name
-                  Padding(
-                    padding: const EdgeInsets.only(left: 48),
-                    child: CustomTextfield(
-                      label: "Last name",
-                      maxLines: 1,
-                      pixelHeight: 48,
-                      pixelWidth: appUiState.deviceWidth.value * 0.8,
-                      cursorColor: const CustomText(
-                            "",
-                          ).effectiveStyle(context).color ??
-                          Colors.green,
-                      inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                      contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
-                      border: defaultInputBorder,
-                      disabledBorder: defaultInputBorder,
-                      enabledBorder: defaultInputBorder,
-                      focusedBorder: activeInputBorder,
                     ),
+                  ],
+                ),
+        
+                const SizedBox(height: 16,),
+        
+                // First name
+                Padding(
+                  padding: const EdgeInsets.only(left: 48),
+                  child: CustomTextfield(
+                    label: "Last name",
+                    maxLines: 1,
+                    pixelHeight: 48,
+                    pixelWidth: appUiState.deviceWidth.value * 0.8,
+                    cursorColor: const CustomText(
+                          "",
+                        ).effectiveStyle(context).color ??
+                        Colors.green,
+                    inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                    // contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
+                    border: defaultInputBorder,
+                    disabledBorder: defaultInputBorder,
+                    enabledBorder: defaultInputBorder,
+                    focusedBorder: activeInputBorder,
                   ),
-          
-                  const SizedBox(height: 16,),
-          
-                  // Phone number
-                  Row(
-                    spacing: 24,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Icon(Icons.call_outlined, color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary),
-                      Expanded(
-                        child: Row(
-                          spacing: 16,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Transform.translate(
-                                    offset: Offset(0, 12),
-                                    child: CustomText("Country", color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary)),
-                                CustomTextfield(
-                                  pixelHeight: 48,
-                                  pixelWidth: 90,
-                                  ontap: () {},
+                ),
+        
+                const SizedBox(height: 16,),
+        
+                // Phone number
+                Row(
+                  spacing: 24,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Icon(Icons.call_outlined, color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary),
+                    Expanded(
+                      child: Row(
+                        spacing: 16,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              CustomText("Country", color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary),
+                              GestureDetector(
+                                onTap: () {
+                                  log("Tapped country");
+                                },
+                                child: CustomTextfield(
                                   isEnabled: false,
                                   defaultText: "NG +234",
-                                  inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                                  contentPadding: const EdgeInsets.only(
-                                    top: Constants.spaceMedium,
-                                  ),
+                                  suffixIcon: SizedBox(
+                                    width: 24,
+                                    child: Align(
+                                      child: Icon(Icons.arrow_drop_down, color: isDarkMode ? Colors.white : Colors.black,))),
+                                  alwaysShowSuffixIcon: true,
+                                  pixelHeight: 36,
+                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                  maxLines: 1,
                                   textAlign: TextAlign.center,
                                   border: defaultInputBorder,
                                   disabledBorder: defaultInputBorder,
                                   enabledBorder: defaultInputBorder,
                                   focusedBorder: activeInputBorder,
                                 ),
-                              ],
-                            ),
-                            Expanded(
-                              child: CustomTextfield(
-                                hint: "Phone number",
-                                maxLines: 1,
-                                pixelHeight: 48,
-                                cursorColor: const CustomText(
-                                      "",
-                                    ).effectiveStyle(context).color ??
-                                    Colors.green,
-                                inputTextStyle: CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
-                                contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
-                                border: defaultInputBorder,
-                                disabledBorder: defaultInputBorder,
-                                enabledBorder: defaultInputBorder,
-                                focusedBorder: activeInputBorder,
                               ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-          
-                  const SizedBox(height: 48,),
-                  
-                  Padding(
-                    padding: const EdgeInsets.only(left: 48),
-                    child: CustomWidgets.richText(context, textSpans: [CustomWidgets.textSpan(context, "Add information", fontWeight: FontWeight.w500, fontSize: 15, color: WhatsAppColors.emerald)]),
-                  ),
-          
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: CustomElevatedButton(
-                              pixelHeight: 42,
-                              label: "Save",
-                              textColor: Colors.black,
-                              backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
-                              screenWidth: 100,
-                              textSize: Constants.fontSizeSmall + 1,
-                              onClick: () {
-                                
+                            ],
+                          ),
+                          Expanded(
+                            child: CustomTextfield(
+                              hint: "Phone number",
+                              internalArgs: (controller, focusNode) {
+                                final String replacement = controller.text.replaceAll(RegExp(r'\s+'), '').replaceFirst(RegExp(r'^0|^\+234'), '');
+                                if(controller.text != replacement) controller.text = replacement;
                               },
+                              maxLines: 1,
+                              pixelHeight: 42,
+                              cursorColor: const CustomText(
+                                    "",
+                                  ).effectiveStyle(context).color ??
+                                  Colors.green,
+                              inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                              border: defaultInputBorder,
+                              disabledBorder: defaultInputBorder,
+                              enabledBorder: defaultInputBorder,
+                              focusedBorder: activeInputBorder,
                             ),
-                    ),
-                  ),
-          
-                  const SizedBox(height: 100,),
-                ],
-              ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+        
+                const SizedBox(height: 48,),
+                
+                Padding(
+                  padding: const EdgeInsets.only(left: 48),
+                  child: CustomWidgets.richText(context, textSpans: [CustomWidgets.textSpan(context, "Add information", fontWeight: FontWeight.w500, fontSize: 15, color: WhatsAppColors.emerald)]),
+                ),
+                  ],
+                )),
+        
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CustomElevatedButton(
+                          pixelHeight: 42,
+                          label: "Save",
+                          textColor: Colors.black,
+                          backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
+                          screenWidth: 100,
+                          textSize: Constants.fontSizeSmall + 1,
+                          onClick: () {
+                            
+                          },
+                        ),
+                ),
+        
+              ],
             ),
           ),
         ),
