@@ -7,9 +7,8 @@ import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/features/authentication/views/contact_verification_view.dart';
 import 'package:whatsapp_clone/features/authentication/views/widgets/select_language_bottom_sheet.dart';
@@ -84,28 +83,28 @@ List<Widget> welcomeScreenWidgets(
         children: [
           Column(
             children: [
-              CustomText("Welcome to WhatsApp", fontSize: Constants.fontSizeExtraLarge),
+              const CustomText("Welcome to WhatsApp", fontSize: Constants.fontSizeExtraLarge),
               const SizedBox(
                 height: Constants.spaceMedium,
               ),
-              CustomWidgets.richText(context, align: TextAlign.center, textSpans: [
-                CustomWidgets.textSpan(context, "Read our ", fontSize: Constants.fontSizeSmall + 2),
-                CustomWidgets.textSpan(context, "Privacy Policy",
+              CustomRichText(textAlign: TextAlign.center, children: [
+                CustomTextSpanData("Read our ", fontSize: Constants.fontSizeSmall + 2),
+                CustomTextSpanData("Privacy Policy",
                     fontSize: Constants.fontSizeSmall + 2,
                     color: isDarkMode ? Colors.lightBlue : Colors.blue,
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         Get.snackbar("Message", "Privacy Policy", snackPosition: SnackPosition.BOTTOM);
                       }),
-                CustomWidgets.textSpan(context, ". Tap \"Agree and continue to accept the ", fontSize: Constants.fontSizeSmall + 2),
-                CustomWidgets.textSpan(context, "Terms of Service",
+                CustomTextSpanData(". Tap \"Agree and continue to accept the ", fontSize: Constants.fontSizeSmall + 2),
+                CustomTextSpanData("Terms of Service",
                     fontSize: Constants.fontSizeSmall + 2,
                     color: isDarkMode ? Colors.lightBlue : Colors.blue,
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         Get.snackbar("Message", "Terms of service", snackPosition: SnackPosition.BOTTOM);
                       }),
-                CustomWidgets.textSpan(context, ".", fontSize: Constants.fontSizeSmall + 2),
+                CustomTextSpanData(".", fontSize: Constants.fontSizeSmall + 2),
               ]),
               const SizedBox(
                 height: Constants.spaceExtraLarge,

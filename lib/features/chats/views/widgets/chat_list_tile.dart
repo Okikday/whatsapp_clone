@@ -6,9 +6,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 
 class ChatListTile extends StatelessWidget {
   final double width;
@@ -114,7 +113,7 @@ class ChatListTile extends StatelessWidget {
                             Expanded(
                                 child: CustomText(
                               chatName,
-                              align: TextAlign.left,
+                              textAlign: TextAlign.left,
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
                               overflow: TextOverflow.ellipsis,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/sub_views/expand_image_view.dart';
@@ -57,19 +57,19 @@ class BuildAttachmentWidget extends StatelessWidget {
         ),
       );
     } else if (msgType == MessageType.document) {
-      return SizedBox(
+      return const SizedBox(
         child: CustomText("Attachment"),
       );
     } else if (msgType == MessageType.video) {
-      return SizedBox(
+      return const SizedBox(
         child: CustomText("Attachment"),
       );
     } else if (msgType == MessageType.link) {
-      return SizedBox(
+      return const SizedBox(
         child: CustomText("Attachment"),
       );
     } else {
-      return SizedBox(
+      return const SizedBox(
         child: CustomText("Attachment"),
       );
     }

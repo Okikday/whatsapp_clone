@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/constants.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
 import 'package:whatsapp_clone/features/updates/views/widgets/status_list_tile.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
@@ -25,7 +24,7 @@ class UpdatesTabView extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: generalPadding,
-            child: CustomText("Status", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
+            child: const CustomText("Status", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
           ),
         ),
         const SliverToBoxAdapter(
@@ -63,7 +62,7 @@ class UpdatesTabView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomText("Channels", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
+                const CustomText("Channels", fontSize: Constants.fontSizeLarge, fontWeight: FontWeight.w500),
                 CustomElevatedButton(
                   pixelWidth: 72,
                   contentPadding: const EdgeInsets.all(4),
@@ -82,7 +81,7 @@ class UpdatesTabView extends StatelessWidget {
           ),
         ),
 
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(
             child: SizedBox(
           height: 360,
           child: Center(child: CustomText("You haven't joined any Channels yet", color: Colors.grey)),

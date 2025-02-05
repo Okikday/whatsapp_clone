@@ -46,11 +46,10 @@ dependencies:
   image: ^4.5.2
   bubble: ^1.2.1
   path: any
-  heroine: ^0.4.0
-  adaptive_dialog: ^2.4.0
   modern_dialog: ^1.3.0
-  dropdown_button2: ^2.3.9
   scroll_to_index: ^3.0.1
+  heroine: ^0.4.0
+  custom_widgets_toolkit: ^0.0.1
 
 dev_dependencies:
   flutter_test:

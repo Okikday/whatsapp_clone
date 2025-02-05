@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class Utilities {
       return child;
     },
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const curve = Curves.easeOutCubic;
+      final curve = CustomSpringCurves.iosDefault;
       final Animation<Offset> offsetAnimation = animation.drive(
         Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve)),
       );
@@ -53,7 +54,7 @@ class Utilities {
         child: child,
       );
     },
-    transitionDuration: const Duration(milliseconds: 350),
+    transitionDuration: const Duration(milliseconds: 450),
     reverseTransitionDuration: const Duration(milliseconds: 250),
   );
 }

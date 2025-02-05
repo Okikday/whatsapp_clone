@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_functions.dart';
 
 class BuildTaggedMsgWidget extends StatelessWidget {
   final Color accentColor;

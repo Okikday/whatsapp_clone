@@ -1,8 +1,8 @@
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/common/widgets/custom_radio_buttons.dart';
 
 class SelectLanguageBottomSheet extends StatelessWidget {
@@ -39,7 +39,7 @@ class SelectLanguageBottomSheet extends StatelessWidget {
                       Expanded(
                         child: CustomText(
                           "App's Language",
-                          align: TextAlign.left,
+                          textAlign: TextAlign.left,
                           fontSize: Constants.fontSizeMedium,
                           fontWeight: FontWeight.w600,
                         ),

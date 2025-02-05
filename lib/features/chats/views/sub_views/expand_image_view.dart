@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heroine/heroine.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
 import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 
 class ExpandImageView extends StatelessWidget {
@@ -75,15 +75,15 @@ class ExpandImageView extends StatelessWidget {
                         color: getCurrIconColor,
                       ),
                       Expanded(child: CustomText(chatName, fontSize: 18, fontWeight: FontWeight.w500)),
-                      IconButton(onPressed: () {}, icon: Icon(Icons.star_border_rounded)),
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.star_border_rounded)),
                       IconButton(
                           onPressed: () {},
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.turn_right_rounded,
                           )),
                       IconButton(
                           onPressed: () {},
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.more_vert,
                           ))
                     ],

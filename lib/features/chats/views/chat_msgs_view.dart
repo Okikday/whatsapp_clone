@@ -1,10 +1,9 @@
-import 'dart:math';
 
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble.dart';
-import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 
 class ChatMsgsView extends StatelessWidget {
   final bool isDarkMode;
@@ -34,7 +33,7 @@ class ChatMsgsView extends StatelessWidget {
         width: width,
         child: CustomScrollView(
           slivers: [
-            const PinnedHeaderSliver(child: CustomText("Date"),),
+            const PinnedHeaderSliver(child: Center(child: CustomText("Date",)),),
             SliverList.builder(
                 itemCount: mockMessageModels.length,
                 itemBuilder: (context, index) {

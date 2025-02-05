@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';

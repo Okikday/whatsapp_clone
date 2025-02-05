@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 
 final ChatViewController chatViewController = Get.put(ChatViewController());
 

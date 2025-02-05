@@ -7,14 +7,11 @@ import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
-import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';
 import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
 import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
-import 'package:whatsapp_clone/common/widgets/loading_dialog.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
 class ContactVerificationView extends StatelessWidget {
@@ -60,18 +57,17 @@ class ContactVerificationView extends StatelessWidget {
                             height: Constants.spaceSmall,
                           ),
                           const CustomText("WhatsApp will need to verify your phone number. ",
-                              fontSize: Constants.fontSizeSmall + 2, align: TextAlign.center),
-                          CustomWidgets.richText(context,
-                              textSpans: [
-                                CustomWidgets.textSpan(context, "Carrier charges may apply. ", fontSize: Constants.fontSizeSmall + 2),
-                                CustomWidgets.textSpan(
-                                  context,
+                              fontSize: Constants.fontSizeSmall + 2, textAlign: TextAlign.center),
+                          CustomRichText(
+                              children: [
+                                CustomTextSpanData("Carrier charges may apply. ", fontSize: Constants.fontSizeSmall + 2),
+                                CustomTextSpanData(
                                   "What's my number?",
                                   color: isDarkMode ? Colors.lightBlue : Colors.blue,
                                   fontSize: Constants.fontSizeSmall + 2,
                                 )
                               ],
-                              align: TextAlign.center),
+                              textAlign: TextAlign.center),
                           const SizedBox(
                             height: Constants.spaceMedium,
                           ),
@@ -81,7 +77,7 @@ class ContactVerificationView extends StatelessWidget {
                               pixelWidth: appUiState.deviceWidth.value * 0.75,
                               isEnabled: false,
                               defaultText: "Nigeria",
-                              inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                              inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                               textAlign: TextAlign.center,
                               suffixIcon: const Icon(
                                 FontAwesomeIcons.caretDown,
@@ -108,7 +104,7 @@ class ContactVerificationView extends StatelessWidget {
                                   pixelWidth: appUiState.deviceWidth.value * 0.2,
                                   isEnabled: false,
                                   defaultText: "+ 234",
-                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                                   textAlign: TextAlign.center,
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
@@ -122,7 +118,7 @@ class ContactVerificationView extends StatelessWidget {
                                   cursorColor: const CustomText(
                                     "",
                                   ).effectiveStyle(context).color ?? Colors.green,
-                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
                                   enabledBorder: underlineInputBorder,
@@ -157,11 +153,11 @@ class ContactVerificationView extends StatelessWidget {
                                     log(result.error.toString());
                                   }
                                 },
-                                child: Row(
+                                child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   spacing: 10,
                                   children: [
-                                    const Icon(
+                                     Icon(
                                       FontAwesomeIcons.google,
                                       color: WhatsAppColors.primary,
                                     ),

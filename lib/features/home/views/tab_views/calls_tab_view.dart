@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 
 class CallsTabView extends StatelessWidget {
   const CallsTabView({super.key});
@@ -17,19 +17,19 @@ class CallsTabView extends StatelessWidget {
         const SizedBox(height: 12,),
         Padding(
           padding: generalPadding,
-          child: SizedBox(width: Get.width, child: CustomText("Favourites", fontSize: Constants.fontSizeMedium, align: TextAlign.left)),
+          child: SizedBox(width: Get.width, child: const CustomText("Favourites", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.left)),
         ),
         const SizedBox(height: 16,),
         ListTile(
           
           contentPadding: generalPadding.copyWith(top: 4, bottom: 4),
-          title: CustomText("Add Favourite", fontSize: Constants.fontSizeMedium - 1),
+          title: const CustomText("Add Favourite", fontSize: Constants.fontSizeMedium - 1),
           leading: CircleAvatar(backgroundColor: WhatsAppColors.secondary, child: Icon(Icons.favorite, color: scaffoldBgColor, size: 24,), ),
           onTap: () {
             
           },
         ),
-        Expanded(child: Center(child: CustomText("You have no recent calls"),))
+        const Expanded(child: Center(child: CustomText("You have no recent calls"),))
       ],
     );
   }

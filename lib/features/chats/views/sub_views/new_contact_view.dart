@@ -1,13 +1,11 @@
 import 'dart:developer';
 
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
-import 'package:whatsapp_clone/common/custom_widgets.dart';
-import 'package:whatsapp_clone/common/widgets/custom_elevated_button.dart';
-import 'package:whatsapp_clone/common/widgets/custom_textfield.dart';
 import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 
 class NewContactView extends StatelessWidget {
@@ -69,7 +67,7 @@ class NewContactView extends StatelessWidget {
                               "",
                             ).effectiveStyle(context).color ??
                             Colors.green,
-                        inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                        inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                         // contentPadding: const EdgeInsets.only(top: Constants.spaceExtraLarge, left: 8),
                         border: defaultInputBorder,
                         disabledBorder: defaultInputBorder,
@@ -94,7 +92,7 @@ class NewContactView extends StatelessWidget {
                           "",
                         ).effectiveStyle(context).color ??
                         Colors.green,
-                    inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                    inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                     // contentPadding: const EdgeInsets.only(top: Constants.spaceMedium, left: 8),
                     border: defaultInputBorder,
                     disabledBorder: defaultInputBorder,
@@ -136,7 +134,7 @@ class NewContactView extends StatelessWidget {
                                       child: Icon(Icons.arrow_drop_down, color: isDarkMode ? Colors.white : Colors.black,))),
                                   alwaysShowSuffixIcon: true,
                                   pixelHeight: 36,
-                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                                  inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                                   maxLines: 1,
                                   textAlign: TextAlign.center,
                                   border: defaultInputBorder,
@@ -160,7 +158,7 @@ class NewContactView extends StatelessWidget {
                                     "",
                                   ).effectiveStyle(context).color ??
                                   Colors.green,
-                              inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, align: TextAlign.center).style,
+                              inputTextStyle: const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                               border: defaultInputBorder,
                               disabledBorder: defaultInputBorder,
                               enabledBorder: defaultInputBorder,
@@ -177,7 +175,7 @@ class NewContactView extends StatelessWidget {
                 
                 Padding(
                   padding: const EdgeInsets.only(left: 48),
-                  child: CustomWidgets.richText(context, textSpans: [CustomWidgets.textSpan(context, "Add information", fontWeight: FontWeight.w500, fontSize: 15, color: WhatsAppColors.emerald)]),
+                  child: CustomRichText(children: [CustomTextSpanData("Add information", fontWeight: FontWeight.w500, fontSize: 15, color: WhatsAppColors.emerald)]),
                 ),
                   ],
                 )),

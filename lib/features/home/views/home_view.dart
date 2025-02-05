@@ -2,11 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
-import 'package:whatsapp_clone/common/colors.dart';
-import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/features/chats/views/select_contact_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
@@ -53,7 +50,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       () {
         final HomeUiController stateController = homeUiController;
         final bool isDarkMode = appUiState.isDarkMode.value;
-        final double deviceHeight = appUiState.deviceHeight.value;
         final int homeBottomNavBarCurrentIndex = stateController.homeBottomNavBarCurrentIndex.value;
         return PopScope(
           canPop: false,
