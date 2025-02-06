@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:heroine/heroine.dart';
 import 'package:simple_animations/simple_animations.dart';
+import 'package:whatsapp_clone/app/controllers/app_animation_settings.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
@@ -127,7 +128,12 @@ class ChatsTabView extends StatelessWidget {
                                     messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
                                   );
                                   await Future.delayed(const Duration(milliseconds: 250));
-                                  navigator?.push(Utilities.customPageRouteBuilder(preloadedChatView)).then((onValue) {
+                                  navigator
+                                      ?.push(Utilities.customPageRouteBuilder(preloadedChatView,
+                                          curve: appAnimationSettingsController.curve,
+                                          transitionDuration: appAnimationSettingsController.transitionDuration,
+                                          reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration))
+                                      .then((onValue) {
                                     chatsTabUiController.setAllowPagePush(true);
                                   });
                                 }
@@ -173,8 +179,8 @@ class ChatsTabView extends StatelessWidget {
                       height: 32,
                       child: Align(
                           alignment: Alignment.center,
-                          child: CustomText("Your personal messages will be end-to-end encrypted",
-                              textAlign: TextAlign.center, color: WhatsAppColors.secondary))),
+                          child:
+                              CustomText("Your personal messages will be end-to-end encrypted", textAlign: TextAlign.center, color: WhatsAppColors.secondary))),
                 )
               ],
             );
@@ -257,14 +263,19 @@ class ChatsTabView extends StatelessWidget {
                                     onPressed: () {
                                       if (chatsTabUiController.allowPagePush.value) {
                                         chatsTabUiController.setAllowPagePush(false);
-                                      final ChatView preloadedChatView = ChatView(
-                                        chatModel: cacheChatModel,
-                                        messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
-                                      );
-                                            
-                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(preloadedChatView)).then((onValue){
-                                        chatsTabUiController.setAllowPagePush(true);
-                                      });
+                                        final ChatView preloadedChatView = ChatView(
+                                          chatModel: cacheChatModel,
+                                          messageModel: MessageModel.fromMap(TestChatsData.messageList[index]),
+                                        );
+
+                                        navigator
+                                            ?.pushReplacement(Utilities.customPageRouteBuilder(preloadedChatView,
+                                                curve: appAnimationSettingsController.curve,
+                                                transitionDuration: appAnimationSettingsController.transitionDuration,
+                                                reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration))
+                                            .then((onValue) {
+                                          chatsTabUiController.setAllowPagePush(true);
+                                        });
                                       }
                                     },
                                   ),
@@ -288,7 +299,10 @@ class ChatsTabView extends StatelessWidget {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(ProfileView(chatModel: cacheChatModel)));
+                                      navigator?.pushReplacement(Utilities.customPageRouteBuilder(ProfileView(chatModel: cacheChatModel),
+                                          curve: appAnimationSettingsController.curve,
+                                          transitionDuration: appAnimationSettingsController.transitionDuration,
+                                          reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration));
                                     },
                                     icon: const Icon(Icons.info_outline_rounded),
                                     color: WhatsAppColors.primary,

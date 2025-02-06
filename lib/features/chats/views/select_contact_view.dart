@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/app/controllers/app_animation_settings.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
@@ -61,7 +62,7 @@ class SelectContactView extends StatelessWidget {
                   onTap: () {},
                 ),
               ),
-          
+
               // New contact
               SliverToBoxAdapter(
                 child: ListTile(
@@ -87,11 +88,14 @@ class SelectContactView extends StatelessWidget {
                     onPressed: () {},
                   ),
                   onTap: () {
-                    navigator?.push(Utilities.customPageRouteBuilder(const NewContactView()));
+                    navigator?.push(Utilities.customPageRouteBuilder(const NewContactView(),
+                        curve: appAnimationSettingsController.curve,
+                        transitionDuration: appAnimationSettingsController.transitionDuration,
+                        reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration));
                   },
                 ),
               ),
-          
+
               // New community
               SliverToBoxAdapter(
                 child: ListTile(
@@ -112,7 +116,7 @@ class SelectContactView extends StatelessWidget {
                   onTap: () {},
                 ),
               ),
-          
+
               const SliverToBoxAdapter(child: SizedBox(height: 12)),
               SliverToBoxAdapter(
                 child: Padding(
@@ -124,9 +128,9 @@ class SelectContactView extends StatelessWidget {
                   ),
                 ),
               ),
-          
+
               const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          
+
               SliverList(
                   delegate: SliverChildBuilderDelegate(childCount: TestChatsData.chatList.length, (context, index) {
                 final ChatModel cacheChatModel = TestChatsData.chatList[index];
@@ -149,9 +153,7 @@ class SelectContactView extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  onTap: () {
-                    
-                  },
+                  onTap: () {},
                 );
               }))
             ],
@@ -183,7 +185,7 @@ class SelectContactAppBar extends StatelessWidget {
           const SizedBox(
             width: 4,
           ),
-           Expanded(
+          Expanded(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,

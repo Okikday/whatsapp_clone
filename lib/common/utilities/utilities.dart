@@ -29,13 +29,17 @@ class Utilities {
     }
   }
 
-  static PageRouteBuilder customPageRouteBuilder(Widget child) {
+  static PageRouteBuilder customPageRouteBuilder(
+    Widget child, {
+    Curve curve = CustomCurves.easeIn,
+    int transitionDuration = 1000,
+    int reverseTransitionDuration = 250,
+  }) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) {
       return child;
     },
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curve = CustomSpringCurves.iosDefault;
       final Animation<Offset> offsetAnimation = animation.drive(
         Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve)),
       );
@@ -54,8 +58,8 @@ class Utilities {
         child: child,
       );
     },
-    transitionDuration: const Duration(milliseconds: 450),
-    reverseTransitionDuration: const Duration(milliseconds: 250),
+    transitionDuration: Duration(milliseconds: transitionDuration),
+    reverseTransitionDuration: Duration(milliseconds: reverseTransitionDuration),
   );
 }
 

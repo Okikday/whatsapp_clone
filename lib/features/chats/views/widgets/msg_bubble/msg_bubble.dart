@@ -1,5 +1,4 @@
 
-import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -8,6 +7,7 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_functions.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/custom_bubble.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble_content.dart';
 
 class MsgBubble extends StatelessWidget {
@@ -103,18 +103,18 @@ class MsgBubble extends StatelessWidget {
                     constraints: BoxConstraints(maxWidth: hasMedia ? width * 0.7 : width * 0.85),
                     child: Animate(
                       effects: [FadeEffect(begin: selectedIndex != null ? 0.8 : 1.0, end: selectedIndex != null ? 0.8 : 1.0,)],
-                      child: Bubble(
-                          showNip: true,
-                          stick: true,
-                          nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
+                      child: CustomBubble(
                           nipHeight: 12,
                           nipWidth: 10,
                           nipRadius: 2,
-                          padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
-                          margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
+                          nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.none,
+                          padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                          // margin: EdgeInsets.all(0),
+                          margin: EdgeInsets.only(left: isFirstMsg ? (isSender ? 0 : 10) : (isSender ? 0 : (10 + 10 - 2)), right: isFirstMsg ? (isSender ? 10 : 0) : (isSender ? (10 + 10 - 2) : 0), top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
                           radius: const Radius.circular(10),
                           color: selectedIndex != null ? bubbleBgColor : bubbleBgColor,
                           shadowColor: isDarkMode ? Colors.white10 : Colors.black12,
+                          elevation: 1,
                           child: MsgBubbleContent(
                               messageModel: messageModel,
                               hasMedia: hasMedia,
@@ -135,6 +135,30 @@ class MsgBubble extends StatelessWidget {
     );
   }
 }
+
+/*
+Bubble(
+                          showNip: true,
+                          stick: true,
+                          nip: isFirstMsg ? (isSender ? BubbleNip.rightTop : BubbleNip.leftTop) : BubbleNip.no,
+                          nipHeight: 12,
+                          nipWidth: 10,
+                          nipRadius: 2,
+                          padding: const BubbleEdges.fromLTRB(4, 4, 4, 4),
+                          margin: BubbleEdges.only(left: isSender ? 0 : 10, right: isSender ? 10 : 0, top: isFirstMsg ? 4 : 2, bottom: isFirstMsg ? 4 : 2),
+                          radius: const Radius.circular(10),
+                          color: selectedIndex != null ? bubbleBgColor : bubbleBgColor,
+                          shadowColor: isDarkMode ? Colors.white10 : Colors.black12,
+                          child: MsgBubbleContent(
+                              messageModel: messageModel,
+                              hasMedia: hasMedia,
+                              isSender: isSender,
+                              messageId: messageModel.messageId,
+                              taggedMsgColor: taggedMsgColor,
+                              index: index,
+                              )),
+
+  */
 
 /*
 

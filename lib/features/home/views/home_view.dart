@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/app/controllers/app_animation_settings.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/features/chats/views/select_contact_view.dart';
@@ -66,16 +66,30 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   scaffoldBgColor: scaffoldBgColor,
                   padding: chatsTabUiController.chatTilesSelected.isEmpty ? null : EdgeInsets.zero,
                   child: chatsTabUiController.chatTilesSelected.isEmpty ? const HomeAppBarChild() : const ChatSelectionAppBarChild()),
-              bottomNavigationBar: HomeNavigationBar(homeBottomNavBarCurrentIndex: homeBottomNavBarCurrentIndex, isDarkMode: isDarkMode, scaffoldBgColor: scaffoldBgColor, stateController: stateController, pageController: pageController),
+              bottomNavigationBar: HomeNavigationBar(
+                  homeBottomNavBarCurrentIndex: homeBottomNavBarCurrentIndex,
+                  isDarkMode: isDarkMode,
+                  scaffoldBgColor: scaffoldBgColor,
+                  stateController: stateController,
+                  pageController: pageController),
               floatingActionButton: Visibility(
                 visible: homeBottomNavBarCurrentIndex != 2,
                 child: FloatingActionButton(
                   onPressed: () {
-                    if(homeBottomNavBarCurrentIndex == 0)navigator?.push(Utilities.customPageRouteBuilder(const SelectContactView()));
+                    if (homeBottomNavBarCurrentIndex == 0){
+                      navigator?.push(Utilities.customPageRouteBuilder(const SelectContactView(),
+                          curve: appAnimationSettingsController.curve,
+                          transitionDuration: appAnimationSettingsController.transitionDuration,
+                          reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration));
+                          }
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Icon(
-                    homeBottomNavBarCurrentIndex == 0 ? Icons.add_comment_rounded : homeBottomNavBarCurrentIndex == 1 ? Icons.camera_alt : Icons.add_ic_call,
+                    homeBottomNavBarCurrentIndex == 0
+                        ? Icons.add_comment_rounded
+                        : homeBottomNavBarCurrentIndex == 1
+                            ? Icons.camera_alt
+                            : Icons.add_ic_call,
                     color: scaffoldBgColor,
                   ),
                 ),

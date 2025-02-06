@@ -49,7 +49,7 @@ dependencies:
   modern_dialog: ^1.3.0
   scroll_to_index: ^3.0.1
   heroine: ^0.4.0
-  custom_widgets_toolkit: ^0.0.1
+  custom_widgets_toolkit: ^0.0.2
 
 dev_dependencies:
   flutter_test:

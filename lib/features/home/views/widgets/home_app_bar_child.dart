@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/app/views/dev_settings_view.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
@@ -60,7 +61,7 @@ class HomeAppBarChild extends StatelessWidget {
                   )).animate().flipH(duration: const Duration(milliseconds: 150)).fadeIn(duration: const Duration(milliseconds: 150))),
                   
           CustomPopupMenuButton(
-            menuItems: const ["Sign out"],
+            menuItems: const ["Sign out", "dev settings"],
             onSelected: (value) async {
               if (value == "Sign out") {
                 Get.dialog(
@@ -73,6 +74,8 @@ class HomeAppBarChild extends StatelessWidget {
                   Get.close(1);
                   Get.off(() => const WelcomeScreen());
                 });
+              }else if(value == "dev settings"){
+                Get.to(() => const DevSettingsView());
               }
             },
           )
