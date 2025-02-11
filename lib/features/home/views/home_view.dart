@@ -1,3 +1,4 @@
+import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -25,7 +26,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late PageController pageController;
   @override
   void initState() {
@@ -42,7 +43,11 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
     WidgetsBinding.instance.addPostFrameCallback((_) => homeUiController.homeCameraIconAnimController.value!.forward(from: 0));
 
@@ -65,7 +70,35 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               appBar: CustomAppBarContainer(
                   scaffoldBgColor: scaffoldBgColor,
                   padding: chatsTabUiController.chatTilesSelected.isEmpty ? null : EdgeInsets.zero,
-                  child: chatsTabUiController.chatTilesSelected.isEmpty ? const HomeAppBarChild() : const ChatSelectionAppBarChild()),
+                  child: AnimatedSwitcher(
+                    // duration: Durations.medium3,
+                    // reverseDuration: Durations.short3,
+                    duration: const Duration(milliseconds: 1500),
+                    reverseDuration: Durations.long4,
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      final curvedAnimation = CurvedAnimation(
+                        parent: animation,
+                        curve: CustomCurves.snappySpring,
+                      );
+                      if (child.key == const ValueKey('chatSelection')) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.1, 0.0),
+                            end: Offset.zero,
+                          ).animate(curvedAnimation),
+                          child: child,
+                        );
+                      } else {
+                        return FadeTransition(
+                          opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+                          child: child,
+                        );
+                      }
+                    },
+                    child: chatsTabUiController.chatTilesSelected.isEmpty
+                        ? const HomeAppBarChild(key: ValueKey('home'))
+                        : const ChatSelectionAppBarChild(key: ValueKey('chatSelection')),
+                  )),
               bottomNavigationBar: HomeNavigationBar(
                   homeBottomNavBarCurrentIndex: homeBottomNavBarCurrentIndex,
                   isDarkMode: isDarkMode,
@@ -76,12 +109,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                 visible: homeBottomNavBarCurrentIndex != 2,
                 child: FloatingActionButton(
                   onPressed: () {
-                    if (homeBottomNavBarCurrentIndex == 0){
+                    if (homeBottomNavBarCurrentIndex == 0) {
                       navigator?.push(Utilities.customPageRouteBuilder(const SelectContactView(),
                           curve: appAnimationSettingsController.curve,
                           transitionDuration: appAnimationSettingsController.transitionDuration,
                           reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration));
-                          }
+                    }
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Icon(
@@ -100,12 +133,18 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     if (value != homeBottomNavBarCurrentIndex) stateController.setHomeBottomNavBarCurrentIndex(value);
                   },
                   children: [
-                    ChatsTabView(
-                      chatModels: TestChatsData.chatList,
-                    ).animate().scaleXY(begin: 0.99, end: 1, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
-                    const UpdatesTabView().animate().fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
-                    const CommunitiesTabView().animate().fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
-                    const CallsTabView().animate().fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const ChatsTabView()
+                        .animate()
+                        .scaleXY(begin: 0.99, end: 1, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const UpdatesTabView()
+                        .animate()
+                        .fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const CommunitiesTabView()
+                        .animate()
+                        .fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
+                    const CallsTabView()
+                        .animate()
+                        .fadeIn(begin: 0.8, duration: const Duration(milliseconds: 150), curve: Curves.decelerate),
                   ]),
             ),
           ),

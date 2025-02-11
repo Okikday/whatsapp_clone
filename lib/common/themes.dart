@@ -8,18 +8,19 @@ class Themes {
     scaffoldBackgroundColor: WhatsAppColors.background,
     fontFamily: "AlbertSans",
     appBarTheme: const AppBarTheme(
-      backgroundColor: WhatsAppColors.appBar,
+      backgroundColor: WhatsAppColors.background,
       foregroundColor: WhatsAppColors.textPrimary,
+      surfaceTintColor: WhatsAppColors.emerald,
       elevation: 0,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: WhatsAppColors.secondary,
+      backgroundColor: WhatsAppColors.primary,
     ),
   );
 
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: WhatsAppColors.primary,
+    primaryColor: WhatsAppColors.primaryDark,
     scaffoldBackgroundColor: WhatsAppColors.darkBackground,
     fontFamily: "AlbertSans",
     appBarTheme: const AppBarTheme(
@@ -28,7 +29,7 @@ class Themes {
       elevation: 0,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: WhatsAppColors.secondary,
+      backgroundColor: WhatsAppColors.primaryDark,
     ),
   );
 }

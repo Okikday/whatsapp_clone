@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +5,7 @@ import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/timestamped_chat_message.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/build_attachment_widget.dart';
@@ -33,7 +32,11 @@ class MsgBubbleContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = appUiState.isDarkMode.value;
-    final Color sentAtTextColor = isSender ? (isDarkMode ? const Color(0xFF93B28F) : WhatsAppColors.gray) : isDarkMode ? WhatsAppColors.gray : WhatsAppColors.gray;
+    final Color sentAtTextColor = isSender
+        ? (isDarkMode ? const Color(0xFF93B28F) : WhatsAppColors.gray)
+        : isDarkMode
+            ? WhatsAppColors.gray
+            : WhatsAppColors.gray;
     final TextStyle msgContentStyle = const CustomText("").effectiveStyle(context).copyWith(
           fontSize: 16,
         );
@@ -50,15 +53,22 @@ class MsgBubbleContent extends StatelessWidget {
     );
     final String dateText = DateFormat.jm().format(messageModel.sentAt);
     final double sentAtWidth = MsgBubbleFunctions.calcSentAtWidth(dateText, isSender, sentAtStyle) + 2 + 8;
-    double taggedMsgWidth = hasMedia ? appUiState.deviceWidth * 0.7 : sentAtWidth + UtilitiesFuncs.getTextSize(messageModel.content, msgContentStyle, maxLines: 1).width + 12.0;
+    double taggedMsgWidth =
+        hasMedia ? appUiState.deviceWidth * 0.7 : sentAtWidth + UtilitiesFuncs.getTextSize(messageModel.content, msgContentStyle, maxLines: 1).width + 12.0;
     if (hasMedia) taggedMsgWidth = appUiState.deviceWidth.value * 0.7;
-    
+
+    // TODO: Subject to change depending on who's tagged
+    final Color taggedNameColor =
+        isDarkMode ? (isSender ? const Color(0xFFB3B6DD) : const Color(0xFF84C6A2)) : (isSender ? const Color(0xFF5D608C) : const Color(0xFF43765F));
+    final Color taggedAccentColor =
+        isDarkMode ? (isSender ? const Color(0xFFA790FD) : const Color(0xFF22C062)) : (isSender ? const Color(0xFF1EAA61) : const Color(0xFF1CAB5F));
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (hasTaggedMessage)
           BuildTaggedMsgWidget(
+            index: index,
             taggedUserName: "Someone",
             taggedMsgContent: messageModel.content,
             hasMedia: false,
@@ -66,7 +76,8 @@ class MsgBubbleContent extends StatelessWidget {
             taggedMsgColor: taggedMsgColor,
             isDarkMode: isDarkMode,
             width: taggedMsgWidth,
-            index: index,
+            taggedAccentColor: taggedAccentColor,
+            taggedNameColor: taggedNameColor,
           ),
         if (hasAttachment)
           BuildAttachmentWidget(
@@ -76,6 +87,20 @@ class MsgBubbleContent extends StatelessWidget {
             isSender: isSender,
             isJustImgOverlay: isJustImgOverlay,
             chatName: "Someone",
+            dateWidget: isJustImgOverlay
+                ? DecoratedBox(
+                    decoration: BoxDecoration(boxShadow: [BoxShadow(blurRadius: 8, color: isSender ? Colors.black54 : Colors.white38)]),
+                    child: BuildTimeStampWidget(
+                      date: dateText,
+                      isSender: isSender,
+                      deliveredAt: messageModel.deliveredAt,
+                      seenAt: messageModel.seenAt,
+                      sentAtWidth: sentAtWidth,
+                      sentAtStyle: sentAtStyle,
+                      iconColor: sentAtTextColor,
+                    ),
+                  )
+                : null,
           ),
         if (messageModel.content.isNotEmpty || hasMediaCaption)
           Padding(
@@ -118,17 +143,17 @@ class BuildTimeStampWidget extends StatelessWidget {
   final double sentAtWidth;
   final double iconSize;
   final Color iconColor;
-  const BuildTimeStampWidget(
-      {super.key,
-      required this.date,
-      required this.isSender,
-      this.seenAt,
-      this.deliveredAt,
-      required this.sentAtWidth,
-      this.iconSize = 16,
-      required this.sentAtStyle, 
-      required this.iconColor,
-    });
+  const BuildTimeStampWidget({
+    super.key,
+    required this.date,
+    required this.isSender,
+    this.seenAt,
+    this.deliveredAt,
+    required this.sentAtWidth,
+    this.iconSize = 16,
+    required this.sentAtStyle,
+    required this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +177,8 @@ class BuildTimeStampWidget extends StatelessWidget {
                       : deliveredAt != null
                           ? MsgStatus.delivered
                           : MsgStatus.offline,
-                  size: iconSize, iconColor: iconColor)
+                  size: iconSize,
+                  iconColor: iconColor)
           ],
         ),
       );
@@ -161,10 +187,6 @@ class BuildTimeStampWidget extends StatelessWidget {
     }
   }
 }
-
-
-
-
 
 /*
 class BuildTaggedMsgWidget extends StatefulWidget {
@@ -266,5 +288,3 @@ class _BuildTaggedMsgWidgetState extends State<BuildTaggedMsgWidget> {
   }
 }
 */
-
- 

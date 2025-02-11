@@ -4,9 +4,12 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 
+import '../../../use_cases/functions/msg_bubble_functions.dart';
+
 class BuildTaggedMsgWidget extends StatelessWidget {
-  final Color accentColor;
+  final Color taggedAccentColor;
   final Color taggedMsgColor;
+  final Color taggedNameColor;
   final double width;
   final String taggedUserName;
   final bool hasMedia;
@@ -16,7 +19,8 @@ class BuildTaggedMsgWidget extends StatelessWidget {
   final int index;
   const BuildTaggedMsgWidget({
     super.key,
-    this.accentColor = const Color(0xFFA791F9),
+    required this.taggedAccentColor,
+    required this.taggedNameColor,
     required this.taggedMsgColor,
     required this.width,
     required this.taggedUserName, 
@@ -38,7 +42,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
     final TextStyle taggedUserNameStyle = TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.w600,
-      color: accentColor,
+      color: taggedNameColor,
       overflow: TextOverflow.clip,
     );
     
@@ -58,7 +62,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
             color: taggedMsgColor,
             child: InkWell(
               onTap: () {
-                // MsgBubbleFunctions.onTapTaggedMsg(index);
+                MsgBubbleFunctions.onTapTaggedMsg(index);
               },
               
               overlayColor: WidgetStatePropertyAll(isDarkMode ? Colors.white12 : WhatsAppColors.primary.withAlpha(40)),
@@ -69,7 +73,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
                   spacing: 8,
                   children: [
                     ColoredBox(
-                      color: accentColor,
+                      color: taggedAccentColor,
                       child: SizedBox(
                         width: 4,
                         height: height,

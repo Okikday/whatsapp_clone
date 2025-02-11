@@ -1,10 +1,10 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
+import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
@@ -21,32 +21,32 @@ class ChatListTile extends StatelessWidget {
   final void Function()? onTap;
   final void Function()? onLongPress;
   final void Function(TapUpDetails details)? onTapProfile;
-  final int? selectedIndex;
+  final bool isSelected;
   final String heroTag;
 
   final bool isDarkMode;
-  const ChatListTile(
-      {super.key,
-      required this.width,
-      required this.chatName,
-      required this.lastMsg,
-      this.profilePhoto,
-      this.lastUpdated,
-      this.onTap,
-      this.unreadMsgs,
-      this.hasStatusUpdate,
-      this.isTyping = false,
-      this.onLongPress,
-      this.selectedIndex,
-      this.onTapProfile,
-      required this.isDarkMode, 
-      required this.heroTag,
-      });
+  const ChatListTile({
+    super.key,
+    required this.width,
+    required this.chatName,
+    required this.lastMsg,
+    this.profilePhoto,
+    this.lastUpdated,
+    this.onTap,
+    this.unreadMsgs,
+    this.hasStatusUpdate,
+    this.isTyping = false,
+    this.onLongPress,
+    required this.isSelected,
+    this.onTapProfile,
+    required this.isDarkMode,
+    required this.heroTag,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: selectedIndex != null ? (isDarkMode ? WhatsAppColors.msgSentDark : WhatsAppColors.msgSent) : Colors.transparent,
+      color: isSelected ? (isDarkMode ? WhatsAppColors.msgSentDark : WhatsAppColors.msgSent) : Colors.transparent,
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
@@ -66,37 +66,52 @@ class ChatListTile extends StatelessWidget {
               child: Row(
                 spacing: 12,
                 children: [
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: Badge(
-                      isLabelVisible: selectedIndex != null,
-                      offset: const Offset(-10, -15),
-                      alignment: Alignment.bottomRight,
-                      backgroundColor: Colors.transparent,
-                      label: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: isDarkMode ? WhatsAppColors.msgSentDark : WhatsAppColors.msgSent,
-                        child: Icon(FontAwesomeIcons.solidCircleCheck, size: 20, color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,)).animate().scale( duration: const Duration(milliseconds: 150)),
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: GestureDetector(
-                          onTapDown: (details) { },
-                          onTapUp: (details) {
-                            if(onTapProfile != null) onTapProfile!(details);
-                          },
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: profilePhoto != null
-                                  ? DecorationImage(
-                                      image: CachedNetworkImageProvider(profilePhoto!),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Badge(
+                        isLabelVisible: isSelected,
+                        offset: const Offset(-10, -15),
+                        alignment: Alignment.bottomRight,
+                        backgroundColor: Colors.transparent,
+                        label: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: isDarkMode ? WhatsAppColors.msgSentDark : WhatsAppColors.msgSent,
+                            child: Icon(
+                              FontAwesomeIcons.solidCircleCheck,
+                              size: 20,
+                              color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
+                            )).animate().scale(duration: const Duration(milliseconds: 150)),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: (profilePhoto != null && profilePhoto!.isNotEmpty)
+                                  ? Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: profilePhoto!)
+                                  : Utilities.imgProvider(imgsrc: ImageSource.asset, defaultAssetImage: IconStrings.userIcon),
+                              fit: BoxFit.cover,
                             ),
-                            child: profilePhoto != null ? Heroine(tag: heroTag, spring: Spring.snappy, child: CircleAvatar(backgroundImage: Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: profilePhoto!))) : null,
+                          ),
+                          child: GestureDetector(
+                            onTapDown: (details) {},
+                            onTapUp: (details) {
+                              if (onTapProfile != null) onTapProfile!(details);
+                            },
+                            child: Heroine(
+                              tag: heroTag,
+                              spring: Spring.snappy,
+                              child: CircleAvatar(
+                                backgroundColor: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.darkGray,
+                                child: (profilePhoto != null && profilePhoto!.isNotEmpty)
+                                    ? CachedNetworkImage(imageUrl: profilePhoto!, fit: BoxFit.cover,)
+                                    : Image.asset(IconStrings.userIcon, fit: BoxFit.cover,),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -112,16 +127,17 @@ class ChatListTile extends StatelessWidget {
                           children: [
                             Expanded(
                                 child: CustomText(
-                              chatName,
+                              chatName.isNotEmpty ? chatName : "name not found",
                               textAlign: TextAlign.left,
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
+                              fontStyle: chatName.isNotEmpty ? FontStyle.normal : FontStyle.italic,
                               overflow: TextOverflow.ellipsis,
                             )),
                             const SizedBox(
                               width: 12,
                             ),
-                            CustomText(lastUpdated ?? "", color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
+                            CustomText(lastUpdated ?? "void date", color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
                           ],
                         ),
                       ),
@@ -131,7 +147,7 @@ class ChatListTile extends StatelessWidget {
                           child: SizedBox(
                             height: 28,
                             child: CustomText(
-                              isTyping ? "Typing..." : lastMsg,
+                              isTyping ? "Typing..." : (lastMsg.isEmpty ? "Start chatting" : lastMsg),
                               overflow: TextOverflow.ellipsis,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -140,7 +156,7 @@ class ChatListTile extends StatelessWidget {
                                   : isDarkMode
                                       ? WhatsAppColors.battleshipGrey
                                       : WhatsAppColors.gray,
-                              fontStyle: isTyping ? FontStyle.italic : FontStyle.normal,
+                              fontStyle: isTyping || lastMsg.isEmpty ? FontStyle.italic : FontStyle.normal,
                             ),
                           ),
                         ),

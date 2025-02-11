@@ -41,6 +41,8 @@ class IconStrings{
   static const arrowTurnLeft = "$iconPath/2r.png";
   static const forward = "$iconPath/bs2.png";
 
+  static const userIcon = "$iconPath/3r.png";
+
 }
 
 

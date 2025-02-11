@@ -1,8 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/colors.dart';
@@ -12,8 +12,8 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_msgs_view.dart';
 import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_bubble_selection_app_bar.dart';
@@ -24,11 +24,9 @@ final CustomNativeTextInputController nativeTextInputController = CustomNativeTe
 
 class ChatView extends StatelessWidget {
   final ChatModel chatModel;
-  final MessageModel messageModel;
   const ChatView({
     super.key,
     required this.chatModel,
-    required this.messageModel,
   });
 
   @override
@@ -60,8 +58,8 @@ class ChatView extends StatelessWidget {
                         isDarkMode: isDarkMode,
                         onTapProfile: () async {
                           final ProfileView preloadedProfileView = ProfileView(chatModel: chatModel);
-                          Future.delayed(
-                              const Duration(milliseconds: 150), () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView)));
+                          Future.delayed(const Duration(milliseconds: 150),
+                              () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView)));
                         },
                       ))
                   : CustomAppBarContainer(scaffoldBgColor: scaffoldBgColor, child: const ChatBubbleSelectionAppBar()),
@@ -79,8 +77,7 @@ class ChatView extends StatelessWidget {
                           scale: 1.3,
                           filterQuality: FilterQuality.high,
                           colorFilter: ColorFilter.mode(isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.linen, BlendMode.srcIn),
-                          fit: BoxFit.none
-                          )),
+                          fit: BoxFit.none)),
                   child: Column(
                     children: [
                       // Chat background
@@ -88,9 +85,6 @@ class ChatView extends StatelessWidget {
                         height: height,
                         width: width,
                         isDarkMode: isDarkMode,
-                        messageModels: [
-                          messageModel,
-                        ],
                       ),
 
                       ChatMsgBox(scaffoldBgColor: scaffoldBgColor, currChatViewController: chatViewController),
@@ -141,7 +135,7 @@ class ChatViewAppBar extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () async {
-            if (chatViewController.chatsSelected.isEmpty){
+            if (chatViewController.chatsSelected.isEmpty) {
               navigator?.pop();
             }
           },
@@ -156,12 +150,14 @@ class ChatViewAppBar extends StatelessWidget {
                       Icons.arrow_back_rounded,
                     )),
               ),
-              Hero(
+              Heroine(
                 tag: "${chatModel.chatId}_profile",
                 child: CircleAvatar(
                   radius: 18,
                   backgroundColor: Colors.grey.shade500,
-                  backgroundImage: Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: chatModel.chatProfilePhoto),
+                  backgroundImage: (chatModel.chatProfilePhoto != null && chatModel.chatProfilePhoto!.isNotEmpty)
+                      ? Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: chatModel.chatProfilePhoto)
+                      : Utilities.imgProvider(imgsrc: ImageSource.asset, defaultAssetImage: IconStrings.userIcon),
                 ),
               ),
             ],

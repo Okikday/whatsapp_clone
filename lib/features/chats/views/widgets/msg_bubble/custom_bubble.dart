@@ -1,5 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+import '../../../../../common/assets_strings.dart';
+import '../../../../../common/colors.dart';
 
 /// Enum for bubble nip positions.
 enum BubbleNip {
@@ -332,6 +336,7 @@ class CustomBubble extends StatelessWidget {
     this.borderUp = false,
     this.elevation = 0,
     this.shadowColor = Colors.black12,
+    required this.maxWidth,
   });
 
   final Widget child;
@@ -350,6 +355,7 @@ class CustomBubble extends StatelessWidget {
   final bool borderUp;
   final double elevation;
   final Color shadowColor;
+  final double maxWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -366,31 +372,114 @@ class CustomBubble extends StatelessWidget {
 
     return Padding(
       padding: margin,
-      child: CustomPaint(
-        isComplex: true,
-        painter: BubblePainter(
-          clipper: BubbleClipper(
-            radius: radius,
-            showNip: showNip,
-            position: nip,
-            nipWidth: nipWidth,
-            nipHeight: nipHeight,
-            nipOffset: nipOffset,
-            nipRadius: nipRadius,
-            stick: stick,
-            padding: padding,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: CustomPaint(
+          isComplex: true,
+          painter: BubblePainter(
+            clipper: BubbleClipper(
+              radius: radius,
+              showNip: showNip,
+              position: nip,
+              nipWidth: nipWidth,
+              nipHeight: nipHeight,
+              nipOffset: nipOffset,
+              nipRadius: nipRadius,
+              stick: stick,
+              padding: padding,
+            ),
+            color: color,
+            borderColor: borderColor,
+            borderWidth: borderWidth,
+            borderUp: borderUp,
+            elevation: elevation,
+            shadowColor: shadowColor,
           ),
-          color: color,
-          borderColor: borderColor, 
-          borderWidth: borderWidth,
-          borderUp: borderUp,
-          elevation: elevation,
-          shadowColor: shadowColor,
+          child: Padding(
+            padding: adjustedPadding,
+            child: child,
+          ),
         ),
-        child: Padding(
-          padding: adjustedPadding,
-          child: child,
-        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+class LowerResCustomBubble extends StatelessWidget {
+  const LowerResCustomBubble({
+    super.key,
+    this.bgColor,
+    required this.child,
+    this.padding,
+    this.margin,
+    this.borderRadius,
+    required this.maxWidth,
+    required this.isDarkMode,
+    this.showNip = false,
+    this.isNipLeftNotRight = true,
+  });
+
+  final Color? bgColor;
+  final Widget child;
+  final EdgeInsets? padding;
+  final EdgeInsets? margin;
+  final double? borderRadius;
+  final bool isDarkMode;
+  final double maxWidth;
+  final bool showNip;
+  final bool isNipLeftNotRight;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: Precache side svg
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 0,
+        children: [
+          if (showNip && isNipLeftNotRight)
+            Transform.translate(
+              offset: const Offset(1, 0),
+              child: SvgPicture.asset(
+                SvgStrings.msgBubbleCornerLeft,
+                colorFilter: ColorFilter.mode(bgColor ?? WhatsAppColors.accent, BlendMode.srcIn),
+              ),
+            )
+          else
+            const SizedBox(width: 8),
+
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: bgColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft:  !isNipLeftNotRight || !showNip ? Radius.circular(borderRadius!) : Radius.zero,
+                      topRight: isNipLeftNotRight || !showNip ? Radius.circular(borderRadius!) : Radius.zero,
+                      bottomLeft: Radius.circular(borderRadius!),
+                      bottomRight: Radius.circular(borderRadius!)),
+                  boxShadow: [BoxShadow(color: isDarkMode ? Colors.white10 : Colors.black12)]),
+
+              child: Padding(
+                padding: padding ?? EdgeInsets.zero,
+                child: child,
+              ),
+            ),
+          ),
+          if (showNip && !isNipLeftNotRight)
+            SvgPicture.asset(
+              SvgStrings.msgBubbleCornerRight,
+              colorFilter: ColorFilter.mode(bgColor ?? WhatsAppColors.accent, BlendMode.srcIn),
+            )
+          else
+            const SizedBox(width: 8),
+        ],
       ),
     );
   }

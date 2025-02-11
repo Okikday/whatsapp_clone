@@ -65,15 +65,19 @@ class MsgInputBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextStyle inputTextStyle = TextStyle(color: const CustomText("").style?.color, fontSize: 18, height: 1.2);
+    final Color primaryColor = Theme.of(context).primaryColor;
     return Obx(
       () => CustomTextfield(
+        selectionHandleColor: primaryColor,
+        selectionColor: primaryColor.withValues(alpha: 0.4),
         pixelHeight: currChatViewController.messageBarHeight.value,
         isEnabled: true,
         hint: "Message",
+        maxLines: 6,
         hintStyle: TextStyle(color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic),
         backgroundColor: isDarkMode ? WhatsAppColors.arsenic : Colors.white,
         borderRadius: 24,
-        cursorColor: WhatsAppColors.secondary,
+        cursorColor: primaryColor,
         onTapOutside: () {},
         onchanged: (text) {
           if (text == currChatViewController.messageInput.value) return;

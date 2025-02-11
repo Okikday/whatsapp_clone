@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -24,31 +25,30 @@ class HomeAppBarChild extends StatelessWidget {
 
       return Row(
         children: [
-          CustomText(AppConstants.homeTabTitles[stateCurrentIndex],
-              fontSize: stateCurrentIndex == 0 ? 24 : 22,
-              fontWeight: FontWeight.w600,
-              color: stateCurrentIndex == 0
-                  ? isDarkMode
-                      ? Colors.white
-                      : WhatsAppColors.primary
-                  : null),
           Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Animate(
-                controller: stateController.homeCameraIconAnimController.value,
-                effects: stateCurrentIndex == 1 || stateCurrentIndex == 3 ? AppConstants.homeCamAnimforwardEffect : AppConstants.homeCamAnimBackwardEffect,
-                child: IconButton(
-                    onPressed: () {},
-                    icon: Image.asset(
-                      IconStrings.cameraHome,
-                      width: 24,
-                      height: 24,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      colorBlendMode: BlendMode.srcIn,
-                    )),
-              ),
-            ),
+            child: CustomText(AppConstants.homeTabTitles[stateCurrentIndex],
+                fontSize: stateCurrentIndex == 0 ? 24 : 22,
+                fontWeight: FontWeight.w600,
+                color: stateCurrentIndex == 0
+                    ? isDarkMode
+                        ? Colors.white
+                        : WhatsAppColors.primary
+                    : null),
+          ),
+          Animate(
+            controller: stateController.homeCameraIconAnimController.value,
+            effects: stateCurrentIndex == 1 || stateCurrentIndex == 3
+                ? AppConstants.homeCamAnimforwardEffect
+                : AppConstants.homeCamAnimBackwardEffect,
+            child: IconButton(
+                onPressed: () {},
+                icon: Image.asset(
+                  IconStrings.cameraHome,
+                  width: 24,
+                  height: 24,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                  colorBlendMode: BlendMode.srcIn,
+                )),
           ),
           Visibility(
               visible: stateCurrentIndex == 1 || stateCurrentIndex == 3,
@@ -59,22 +59,49 @@ class HomeAppBarChild extends StatelessWidget {
                     size: 24,
                     color: isDarkMode ? Colors.white : Colors.black,
                   )).animate().flipH(duration: const Duration(milliseconds: 150)).fadeIn(duration: const Duration(milliseconds: 150))),
-                  
           CustomPopupMenuButton(
             menuItems: const ["Sign out", "dev settings"],
             onSelected: (value) async {
               if (value == "Sign out") {
-                Get.dialog(
-                  const LoadingDialog(
-                    msg: "Signing out",
-                  ),
-                );
-                Future.delayed(const Duration(seconds: 1), () async {
-                  await UserAuth().googleSignOut();
-                  Get.close(1);
-                  Get.off(() => const WelcomeScreen());
-                });
-              }else if(value == "dev settings"){
+                showCupertinoDialog(
+                    context: context,
+                    builder: (context) {
+                      return CupertinoAlertDialog(
+                          title: const CustomText(
+                            "Signing out...",
+                            fontSize: 15,
+                          ),
+                          content: const CustomText(
+                            "Are you sure you want to sign out?",
+                            textAlign: TextAlign.center,
+                            fontSize: 13,
+                          ),
+                          actions: [
+                            CupertinoButton(
+                              onPressed: () => Get.close(1),
+                              child: const CustomText(
+                                "Exit",
+                                color: Colors.blueGrey,
+                              ),
+                            ),
+                            CupertinoButton(
+                              onPressed: () async{
+                                Get.close(1);
+                                navigator?.push(LoadingDialog.loadingDialogBuilder(msg: "Signing out"));
+                                await Future.delayed(const Duration(seconds: 1), () async {});
+                                  await FirebaseGoogleAuth().googleSignOut();
+                                  Get.close(1);
+                                  Get.off(() => const WelcomeScreen());
+
+                              },
+                              child: const CustomText(
+                                "Sign out",
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ]);
+                    });
+              } else if (value == "dev settings") {
                 Get.to(() => const DevSettingsView());
               }
             },
@@ -84,7 +111,6 @@ class HomeAppBarChild extends StatelessWidget {
     });
   }
 }
-
 
 //  CustomPopupMenuButton(
 //             menuItems: const ["Sign out"],

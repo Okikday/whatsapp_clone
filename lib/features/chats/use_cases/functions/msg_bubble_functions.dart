@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
+
 
 class MsgBubbleFunctions {
   static void onLongPress(int index) {
@@ -29,7 +30,16 @@ class MsgBubbleFunctions {
   }
 
   static void onTapTaggedMsg(int index) {
-    // What to do
+    final Map<int, int?> chatsBubbleSelected = chatViewController.chatsSelected;
+    if (chatsBubbleSelected.isEmpty) {
+
+    } else {
+      if (chatsBubbleSelected[index] != null) {
+        chatViewController.removeSelectedChatBubble(index);
+      } else {
+        chatViewController.selectChatBubble(index);
+      }
+    }
   }
 
   static double calcSentAtWidth(String dateText, bool isSender, TextStyle sentAtStyle, {double iconSize = 16.0}) {

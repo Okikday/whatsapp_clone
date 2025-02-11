@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
 import 'package:whatsapp_clone/features/updates/views/widgets/status_list_tile.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
 

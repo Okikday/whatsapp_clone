@@ -1,4 +1,3 @@
-// file: animation_settings_view.dart
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,25 +6,23 @@ import 'package:whatsapp_clone/app/controllers/app_animation_settings.dart';
 class AnimationSettingsView extends StatelessWidget {
   AnimationSettingsView({super.key});
 
-  // Create a map of curve names to their instances.
-  // This covers all curves (and indirectly the Spring-based ones via fromSpring).
-final Map<String, Curve> curveOptions = {
-  // Flutter's built-in curves:
-  'Linear': Curves.linear,
-  'Ease': Curves.ease,
-  'EaseIn': Curves.easeIn,
-  'EaseOut': Curves.easeOut,
-  'EaseInOut': Curves.easeInOut,
-  'FastOutSlowIn': Curves.fastOutSlowIn,
-  'Decelerate': Curves.decelerate,
-
-  // Custom spring-based curves:
-  'Instant (Spring)': CustomCurves.instant,
-  'Default iOS (Spring)': CustomCurves.defaultIos,
-  'Bouncy (Spring)': CustomCurves.bouncy,
-  'Snappy (Spring)': CustomCurves.snappy,
-  'Interactive (Spring)': CustomCurves.interactive,
-};
+  final Map<String, Curve> curveOptions = {
+    'linear': CustomCurves.linear,
+    'ease': CustomCurves.ease,
+    'decelerate': CustomCurves.decelerate,
+    'fastSlowInOut': CustomCurves.fastSlowInOut,
+    'bounceOut': CustomCurves.bounceOut,
+    'bounceIn': CustomCurves.bounceIn,
+    'easeOutSine': CustomCurves.easeOutSine,
+    'easeInOutSine': CustomCurves.easeInOutSine,
+    'easeOutCirc': CustomCurves.easeOutCirc,
+    'easeInOutCirc': CustomCurves.easeInOutCirc,
+    'instant': CustomCurves.instantSpring,
+    'defaultIos': CustomCurves.defaultIosSpring,
+    'bouncy': CustomCurves.bouncySpring,
+    'snappy': CustomCurves.snappySpring,
+    'interactive': CustomCurves.interactiveSpring,
+  };
 
 
   @override
@@ -42,9 +39,8 @@ final Map<String, Curve> curveOptions = {
         child: Obx(() {
           // Find the current curve's name by comparing with our map values.
           final currentCurveName = curveOptions.entries.firstWhere(
-            (entry) => entry.value == appAnimationSettingsController.curve,
-            orElse: () =>
-                 MapEntry('Custom', CustomCurves.defaultIos),
+                (entry) => entry.value == appAnimationSettingsController.curve,
+            orElse: () => MapEntry('easeOutCirc', CustomCurves.easeOutCirc),
           ).key;
 
           return Column(
@@ -67,48 +63,41 @@ final Map<String, Curve> curveOptions = {
                 }).toList(),
                 onChanged: (String? newName) {
                   if (newName != null) {
-                    appAnimationSettingsController.curve =
-                        curveOptions[newName]!;
+                    appAnimationSettingsController.curve = curveOptions[newName]!;
                   }
                 },
               ),
+
               const SizedBox(height: 24),
               // Transition Duration slider
               CustomText(
-                'Transition Duration (${appAnimationSettingsController.transitionDuration} ms)',
+                'Transition Duration (${appAnimationSettingsController.transitionDuration.inMilliseconds} ms)',
                 fontSize: 16,
               ),
               Slider(
-                value:
-                    appAnimationSettingsController.transitionDuration.toDouble(),
+                value: appAnimationSettingsController.transitionDuration.inMilliseconds.toDouble(),
                 min: 100,
                 max: 5000,
                 divisions: 490,
-                label:
-                    '${appAnimationSettingsController.transitionDuration} ms',
+                label: '${appAnimationSettingsController.transitionDuration.inMilliseconds} ms',
                 onChanged: (double value) {
-                  appAnimationSettingsController.transitionDuration =
-                      value.toInt();
+                  appAnimationSettingsController.transitionDuration = Duration(milliseconds: value.toInt());
                 },
               ),
               const SizedBox(height: 24),
               // Reverse Transition Duration slider
               CustomText(
-                'Reverse Transition Duration (${appAnimationSettingsController.reverseTransitionDuration} ms)',
+                'Reverse Transition Duration (${appAnimationSettingsController.reverseTransitionDuration.inMilliseconds} ms)',
                 fontSize: 16,
               ),
               Slider(
-                value: appAnimationSettingsController
-                    .reverseTransitionDuration
-                    .toDouble(),
+                value: appAnimationSettingsController.reverseTransitionDuration.inMilliseconds.toDouble(),
                 min: 100,
                 max: 5000,
                 divisions: 490,
-                label:
-                    '${appAnimationSettingsController.reverseTransitionDuration} ms',
+                label: '${appAnimationSettingsController.reverseTransitionDuration.inMilliseconds} ms',
                 onChanged: (double value) {
-                  appAnimationSettingsController.reverseTransitionDuration =
-                      value.toInt();
+                  appAnimationSettingsController.reverseTransitionDuration = Duration(milliseconds: value.toInt());
                 },
               ),
               const Spacer(),
@@ -116,9 +105,9 @@ final Map<String, Curve> curveOptions = {
               Center(
                 child: CustomElevatedButton(
                   pixelHeight: 48,
-                  onClick: () =>
-                      appAnimationSettingsController.resetToDefault(),
+                  onClick: () => appAnimationSettingsController.resetToDefault(),
                   label: "Reset to Default",
+                  textSize: 14,
                 ),
               ),
             ],
@@ -128,3 +117,9 @@ final Map<String, Curve> curveOptions = {
     );
   }
 }
+
+
+
+
+
+

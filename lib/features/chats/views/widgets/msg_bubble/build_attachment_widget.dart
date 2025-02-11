@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,7 +7,7 @@ import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/message_model.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/sub_views/expand_image_view.dart';
 
 class BuildAttachmentWidget extends StatelessWidget {
@@ -15,7 +17,8 @@ class BuildAttachmentWidget extends StatelessWidget {
   final bool isJustImgOverlay;
   final String messageId;
   final String chatName;
-  const BuildAttachmentWidget({super.key, required this.msgType, required this.isSender, required this.isJustImgOverlay, required this.mediaUrl, required this.messageId, required this.chatName});
+  final Widget? dateWidget;
+  const BuildAttachmentWidget({super.key, required this.msgType, required this.isSender, required this.isJustImgOverlay, required this.mediaUrl, required this.messageId, required this.chatName, this.dateWidget,});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +48,19 @@ class BuildAttachmentWidget extends StatelessWidget {
                           Get.to(() => ExpandImageView(imageUrl: mediaUrl, messageId: messageId, chatName: chatName, ), transition: Transition.fade);
                         }
                       },
-                      child: CachedNetworkImage(
+                      child: dateWidget != null ? Stack(
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: mediaUrl,
+                            fit: BoxFit.fitWidth,
+                          ),
+                          if(dateWidget != null) Positioned(bottom: 2, right: 0, child: dateWidget!)
+                        ],
+                      ) : CachedNetworkImage(
                         imageUrl: mediaUrl,
                         fit: BoxFit.fitWidth,
-                        memCacheWidth: (appUiState.deviceWidth.value * 0.7).truncate(),
-                      )),
+                      ),
+                  ),
                 ),
               ),
             ),

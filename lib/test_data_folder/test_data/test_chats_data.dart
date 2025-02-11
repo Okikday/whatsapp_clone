@@ -1,4 +1,4 @@
-import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
 
 class TestChatsData {
   static final List<ChatModel> chatList = [

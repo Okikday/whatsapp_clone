@@ -1,15 +1,18 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
+import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
-import 'package:whatsapp_clone/features/chats/use_cases/models/chat_model.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/profile_list_tile.dart';
 
 class ProfileView extends StatelessWidget {
@@ -22,127 +25,126 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
-    // final ScrollController scrollController = PrimaryScrollController.of(context);
-    // scrollController.removeListener(() => scrollOffsetNotifier.value = scrollController.offset);
-    // scrollController.addListener(() => scrollOffsetNotifier.value = scrollController.offset);
-    // // log("Build profile view");
 
-    return Scaffold(
-      backgroundColor: scaffoldBgColor,
-      body: Obx(
-        () {
-          final double width = appUiState.deviceWidth.value;
-          final double leftPaddedWidth = width - 16;
-          final double height = appUiState.deviceHeight.value;
-          final bool isDarkMode = appUiState.isDarkMode.value;
-          final Color altTextColor = isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic;
-          final double statusBarHeight = MediaQuery.paddingOf(context).top;
-          const double additionalHeight = 75;
-          const double maxHeight = kToolbarHeight + additionalHeight;
+    return AnnotatedRegion(
+      value: SystemUiOverlayStyle(systemNavigationBarColor: scaffoldBgColor),
+      child: Scaffold(
+        backgroundColor: scaffoldBgColor,
+        body: Obx(
+          () {
+            final double width = appUiState.deviceWidth.value;
+            final double leftPaddedWidth = width - 16;
+            final double height = appUiState.deviceHeight.value;
+            final bool isDarkMode = appUiState.isDarkMode.value;
+            final Color altTextColor = isDarkMode ? WhatsAppColors.gray : WhatsAppColors.arsenic;
+            final double statusBarHeight = MediaQuery.paddingOf(context).top;
+            const double additionalHeight = 75;
+            const double maxHeight = kToolbarHeight + additionalHeight;
 
-          final BoxDecoration boxDecoration = BoxDecoration(color: scaffoldBgColor, boxShadow: [
-            BoxShadow(
-                offset: const Offset(0, 2),
-                color: isDarkMode ? Colors.black.withAlpha(50) : altTextColor.withAlpha(25),
-                blurStyle: BlurStyle.solid,
-                blurRadius: 2)
-          ]);
+            final BoxDecoration boxDecoration = BoxDecoration(color: scaffoldBgColor, boxShadow: [
+              BoxShadow(
+                  offset: const Offset(0, 2),
+                  color: isDarkMode ? Colors.black.withAlpha(50) : altTextColor.withAlpha(25),
+                  blurStyle: BlurStyle.solid,
+                  blurRadius: 2)
+            ]);
 
-          return SizedBox(
-            height: height,
-            width: width,
-            child: NotificationListener(
-              onNotification: (notification) {
-                switch (notification) {
-                  case ScrollMetricsNotification():
-                    if (scrollOffsetNotifier.value != notification.metrics.pixels) {
-                      scrollOffsetNotifier.value = notification.metrics.pixels;
-                    }
-                }
-                return true;
-              },
-              child: CustomScrollView(physics: CustomScrollPhysics.android(), slivers: [
-                ValueListenableBuilder<double>(
-                    valueListenable: scrollOffsetNotifier,
-                    builder: (context, scrollOffsetNotifier, child) {
-                      final double imageSize = (maxHeight - (scrollOffsetNotifier)).clamp(kToolbarHeight - 8, additionalHeight * 2);
-                      final double percentScroll = scrollOffsetNotifier.clamp(0, additionalHeight) / additionalHeight;
-                      return SliverAppBar(
-                        expandedHeight: maxHeight,
-                        collapsedHeight: kToolbarHeight,
-                        floating: false,
-                        pinned: true,
-                        automaticallyImplyLeading: false,
-                        backgroundColor: scaffoldBgColor,
-                        surfaceTintColor: Colors.transparent,
-                        shape: percentScroll > 0.98
-                            ? LinearBorder(side: BorderSide(color: isDarkMode ? WhatsAppColors.arsenic : WhatsAppColors.gray), bottom: const LinearBorderEdge())
-                            : null,
-                        flexibleSpace: FlexibleSpaceBar(
-                          titlePadding: EdgeInsets.only(top: statusBarHeight),
-                          expandedTitleScale: 1.0,
-                          collapseMode: CollapseMode.none,
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Hero(tag: "icon_arrow_back", child: SizedBox(width: 48, height: 48, child: BackButton())),
-                              Expanded(
-                                  child: Align(
-                                alignment: Alignment.center,
-                                child: AnimatedSize(
-                                  duration: const Duration(milliseconds: 350),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      AnimatedSize(
-                                          duration: const Duration(milliseconds: 350),
-                                          child: SizedBox(
-                                            width: ((width - maxHeight - 96) / 2) * (1 - percentScroll),
-                                          )),
-                                      ProfilePhotoAvatar(
-                                        url: chatModel.chatProfilePhoto,
-                                        size: imageSize,
-                                        heroineTag: "${chatModel.chatId}_profile",
-                                      ),
-                                      if (percentScroll >= 0.95)
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 12),
-                                          child: CustomText(
-                                            chatModel.chatName,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ).animate().slideX(begin: 0.1).fadeIn()
-                                    ],
+            return SizedBox(
+              height: height,
+              width: width,
+              child: NotificationListener(
+                onNotification: (notification) {
+                  switch (notification) {
+                    case ScrollMetricsNotification():
+                      if (scrollOffsetNotifier.value != notification.metrics.pixels) {
+                        scrollOffsetNotifier.value = notification.metrics.pixels;
+                      }
+                  }
+                  return true;
+                },
+                child: CustomScrollView(physics: CustomScrollPhysics.android(), slivers: [
+                  ValueListenableBuilder<double>(
+                      valueListenable: scrollOffsetNotifier,
+                      builder: (context, scrollOffsetNotifier, child) {
+                        final double imageSize = (maxHeight - (scrollOffsetNotifier)).clamp(kToolbarHeight - 8, additionalHeight * 2);
+                        final double percentScroll = scrollOffsetNotifier.clamp(0, additionalHeight) / additionalHeight;
+                        return SliverAppBar(
+                          expandedHeight: maxHeight,
+                          collapsedHeight: kToolbarHeight,
+                          floating: false,
+                          pinned: true,
+                          automaticallyImplyLeading: false,
+                          backgroundColor: scaffoldBgColor,
+                          surfaceTintColor: Colors.transparent,
+                          shape: percentScroll > 0.98
+                              ? LinearBorder(side: BorderSide(color: isDarkMode ? WhatsAppColors.arsenic : Colors.black12), bottom: const LinearBorderEdge())
+                              : null,
+                          flexibleSpace: FlexibleSpaceBar(
+                            titlePadding: EdgeInsets.only(top: statusBarHeight),
+                            expandedTitleScale: 1.0,
+                            collapseMode: CollapseMode.none,
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Hero(tag: "icon_arrow_back", child: SizedBox(width: 48, height: 48, child: BackButton())),
+                                Expanded(
+                                    child: Align(
+                                  alignment: Alignment.center,
+                                  child: AnimatedSize(
+                                    duration: const Duration(milliseconds: 350),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        AnimatedSize(
+                                            duration: const Duration(milliseconds: 350),
+                                            child: SizedBox(
+                                              width: ((width - maxHeight - 96) / 2) * (1 - percentScroll),
+                                            )),
+                                        ProfilePhotoAvatar(
+                                          url: chatModel.chatProfilePhoto,
+                                          size: imageSize,
+                                          heroineTag: "${chatModel.chatId}_profile",
+                                        ),
+                                        if (percentScroll >= 0.95)
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 12),
+                                            child: CustomText(
+                                              chatModel.chatName,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ).animate().slideX(begin: 0.1).fadeIn()
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              )),
-                              Hero(
-                                  tag: "icon_more_vert",
-                                  child: SizedBox(
-                                      width: 48,
-                                      height: 48,
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.more_vert),
-                                      )))
-                            ],
+                                )),
+                                Hero(
+                                    tag: "icon_more_vert",
+                                    child: SizedBox(
+                                        width: 48,
+                                        height: 48,
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.more_vert),
+                                        )))
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-                ProfileViewBody(
-                    chatModel: chatModel,
-                    isDarkMode: isDarkMode,
-                    boxDecoration: boxDecoration,
-                    width: width,
-                    altTextColor: altTextColor,
-                    leftPaddedWidth: leftPaddedWidth),
-              ]),
-            ),
-          );
-        },
+                        );
+                      }),
+                  ProfileViewBody(
+                      chatModel: chatModel,
+                      isDarkMode: isDarkMode,
+                      boxDecoration: boxDecoration,
+                      width: width,
+                      altTextColor: altTextColor,
+                      leftPaddedWidth: leftPaddedWidth),
+                ]),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -256,22 +258,26 @@ class ProfileViewBody extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 SizedBox(
                   height: 120,
-                  child: ListView.builder(
-                      itemCount: 20,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsets.only(left: index == 0 ? 16 : 8),
-                          child: const ColoredBox(
-                              color: Colors.black,
-                              child: SizedBox(
-                                height: 100,
-                                width: 100,
-                              )),
-                        );
-                      }),
+                  child: NotificationListener(
+                    onNotification: (notification) => true,
+                    child: ListView.builder(
+                        itemCount: 20,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(left: index == 0 ? 16 : 8),
+                            child: const ColoredBox(
+                                color: Colors.black,
+                                child: SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                )),
+                          );
+                        }),
+                  ),
                 ),
                 const SizedBox(
                   height: 12,
@@ -422,7 +428,10 @@ class ProfilePhotoAvatar extends StatelessWidget {
                     image: CachedNetworkImageProvider(url!),
                     fit: BoxFit.contain,
                   )
-                : null,
+                : DecorationImage(
+              image: Utilities.imgProvider(imgsrc: ImageSource.asset, defaultAssetImage: IconStrings.userIcon),
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),

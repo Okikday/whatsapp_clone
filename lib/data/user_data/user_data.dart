@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:whatsapp_clone/app/data/hive_data/hive_data.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/data/hive_data/hive_data.dart';
 
 class UserDataFunctions {
   static const String _path = "user_data";
@@ -10,16 +10,16 @@ class UserDataFunctions {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   static var data = HiveData.box;
   final hiveData = HiveData();
+  static const String pathUserCredentialMap = "user_credential_map";
 
-  Future<Result<bool>> saveUserDetails({String? googleIDToken, String? googleAccessToken, required UserCredentialModel userCredentialModel}) async {
+  Future<Result<bool>> saveUserDetails(
+      {String? googleIDToken, String? googleAccessToken, required UserCredentialModel userCredentialModel}) async {
     try {
       if (googleIDToken != null) await _secureStorage.write(key: "googleIDToken", value: googleIDToken);
       if (googleAccessToken != null) await _secureStorage.write(key: "googleAccessToken", value: googleAccessToken);
 
-      userCredentialModel.toMap().forEach((key, value) async {
-        if (value != null) await hiveData.setData(key: "$_path/$key", value: value);
-      });
-
+      await hiveData.setData(key: "$_path/$pathUserCredentialMap", value: userCredentialModel.toMap());
+      log("storedData: ${await hiveData.getData(key: "$_path/$pathUserCredentialMap")}");
       return Result.success(true);
     } catch (e) {
       return Result.error("Error: $e");
@@ -31,13 +31,12 @@ class UserDataFunctions {
       // Clear stored tokens and user information
       await _secureStorage.delete(key: 'googleIDToken');
       await _secureStorage.delete(key: 'googleAccessToken');
-      UserCredentialModel.defaultMap.forEach((key, value) async {
-        try{
-          await hiveData.deleteData(key: "$_path/$key");
-        }catch(e){
-          log("Error deleting user Data, $e");
-        }
-      });
+      await hiveData.deleteData(key: "$_path/$pathUserCredentialMap");
+      try {
+        await hiveData.deleteData(key: "$_path/$pathUserCredentialMap");
+      } catch (e) {
+        log("Error deleting user Data, $e");
+      }
       log("Successfully cleared user's data");
       return Result.success(true);
     } catch (e) {
@@ -45,25 +44,43 @@ class UserDataFunctions {
     }
   }
 
-  Future<Result<UserCredentialModel>> getUserDetails() async {
+  Future<Result<UserCredentialModel?>> getUserDetails() async {
     try {
-      final Map<String, dynamic> userData = {};
+      final userData = await hiveData.getData(key: "$_path/$pathUserCredentialMap");
 
-      // Loop through default keys
-      for (final key in UserCredentialModel.defaultMap.keys) {
-        // Fetch data for each key
-        userData[key] = await hiveData.getData(key: "$_path/$key");
-      }
+      if (userData == null) return Result.error("Couldn't load user's data");
 
       // Create the UserCredentialModel from the fetched data
-      final user = UserCredentialModel.fromMap(userData);
+      final user = UserCredentialModel.fromMap(Map<String, dynamic>.from(userData));
       return Result.success(user);
     } catch (e) {
       return Result.error("Failed to fetch user details: ${e.toString()}");
     }
   }
+  
+  Future<Result<String>> getUserId() async{
+    try {
+      final userData = await hiveData.getData(key: "$_path/$pathUserCredentialMap");
+      if (userData == null) return Result.error("Unable to fetch user data");
+      // Create the UserCredentialModel from the fetched data
+      final user = UserCredentialModel.fromMap(Map<String, dynamic>.from(userData));
+      return Result.success(user.userID);
+    } catch (e) {
+      return Result.error("error: $e");
+    }
+  }
 
-  Future<bool> isUserSignedIn() async => await hiveData.getData(key: "$_path/userID") != null;
+  Future<bool> isUserSignedIn() async {
+    try {
+      final userData = await hiveData.getData(key: "$_path/$pathUserCredentialMap");
+      if (userData == null) return false;
+      // Create the UserCredentialModel from the fetched data
+      final user = UserCredentialModel.fromMap(Map<String, dynamic>.from(userData));
+      return user.userID.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 // User credential model for easy User Object

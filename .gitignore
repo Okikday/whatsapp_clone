@@ -42,3 +42,4 @@ app.*.map.jsonpdate
 /android/app/profile
 /android/app/release
 /android/app/google-services.json
+/lib/data/drift_database/app_drift_database.g.dart

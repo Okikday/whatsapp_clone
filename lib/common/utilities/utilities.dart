@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -5,6 +6,7 @@ import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
@@ -12,57 +14,87 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class Utilities {
-  static ImageProvider? imgProvider({
+  /// Returns an [ImageProvider] based on the input parameters.
+  ///
+  /// - If an explicit [imgsrc] is provided, its branch is used:
+  ///   - `ImageSource.file`: returns a [FileImage] if [imgfile] is non-null.
+  ///   - `ImageSource.network`: returns a [CachedNetworkImageProvider] if [imgurl]
+  ///     is non-empty and valid.
+  /// - If [imgsrc] is omitted, the provider is automatically deduced:
+  ///   - Uses [FileImage] if [imgfile] is provided.
+  ///   - Otherwise, uses [CachedNetworkImageProvider] if [imgurl] is valid.
+  /// - If neither option is valid, falls back to an [AssetImage].
+  static ImageProvider imgProvider({
     File? imgfile,
     String? imgurl,
-    required ImageSource imgsrc,
-    String defaulAssetImage = ImagesStrings.imgPlaceholder,
+    ImageSource? imgsrc,
+    String defaultAssetImage = ImagesStrings.imgPlaceholder,
   }) {
-    if (imgfile == null && imgurl == null) {
-      return AssetImage(defaulAssetImage);
-    } else if (imgurl != null && imgsrc == ImageSource.network) {
-      return CachedNetworkImageProvider(imgurl);
-    } else if (imgsrc == ImageSource.file && imgfile != null) {
-      return FileImage(imgfile);
-    } else {
-      return null;
+    // If the image source is explicitly provided, use that branch.
+    if (imgsrc != null) {
+      if (imgsrc == ImageSource.file && imgfile != null) {
+        return FileImage(imgfile);
+      } else if (imgsrc == ImageSource.network &&
+          imgurl != null &&
+          imgurl.trim().isNotEmpty) {
+        final uri = Uri.tryParse(imgurl);
+        if (uri != null && (uri.scheme == 'http' || uri.scheme == 'https')) {
+          return CachedNetworkImageProvider(imgurl);
+        }
+      }
+      // If the explicit branch fails (or the needed parameter is missing),
+      // fall back to the placeholder.
+      return AssetImage(defaultAssetImage);
     }
+
+    // If no explicit image source is provided, deduce automatically.
+    if (imgfile != null) {
+      return FileImage(imgfile);
+    }
+    if (imgurl != null && imgurl.trim().isNotEmpty) {
+      final uri = Uri.tryParse(imgurl);
+      if (uri != null && (uri.scheme == 'http' || uri.scheme == 'https')) {
+        return CachedNetworkImageProvider(imgurl);
+      }
+    }
+    // Fallback to the placeholder asset image.
+    return AssetImage(defaultAssetImage);
   }
 
   static PageRouteBuilder customPageRouteBuilder(
     Widget child, {
-    Curve curve = CustomCurves.easeIn,
-    int transitionDuration = 1000,
-    int reverseTransitionDuration = 250,
+    Curve? curve,
+    Duration transitionDuration = Durations.medium3,
+    Duration reverseTransitionDuration = Durations.medium1,
   }) {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return child;
-    },
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final Animation<Offset> offsetAnimation = animation.drive(
-        Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve)),
-      );
-      final Animation<double> reverseFadeAnimation = animation.drive(
-        Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
-      );
+    curve = curve ?? CustomCurves.defaultIosSpring;
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return child;
+      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final Animation<Offset> offsetAnimation = animation.drive(
+          Tween(begin: const Offset(0.0, 0.1), end: Offset.zero).chain(CurveTween(curve: curve!)),
+        );
+        final Animation<double> reverseFadeAnimation = animation.drive(
+          Tween<double>(begin: 0, end: 1.0).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+        );
 
-      if (animation.status == AnimationStatus.reverse) {
+        if (animation.status == AnimationStatus.reverse) {
+          return SlideTransition(
+            position: offsetAnimation,
+            child: FadeTransition(opacity: reverseFadeAnimation, child: child),
+          );
+        }
         return SlideTransition(
           position: offsetAnimation,
-          child: FadeTransition(opacity: reverseFadeAnimation, child: child),
+          child: child,
         );
-      }
-      return SlideTransition(
-        position: offsetAnimation,
-        child: child,
-      );
-    },
-    transitionDuration: Duration(milliseconds: transitionDuration),
-    reverseTransitionDuration: Duration(milliseconds: reverseTransitionDuration),
-  );
-}
-
+      },
+      transitionDuration: transitionDuration,
+      reverseTransitionDuration: reverseTransitionDuration,
+    );
+  }
 }
 
 /// A class representing a result that can be either a success or a failure.
@@ -81,6 +113,7 @@ class Result<T> {
 
   /// Factory constructor for a failed result.
   factory Result.error(String error) {
+    log("error: $error");
     return Result._(error: error);
   }
 
@@ -146,9 +179,6 @@ class LogModel {
   }
 }
 
-
-
-
 class LoggingService {
   final _logCollection = FirebaseFirestore.instance.collection('errorLogs');
   late Box _offlineLogsBox;
@@ -197,8 +227,7 @@ class LoggingService {
     debugPrint('Logs sent to Firebase for user: ${log.userId}');
   }
 
-  Future<bool> _isOffline() async =>
-      (await Connectivity().checkConnectivity()).first == ConnectivityResult.none;
+  Future<bool> _isOffline() async => (await Connectivity().checkConnectivity()).first == ConnectivityResult.none;
 
   Future<void> syncOfflineLogs() async {
     final logs = _offlineLogsBox.values.map((e) => LogModel.fromMap(e)).toList();
