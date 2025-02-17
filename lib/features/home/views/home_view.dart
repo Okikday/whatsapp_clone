@@ -69,16 +69,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, Auto
             child: Scaffold(
               appBar: CustomAppBarContainer(
                   scaffoldBgColor: scaffoldBgColor,
-                  padding: chatsTabUiController.chatTilesSelected.isEmpty ? null : EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
                   child: AnimatedSwitcher(
                     // duration: Durations.medium3,
                     // reverseDuration: Durations.short3,
-                    duration: const Duration(milliseconds: 1500),
-                    reverseDuration: Durations.long4,
+                    duration: Durations.medium1,
+                    reverseDuration: Durations.medium1,
                     transitionBuilder: (Widget child, Animation<double> animation) {
                       final curvedAnimation = CurvedAnimation(
                         parent: animation,
-                        curve: CustomCurves.snappySpring,
+                        curve: CustomCurves.ease,
                       );
                       if (child.key == const ValueKey('chatSelection')) {
                         return SlideTransition(
@@ -90,13 +90,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, Auto
                         );
                       } else {
                         return FadeTransition(
-                          opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+                          opacity: chatsTabUiController.chatTilesSelected.isEmpty
+                              ? Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation)
+                              : Tween<double>(begin: 1.0, end: 0.0).animate(curvedAnimation),
                           child: child,
                         );
                       }
                     },
                     child: chatsTabUiController.chatTilesSelected.isEmpty
-                        ? const HomeAppBarChild(key: ValueKey('home'))
+                        ? const Padding(padding: EdgeInsets.only(left: 16), child: HomeAppBarChild(key: ValueKey('home')))
                         : const ChatSelectionAppBarChild(key: ValueKey('chatSelection')),
                   )),
               bottomNavigationBar: HomeNavigationBar(

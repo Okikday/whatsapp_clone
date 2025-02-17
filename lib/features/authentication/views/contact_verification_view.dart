@@ -13,6 +13,7 @@ import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/widgets/custom_popup_menu_button.dart';
 import 'package:whatsapp_clone/common/widgets/custom_snackbar.dart';
+import 'package:whatsapp_clone/data/app_data.dart';
 import 'package:whatsapp_clone/data/firebase_data/firebase_data.dart';
 import 'package:whatsapp_clone/data/user_data/user_data.dart';
 import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
@@ -222,16 +223,16 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                                     CupertinoButton(onPressed: () async{
                                       Get.close(1);
                                       await onGoogleSignIn(context);
-                                      navigator?.push(LoadingDialog.loadingDialogBuilder());
-                                      final Result userId = await UserDataFunctions().getUserId();
-                                      if(!userId.isSuccess) {
+                                      LoadingDialog.showLoadingDialog(Get.context!, progressIndicatorColor: WhatsAppColors.secondary, backgroundColor: Get.theme.scaffoldBackgroundColor);
+                                      final Result userIdResult = await UserDataFunctions().getUserId();
+                                      if(!userIdResult.isSuccess) {
                                         await FirebaseGoogleAuth().googleSignOut();
                                         await UserDataFunctions().clearUserDetails();
                                         Get.close(1);
                                         CustomSnackBar.showSnackBar(Get.context!, content: "Unable to complete sign up", vibe: SnackBarVibe.error);
                                         return;
                                       }
-                                      final outcomeUpdatePhoneNumber = await FirebaseData().updateUserField(userId.value, {"phoneNumber": ngnPhoneNumber});
+                                      final outcomeUpdatePhoneNumber = await FirebaseData().updateUserField(userIdResult.value, {"phoneNumber": ngnPhoneNumber});
                                       if(!outcomeUpdatePhoneNumber.isSuccess){
                                         await FirebaseGoogleAuth().googleSignOut();
                                         await UserDataFunctions().clearUserDetails();
@@ -239,6 +240,8 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                                         CustomSnackBar.showSnackBar(Get.context!, content: "Unable to complete sign up", vibe: SnackBarVibe.error);
                                         return;
                                       }
+
+                                      AppData.userId = userIdResult.value;
                                       log("Successfully added phone number to firebase");
                                       Get.close(1);
                                       CustomSnackBar.showSnackBar(Get.context!, content: "Successfully signed in with phone number and Google");
@@ -260,7 +263,7 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
 }
 
 Future<void> onGoogleSignIn(BuildContext context) async {
-  navigator?.push(LoadingDialog.loadingDialogBuilder(progressIndicatorColor: WhatsAppColors.secondary));
+  LoadingDialog.showLoadingDialog(Get.context!, progressIndicatorColor: WhatsAppColors.secondary, backgroundColor: Get.theme.scaffoldBackgroundColor);
   final Result result = await FirebaseGoogleAuth().signInWithGoogle();
   Get.close(1);
   if (result.isSuccess || result.value == true) {

@@ -1,4 +1,7 @@
+import 'package:uuid/uuid.dart';
+
 class ChatsFunctions {
+  static String generateMsgId() => const Uuid().v4();
 
   static double calculateContentHeight({
   required String text,

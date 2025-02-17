@@ -229,7 +229,7 @@ class _NewContactViewState extends State<NewContactView> {
                                   enabledBorder: defaultInputBorder,
                                   focusedBorder: activeInputBorder,
                                   onSubmitted: (text) {
-                                    if (text.isNotEmpty && text.length > 5) {
+                                    if (text.isNotEmpty && text.length == 10) {
                                       if (firstName.value.isEmpty) {
                                         errorMsg.value = "Fill in first name";
                                       } else {
@@ -295,17 +295,16 @@ class _NewContactViewState extends State<NewContactView> {
                         screenWidth: 100,
                         textSize: Constants.fontSizeSmall + 1,
                         onClick: () async {
-
-
                           bool isInfoVerified = firstName.value.isNotEmpty &&
                               phoneNumber.value.isNotEmpty &&
                               firstName.value.length >= 2 &&
-                              phoneNumber.value.length > 5 && (int.tryParse(phoneNumber.value.toString()) != null);
-                          navigator?.push(LoadingDialog.loadingDialogBuilder(
-                              msg: "Adding phone number", backgroundColor: Get.theme.scaffoldBackgroundColor.withValues(alpha: 0.1)));
+                              phoneNumber.value.length == 10 &&
+                              (int.tryParse(phoneNumber.value.toString()) != null);
+                          LoadingDialog.showLoadingDialog(context,
+                              msg: "Adding phone number", backgroundColor: Get.theme.scaffoldBackgroundColor.withValues(alpha: 0.1));
                           if (!isInfoVerified) {
                             Get.close(1);
-                            errorMsg.value = "Error in details";
+                            if(errorMsg.value.isEmpty) errorMsg.value = "Error in details";
                             Future.delayed(Durations.extralong4, () {
                               errorMsg.value = "";
                             });
@@ -315,7 +314,8 @@ class _NewContactViewState extends State<NewContactView> {
                           final bool chatExists = (await AppData.chats.getChatById("chatId_${phoneNumber.value}")) != null;
                           if (chatExists) {
                             Get.close(1);
-                            CustomSnackBar.showSnackBar(Get.context!, content: "Phone number ${phoneNumber.value} already exists", vibe: SnackBarVibe.warning);
+                            CustomSnackBar.showSnackBar(Get.context!,
+                                content: "Phone number ${phoneNumber.value} already exists", vibe: SnackBarVibe.warning);
                             return;
                           }
 
@@ -328,7 +328,8 @@ class _NewContactViewState extends State<NewContactView> {
                                 lastMsg: "",
                                 lastUpdated: DateTime.now()));
                             Get.close(1);
-                            CustomSnackBar.showSnackBar(Get.context!, content: "Successfully added phone number", vibe: SnackBarVibe.success);
+                            CustomSnackBar.showSnackBar(Get.context!,
+                                content: "Successfully added phone number", vibe: SnackBarVibe.success);
                           } catch (e) {
                             Get.close(1);
                             CustomSnackBar.showSnackBar(Get.context!, content: "Error adding phone number", vibe: SnackBarVibe.error);
@@ -347,4 +348,3 @@ class _NewContactViewState extends State<NewContactView> {
     );
   }
 }
-

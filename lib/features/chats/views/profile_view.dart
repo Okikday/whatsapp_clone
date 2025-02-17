@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,17 +13,35 @@ import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
+import 'package:whatsapp_clone/common/utilities/formatter.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/profile_list_tile.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   final ChatModel chatModel;
-  ProfileView({super.key, required this.chatModel});
+  const ProfileView({super.key, required this.chatModel});
 
-  final ValueNotifier<double> scrollOffsetNotifier = ValueNotifier(0.0);
-  final ValueNotifier<double> percentScrollNotifier = ValueNotifier(0.0);
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
 
+class _ProfileViewState extends State<ProfileView> {
+  late final ValueNotifier<double> scrollOffsetNotifier;
+  late final ValueNotifier<double> percentScrollNotifier;
+  @override
+  void initState() {
+    super.initState();
+    scrollOffsetNotifier = ValueNotifier(0.0);
+    percentScrollNotifier = ValueNotifier(0.0);
+  }
+
+  @override
+  void dispose() {
+    scrollOffsetNotifier.dispose();
+    percentScrollNotifier.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
@@ -102,19 +122,22 @@ class ProfileView extends StatelessWidget {
                                               width: ((width - maxHeight - 96) / 2) * (1 - percentScroll),
                                             )),
                                         ProfilePhotoAvatar(
-                                          url: chatModel.chatProfilePhoto,
+                                          url: widget.chatModel.chatProfilePhoto,
                                           size: imageSize,
-                                          heroineTag: "${chatModel.chatId}_profile",
+                                          heroineTag: "${widget.chatModel.chatId}_profile",
                                         ),
                                         if (percentScroll >= 0.95)
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 12),
-                                            child: CustomText(
-                                              chatModel.chatName,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ).animate().slideX(begin: 0.1).fadeIn()
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 12,),
+                                              child: CustomText(
+                                                widget.chatModel.chatName,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w500,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ).animate().slideX(begin: -0.1).fadeIn(),
+                                          )
                                       ],
                                     ),
                                   ),
@@ -134,7 +157,7 @@ class ProfileView extends StatelessWidget {
                         );
                       }),
                   ProfileViewBody(
-                      chatModel: chatModel,
+                      chatModel: widget.chatModel,
                       isDarkMode: isDarkMode,
                       boxDecoration: boxDecoration,
                       width: width,
@@ -173,15 +196,18 @@ class ProfileViewBody extends StatelessWidget {
     return SliverList(
         delegate: SliverChildListDelegate.fixed(
       [
+        const SizedBox(height: 6,),
         // Name
         Center(
-          child: CustomText(chatModel.chatName, fontSize: 24, fontWeight: FontWeight.w500),
+          child: CustomText(chatModel.chatName, fontSize: 23, fontWeight: FontWeight.w500, textAlign: TextAlign.center,),
         ),
+
+        const SizedBox(height: 6,),
 
         // Phone number
         Center(
-          child: CustomText(chatModel.contactId,
-              fontSize: 16, fontWeight: FontWeight.w500, color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray),
+          child: CustomText(Formatter.formatPhoneNumber(chatModel.contactId),
+              fontSize: 16, fontWeight: FontWeight.w500, color: isDarkMode ? WhatsAppColors.battleshipGrey : WhatsAppColors.gray, textAlign: TextAlign.center,),
         ),
         const SizedBox(height: 16),
         DecoratedBox(
@@ -408,7 +434,7 @@ class ProfileViewBody extends StatelessWidget {
 }
 
 class ProfilePhotoAvatar extends StatelessWidget {
-  const ProfilePhotoAvatar({super.key, required this.url, this.size = 45, required this.heroineTag});
+  const ProfilePhotoAvatar({super.key, required this.url, this.size = 40, required this.heroineTag});
 
   final String? url;
   final double size;

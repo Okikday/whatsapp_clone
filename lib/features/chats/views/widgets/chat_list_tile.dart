@@ -127,10 +127,10 @@ class ChatListTile extends StatelessWidget {
                           children: [
                             Expanded(
                                 child: CustomText(
-                              chatName.isNotEmpty ? chatName : "name not found",
+                              chatName.isNotEmpty ? chatName : "unknown",
                               textAlign: TextAlign.left,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                               fontStyle: chatName.isNotEmpty ? FontStyle.normal : FontStyle.italic,
                               overflow: TextOverflow.ellipsis,
                             )),

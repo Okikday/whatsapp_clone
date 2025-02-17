@@ -73,4 +73,9 @@ class Formatter {
       return formatAsDate(date);
     }
   }
+
+  static String formatPhoneNumber(String number) {
+    final RegExp regex = RegExp(r'(\d{3})(\d{3})(\d{4})');
+    return number.replaceFirstMapped(regex, (m) => "+234 ${m[1]} ${m[2]} ${m[3]}");
+  }
 }

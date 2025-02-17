@@ -63,7 +63,8 @@ class UserDataFunctions {
       final userData = await hiveData.getData(key: "$_path/$pathUserCredentialMap");
       if (userData == null) return Result.error("Unable to fetch user data");
       // Create the UserCredentialModel from the fetched data
-      final user = UserCredentialModel.fromMap(Map<String, dynamic>.from(userData));
+      final UserCredentialModel user = UserCredentialModel.fromMap(Map<String, dynamic>.from(userData));
+
       return Result.success(user.userID);
     } catch (e) {
       return Result.error("error: $e");

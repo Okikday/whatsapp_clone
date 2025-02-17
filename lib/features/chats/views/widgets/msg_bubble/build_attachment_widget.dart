@@ -11,6 +11,7 @@ import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/sub_views/expand_image_view.dart';
 
 class BuildAttachmentWidget extends StatelessWidget {
+  final ChatViewController chatViewController;
   final MessageType msgType;
   final String mediaUrl;
   final bool isSender;
@@ -18,7 +19,7 @@ class BuildAttachmentWidget extends StatelessWidget {
   final String messageId;
   final String chatName;
   final Widget? dateWidget;
-  const BuildAttachmentWidget({super.key, required this.msgType, required this.isSender, required this.isJustImgOverlay, required this.mediaUrl, required this.messageId, required this.chatName, this.dateWidget,});
+  const BuildAttachmentWidget({super.key, required this.msgType, required this.isSender, required this.isJustImgOverlay, required this.mediaUrl, required this.messageId, required this.chatName, this.dateWidget, required this.chatViewController,});
 
   @override
   Widget build(BuildContext context) {

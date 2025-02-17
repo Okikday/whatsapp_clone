@@ -7,7 +7,8 @@ import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 
 class ChatBubbleSelectionAppBar extends StatelessWidget {
-  const ChatBubbleSelectionAppBar({super.key});
+  final ChatViewController chatViewController;
+  const ChatBubbleSelectionAppBar({super.key, required this.chatViewController});
 
   @override
   Widget build(BuildContext context) {

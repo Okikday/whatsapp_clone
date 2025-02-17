@@ -2,25 +2,23 @@ class MessageModel {
   final int? id; // Auto-incremented ID for SQLite
   final String messageId;
   final String chatId;
-  final String senderId;
-  final String receiverId;
+  final String myId;
   final String content;
   final String? taggedMessageID;
   final String? mediaUrl; // URL for media like images, videos, etc.
   final int mediaType; // Use an integer to represent MessageType
-  final DateTime sentAt;
-  final DateTime? deliveredAt;
-  final DateTime? readAt;
-  final DateTime? seenAt;
+  final DateTime? sentAt; // if null, it's not sent/no network. 1 tick if sent
+  final DateTime? deliveredAt; // if null, it's not yet delivered. 2 tick if delivered
+  final DateTime? readAt; // if null, it's not yet read. filled 2 ticks if read
   final bool isStarred;
   final bool isDeleted;
+  final int forwardCount; // not for me
 
   MessageModel({
     this.id,
     required this.messageId,
     required this.chatId,
-    required this.senderId,
-    required this.receiverId,
+    required this.myId,
     required this.content,
     this.taggedMessageID,
     this.mediaUrl,
@@ -28,9 +26,9 @@ class MessageModel {
     required this.sentAt,
     this.deliveredAt,
     this.readAt,
-    this.seenAt,
     this.isStarred = false,
     this.isDeleted = false,
+    this.forwardCount = 0
   });
 
   // Convert MessageModel to a map (for inserting into SQLite)
@@ -38,16 +36,14 @@ class MessageModel {
     return {
       'messageId': messageId,
       'chatId': chatId,
-      'senderId': senderId,
-      'receiverId': receiverId,
+      'myId': myId,
       'content': content,
       'taggedMessageID': taggedMessageID,
       'mediaUrl': mediaUrl,
       'mediaType': mediaType,
-      'sentAt': sentAt.toIso8601String(),
+      'sentAt': sentAt?.toIso8601String(),
       'deliveredAt': deliveredAt?.toIso8601String(),
       'readAt': readAt?.toIso8601String(),
-      'seenAt': seenAt?.toIso8601String(),
       'isStarred': isStarred ? 1 : 0,
       'isDeleted': isDeleted ? 1 : 0,
     };
@@ -59,16 +55,14 @@ class MessageModel {
       id: map['id'],
       messageId: map['messageId'],
       chatId: map['chatId'],
-      senderId: map['senderId'],
-      receiverId: map['receiverId'],
+      myId: map['myId'],
       content: map['content'],
       taggedMessageID: map['taggedMessageID'] as String?,
       mediaUrl: map['mediaUrl'] as String?,
       mediaType: map['mediaType'],
-      sentAt: DateTime.parse(map['sentAt']),
+      sentAt: map['sentAt'] != null ? DateTime.parse(map['sentAt']) : null,
       deliveredAt: map['deliveredAt'] != null ? DateTime.parse(map['deliveredAt'] as String) : null,
       readAt: map['readAt'] != null ? DateTime.parse(map['readAt']) : null,
-      seenAt: map['readAt'] != null ? DateTime.parse(map['readAt']) : null,
       isStarred: map['isStarred'] == 1,
       isDeleted: map['isDeleted'] == 1,
     );
@@ -79,16 +73,14 @@ class MessageModel {
     'id': null, // SQLite auto-incremented ID
     'messageId': '', // Default empty string
     'chatId': '', // Default empty string
-    'senderId': '', // Default empty string
-    'receiverId': '', // Default empty string
+    'myId': '', // Default empty string
     'content': '', // Default empty string
     'taggedMessageID': null,
     'mediaUrl': null, // Default null for optional fields
     'mediaType': 0, // Default 0 for MessageType
-    'sentAt': DateTime.now().toIso8601String(), // Default to the current timestamp
+    'sentAt': null, // Default to null for optional fields
     'deliveredAt': null, // Default null for optional fields
     'readAt': null, // Default null for optional fields
-    'seenAt': null,
     'isStarred': 0, // Default 0 (false)
     'isDeleted': 0, // Default 0 (false)
   };

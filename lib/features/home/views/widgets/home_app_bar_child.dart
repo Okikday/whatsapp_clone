@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/app/views/dev_settings_view.dart';
 import 'package:whatsapp_clone/common/app_constants.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
@@ -87,7 +88,7 @@ class HomeAppBarChild extends StatelessWidget {
                             CupertinoButton(
                               onPressed: () async{
                                 Get.close(1);
-                                navigator?.push(LoadingDialog.loadingDialogBuilder(msg: "Signing out"));
+                                LoadingDialog.showLoadingDialog(context, msg: "Signing out", backgroundColor: Get.theme.scaffoldBackgroundColor);
                                 await Future.delayed(const Duration(seconds: 1), () async {});
                                   await FirebaseGoogleAuth().googleSignOut();
                                   Get.close(1);

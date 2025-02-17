@@ -192,7 +192,10 @@ class SelectContactView extends StatelessWidget {
                                 : null,
                             onTap: () {
                               Get.close(1);
-                              navigator?.push(Utilities.customPageRouteBuilder(ChatView(chatModel: cacheChatModel)));
+                              final String? userId = AppData.userId;
+                              if(userId == null) return;
+
+                              navigator?.push(Utilities.customPageRouteBuilder(ChatView(chatModel: cacheChatModel, myUserId: userId,)));
                             },
                           );
                         },

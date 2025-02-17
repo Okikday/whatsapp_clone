@@ -1,10 +1,17 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-
-final ChatViewController chatViewController = Get.put(ChatViewController());
+import 'package:whatsapp_clone/data/app_data.dart';
+import 'package:whatsapp_clone/data/user_data/user_data.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
 
 class ChatViewController extends GetxController {
+  final Rx<ChatModel> _chatModel;
+  final RxString _myUserId;
+  ChatViewController(ChatModel chatModel, String myUserId): _chatModel = chatModel.obs, _myUserId = myUserId.obs;
+
+  final TextEditingController textEditingController = TextEditingController();
   RxString messageInput = "".obs;
   RxDouble messageBarHeight = 48.0.obs;
   RxBool isMicTappedDown = false.obs;
@@ -12,7 +19,7 @@ class ChatViewController extends GetxController {
   RxMap<int, int?> chatsSelected = <int, int?>{}.obs;
 
   @override
-  void onInit() {
+  void onInit() async{
     super.onInit();
     setMessageInput('');
     chatsSelected.listen((Map<int, int?> value) {
@@ -26,10 +33,12 @@ class ChatViewController extends GetxController {
     super.onClose();
   }
 
+  ChatModel get chatModel => _chatModel.value;
+
   void resetValues() {
-    chatViewController.setMessageInput('');
+    setMessageInput('');
     // setIsChatViewActive(false);
-    chatViewController.clearSelectedChatBubble();
+    clearSelectedChatBubble();
   }
 
   void setMessageInput(String value) => messageInput.value = value;

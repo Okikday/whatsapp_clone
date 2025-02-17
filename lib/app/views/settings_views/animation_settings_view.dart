@@ -105,7 +105,10 @@ class AnimationSettingsView extends StatelessWidget {
               Center(
                 child: CustomElevatedButton(
                   pixelHeight: 48,
-                  onClick: () => appAnimationSettingsController.resetToDefault(),
+                  onClick: () {
+                    appAnimationSettingsController.resetToDefault();
+                    CustomSnackBar.showSnackBar(context, content: "Reset animations to default");
+                  },
                   label: "Reset to Default",
                   textSize: 14,
                 ),

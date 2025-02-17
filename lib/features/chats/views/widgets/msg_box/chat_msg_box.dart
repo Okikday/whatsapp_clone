@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -6,48 +7,87 @@ import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
+import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
+import 'package:whatsapp_clone/data/app_data.dart';
+import 'package:whatsapp_clone/data/user_data/user_data.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/functions/chats_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box_functions.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
 
 class ChatMsgBox extends StatelessWidget {
   final Color scaffoldBgColor;
-  final ChatViewController currChatViewController;
-  const ChatMsgBox({super.key, required this.scaffoldBgColor, required this.currChatViewController});
+  final ChatViewController chatViewController;
+  const ChatMsgBox({super.key, required this.scaffoldBgColor, required this.chatViewController});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final double keyboardHeight = appUiState.viewInsets.value.bottom;
-      return SizedBox(
-        height: currChatViewController.messageBarHeight.value + (keyboardHeight < 40 ? 4 : keyboardHeight + 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.only(right: 4, top: 2),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                          color: appUiState.isDarkMode.value ? WhatsAppColors.arsenic.withAlpha(40) : WhatsAppColors.seaShell.withAlpha(40),
-                          offset: const Offset(0, 1),
-                          blurRadius: BlurEffect.neutralBlur,
-                          blurStyle: BlurStyle.inner)
-                    ], borderRadius: BorderRadius.circular(24)),
-                    child: MsgInputBar(
-                      isDarkMode: appUiState.isDarkMode.value,
-                      currChatViewController: currChatViewController,
-                    ),
-                  )),
-            ),
-            SendOrMicButtonWidget(
-              isDarkMode: appUiState.isDarkMode.value,
-              scaffoldBgColor: scaffoldBgColor,
-              currChatViewController: currChatViewController,
-            )
-          ],
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2),
+        child: SizedBox(
+          height: chatViewController.messageBarHeight.value + (keyboardHeight < 40 ? 4 : keyboardHeight + 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.only(right: 4, top: 2),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                            color:
+                                appUiState.isDarkMode.value ? WhatsAppColors.arsenic.withAlpha(40) : WhatsAppColors.seaShell.withAlpha(40),
+                            offset: const Offset(0, 1),
+                            blurRadius: BlurEffect.neutralBlur,
+                            blurStyle: BlurStyle.inner)
+                      ], borderRadius: BorderRadius.circular(24)),
+                      child: MsgInputBar(
+                        isDarkMode: appUiState.isDarkMode.value,
+                        currChatViewController: chatViewController,
+                      ),
+                    )),
+              ),
+              SendOrMicButtonWidget(
+                chatViewController: chatViewController,
+                isDarkMode: appUiState.isDarkMode.value,
+                scaffoldBgColor: scaffoldBgColor,
+                onTapSend: () async {
+                  chatViewController.textEditingController.clear();
+                  final Result myIdResult = await UserDataFunctions().getUserId();
+                  if (!myIdResult.isSuccess) {
+                    if (Get.context!.mounted) {
+                      CustomSnackBar.showSnackBar(Get.context!, content: "Unable to send message, try contacting app's developer", vibe: SnackBarVibe.warning);
+                    }
+                    return;
+                  }
+
+                  final ChatModel chatModel = chatViewController.chatModel;
+                  String msgId = ChatsFunctions.generateMsgId();
+                  int count = 0;
+                  while (await AppData.messages.doesMsgIdExists(msgId) && count < 10) {
+                    if (count > 10) break;
+                    msgId = ChatsFunctions.generateMsgId();
+                    count++;
+                  }
+                  if (count > 10) return;
+                  AppData.messages.addMessage(MessageModel(
+                      messageId: msgId,
+                      chatId: chatModel.chatId,
+                      content: chatViewController.messageInput.value,
+                      mediaType: MessageType.text.value,
+                      sentAt: null,
+                      myId: myIdResult.value));
+                  AppData.chats.updateChat(chatModel.copyWith(lastMsg: chatViewController.messageInput.value));
+                  chatViewController.setMessageInput("");
+                },
+              )
+            ],
+          ),
         ),
       );
     });
@@ -70,6 +110,7 @@ class MsgInputBar extends StatelessWidget {
       () => CustomTextfield(
         selectionHandleColor: primaryColor,
         selectionColor: primaryColor.withValues(alpha: 0.4),
+        controller: currChatViewController.textEditingController,
         pixelHeight: currChatViewController.messageBarHeight.value,
         isEnabled: true,
         hint: "Message",
@@ -88,7 +129,8 @@ class MsgInputBar extends StatelessWidget {
           );
         },
         inputContentPadding: EdgeInsets.only(
-            top: currChatViewController.messageBarHeight.value == 48.0 ? 0 : 8, bottom: currChatViewController.messageBarHeight.value == 48.0 ? 0 : 2),
+            top: currChatViewController.messageBarHeight.value == 48.0 ? 0 : 8,
+            bottom: currChatViewController.messageBarHeight.value == 48.0 ? 0 : 2),
         inputTextStyle: inputTextStyle,
         prefixIcon: IconButton(
           onPressed: () {},
@@ -111,7 +153,8 @@ class MsgInputBar extends StatelessWidget {
             spacing: 0,
             children: [
               ChatMsgBoxFunctions.widgetAttachmentIconButton(isDarkMode: isDarkMode),
-              ChatMsgBoxFunctions.widgetCameraIconButton(isDarkMode: isDarkMode, isVisible: currChatViewController.messageInput.isEmpty ? true : false)
+              ChatMsgBoxFunctions.widgetCameraIconButton(
+                  isDarkMode: isDarkMode, isVisible: currChatViewController.messageInput.isEmpty ? true : false)
             ],
           ),
         ),
@@ -123,27 +166,43 @@ class MsgInputBar extends StatelessWidget {
 class SendOrMicButtonWidget extends StatelessWidget {
   final bool isDarkMode;
   final Color scaffoldBgColor;
-  final ChatViewController currChatViewController;
-  const SendOrMicButtonWidget({super.key, required this.isDarkMode, required this.scaffoldBgColor, required this.currChatViewController});
+  final ChatViewController chatViewController;
+  final void Function()? onTapSend;
+  const SendOrMicButtonWidget(
+      {super.key, required this.isDarkMode, required this.scaffoldBgColor, required this.chatViewController, this.onTapSend});
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () {
-        final bool isMsgInputEmpty = currChatViewController.messageInput.value.isEmpty;
+        final ChatModel chatModel = chatViewController.chatModel;
+        final bool isMsgInputEmpty = chatViewController.messageInput.value.isEmpty;
         return Padding(
-          padding: EdgeInsets.only(top: (currChatViewController.messageBarHeight.value - 48).clamp(0, 140)),
+          padding: EdgeInsets.only(top: (chatViewController.messageBarHeight.value - 48).clamp(0, 140)),
           child: GestureDetector(
-            onTapDown: (details) {
-              currChatViewController.setIsMicTappedDown(true);
-            },
-            onTapUp: (details) => currChatViewController.setIsMicTappedDown(false),
-            onTapCancel: () => currChatViewController.setIsMicTappedDown(false),
-            onLongPress: () {
-              if (chatViewController.chatsSelected.isNotEmpty) {
-                chatViewController.clearSelectedChatBubble();
+            onTapDown: (details) async {
+              if (isMsgInputEmpty) {
+                chatViewController.setIsMicTappedDown(true);
               }
             },
+            onTap: isMsgInputEmpty
+                ? null
+                : () {
+                    if (onTapSend != null) onTapSend!();
+                  },
+            onTapUp: (details) {
+              if (chatViewController.isMicTappedDown.value != false) chatViewController.setIsMicTappedDown(false);
+            },
+            onTapCancel: () {
+              if (chatViewController.isMicTappedDown.value != false) chatViewController.setIsMicTappedDown(false);
+            },
+            onLongPress: !isMsgInputEmpty
+                ? null
+                : () {
+                    // if (chatViewController.chatsSelected.isNotEmpty) {
+                    //   chatViewController.clearSelectedChatBubble();
+                    // }
+                  },
             onLongPressCancel: () {
               if (chatViewController.chatsSelected.isNotEmpty) {
                 chatViewController.clearSelectedChatBubble();
@@ -151,7 +210,7 @@ class SendOrMicButtonWidget extends StatelessWidget {
             },
             child: AnimatedScale(
                 scale: isMsgInputEmpty
-                    ? currChatViewController.isMicTappedDown.value
+                    ? chatViewController.isMicTappedDown.value
                         ? 1.25
                         : 1
                     : 1,
@@ -174,13 +233,6 @@ class SendOrMicButtonWidget extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
 
 /*
 class MsgInputBar extends StatelessWidget {

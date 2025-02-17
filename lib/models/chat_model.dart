@@ -64,6 +64,38 @@ class ChatModel {
     );
   }
 
+  // copyWith method
+  ChatModel copyWith({
+    String? chatId,
+    String? contactId,
+    String? chatName,
+    String? chatProfilePhoto,
+    String? lastMsg,
+    DateTime? lastUpdated,
+    bool? isMuted,
+    bool? isArchived,
+    bool? isPinned,
+    int? unreadMsgs,
+    bool? hasStatusUpdate,
+    String? profileInfo,
+  }) {
+    return ChatModel(
+      chatId: chatId ?? this.chatId,
+      contactId: contactId ?? this.contactId,
+      chatName: chatName ?? this.chatName,
+      chatProfilePhoto: chatProfilePhoto ?? this.chatProfilePhoto,
+      lastMsg: lastMsg ?? this.lastMsg,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+      isMuted: isMuted ?? this.isMuted,
+      isArchived: isArchived ?? this.isArchived,
+      isPinned: isPinned ?? this.isPinned,
+      unreadMsgs: unreadMsgs ?? this.unreadMsgs,
+      hasStatusUpdate: hasStatusUpdate ?? this.hasStatusUpdate,
+      profileInfo: profileInfo ?? this.profileInfo,
+    );
+  }
+
+
   // A default map structure for initialization
   static Map<String, dynamic> defaultMap() {
     return {

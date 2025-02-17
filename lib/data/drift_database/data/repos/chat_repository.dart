@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
+import 'package:whatsapp_clone/data/drift_database/app_drift_database.dart';
+import 'package:whatsapp_clone/data/drift_database/data/tables/chat_table.dart';
+import 'package:whatsapp_clone/data/drift_database/data/tables/message_table.dart';
+import 'package:whatsapp_clone/models/chat_model.dart';
 
-import '../../../../models/chat_model.dart';
-import '../../app_drift_database.dart';
-import '../tables/chat_table.dart';
+
 
 class ChatRepository {
   final AppDriftDatabase _db = AppDriftDatabase.instance;
@@ -47,6 +49,16 @@ class ChatRepository {
     );
   }
 
+  /// Checks if a chat with the given [chatId] exists in the database.
+  Future<bool> doesChatIdExists(String chatId) async {
+    final chat = await _db.getSingle<ChatTable, ChatTableData>(
+      _db.chatTable,
+          (tbl) => tbl.chatId.equals(chatId),
+    );
+    return chat != null;
+  }
+
+
   /// Inserts a new chat.
   Future<int> addChat(ChatModel chat) async {
     final companion = _toCompanion(chat);
@@ -86,12 +98,29 @@ class ChatRepository {
     );
   }
 
-  /// Deletes a chat by its ID.
-  Future<int> deleteChat(String chatId) async {
-    return await _db.deleteData<ChatTable, ChatTableData>(
-      _db.chatTable,
-      (tbl) => tbl.chatId.equals(chatId),
-    );
+  // /// Deletes a chat by its ID.
+  // Future<int> deleteChat(String chatId) async {
+  //   return await _db.deleteData<ChatTable, ChatTableData>(
+  //     _db.chatTable,
+  //     (tbl) => tbl.chatId.equals(chatId),
+  //   );
+  // }
+
+  /// Deletes a chat and all its associated messages by its ID.
+  Future<int> deleteChatWithMsgs(String chatId) async {
+    return await _db.transaction(() async {
+      // First, delete all messages related to the chat.
+      await _db.deleteData<MessageTable, MessageTableData>(
+        _db.messageTable,
+            (tbl) => tbl.chatId.equals(chatId),
+      );
+
+      // Then, delete the chat record.
+      return await _db.deleteData<ChatTable, ChatTableData>(
+        _db.chatTable,
+            (tbl) => tbl.chatId.equals(chatId),
+      );
+    });
   }
 
   /// Streams all chats.

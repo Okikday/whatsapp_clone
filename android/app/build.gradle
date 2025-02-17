@@ -33,6 +33,29 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_KEYSTORE)
+            storePassword MYAPP_KEYSTORE_PASSWORD
+            keyAlias MYAPP_KEY_ALIAS
+            keyPassword MYAPP_KEY_PASSWORD
+
+        }
+        debug {
+            storeFile file(MYAPP_KEYSTORE)
+            storePassword MYAPP_KEYSTORE_PASSWORD
+            keyAlias MYAPP_KEY_ALIAS
+            keyPassword MYAPP_KEY_PASSWORD
+
+        }
+//        profile {
+//        storeFile file(MYAPP_KEYSTORE)
+//        storePassword MYAPP_KEYSTORE_PASSWORD
+//        keyAlias MYAPP_KEY_ALIAS
+//        keyPassword MYAPP_KEY_PASSWORD
+//        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

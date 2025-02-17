@@ -17,8 +17,7 @@ class MessageRepository {
       // The auto-incremented ID is typically omitted during insert.
       messageId: Value(msg.messageId),
       chatId: Value(msg.chatId),
-      senderId: Value(msg.senderId),
-      receiverId: Value(msg.receiverId),
+      myId: Value(msg.myId),
       content: Value(msg.content),
       taggedMessageID: Value(msg.taggedMessageID),
       mediaUrl: Value(msg.mediaUrl),
@@ -26,7 +25,6 @@ class MessageRepository {
       sentAt: Value(msg.sentAt),
       deliveredAt: Value(msg.deliveredAt),
       readAt: Value(msg.readAt),
-      seenAt: Value(msg.seenAt),
       isStarred: Value(msg.isStarred),
       isDeleted: Value(msg.isDeleted),
     );
@@ -38,8 +36,7 @@ class MessageRepository {
       id: data.id,
       messageId: data.messageId,
       chatId: data.chatId,
-      senderId: data.senderId,
-      receiverId: data.receiverId,
+      myId: data.myId,
       content: data.content,
       taggedMessageID: data.taggedMessageID,
       mediaUrl: data.mediaUrl,
@@ -47,11 +44,20 @@ class MessageRepository {
       sentAt: data.sentAt,
       deliveredAt: data.deliveredAt,
       readAt: data.readAt,
-      seenAt: data.seenAt,
       isStarred: data.isStarred,
       isDeleted: data.isDeleted,
     );
   }
+
+  /// Checks if a message with the given [messageId] exists in the database.
+  Future<bool> doesMsgIdExists(String messageId) async {
+    final message = await _db.getSingle<MessageTable, MessageTableData>(
+      _db.messageTable,
+          (tbl) => tbl.messageId.equals(messageId),
+    );
+    return message != null;
+  }
+
 
   /// Inserts a new message.
   Future<int> addMessage(MessageModel message) async {

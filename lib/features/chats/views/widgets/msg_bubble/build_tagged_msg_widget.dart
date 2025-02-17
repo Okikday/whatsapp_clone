@@ -3,10 +3,13 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
+import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 
 import '../../../use_cases/functions/msg_bubble_functions.dart';
 
 class BuildTaggedMsgWidget extends StatelessWidget {
+  final ChatViewController chatViewController;
+
   final Color taggedAccentColor;
   final Color taggedMsgColor;
   final Color taggedNameColor;
@@ -17,6 +20,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
   final String? mediaUrl;
   final bool isDarkMode;
   final int index;
+
   const BuildTaggedMsgWidget({
     super.key,
     required this.taggedAccentColor,
@@ -28,7 +32,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
     required this.taggedMsgContent,
     this.mediaUrl,
     required this.isDarkMode,
-    required this.index,
+    required this.index, required this.chatViewController,
   });
 
   @override
@@ -62,7 +66,7 @@ class BuildTaggedMsgWidget extends StatelessWidget {
             color: taggedMsgColor,
             child: InkWell(
               onTap: () {
-                MsgBubbleFunctions.onTapTaggedMsg(index);
+                MsgBubbleFunctions(chatViewController).onTapTaggedMsg(index);
               },
               
               overlayColor: WidgetStatePropertyAll(isDarkMode ? Colors.white12 : WhatsAppColors.primary.withAlpha(40)),

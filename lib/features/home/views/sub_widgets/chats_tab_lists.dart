@@ -14,6 +14,7 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/utilities/formatter.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/data/app_data.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/select_contact_view.dart';
@@ -42,7 +43,6 @@ class ChatsTabLists extends StatelessWidget {
     return StreamBuilder(
         stream: chatsTabUiController.tabChatsListStream.value,
         builder: (context, snapshot) {
-          log("${snapshot.data}, ${snapshot.connectionState}");
           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             return SliverImplicitlyAnimatedList<ChatModel>(
               items: snapshot.data!,
@@ -69,11 +69,14 @@ class ChatsTabLists extends StatelessWidget {
                         onTap: () async {
                           if (chatTilesSelected.isEmpty) {
                             if (chatsTabUiController.allowPagePush.value) {
+                              final String? userId = AppData.userId;
+                              if(userId == null) return;
                               chatsTabUiController.setAllowPagePush(false);
 
                               log("allowPage push: ${chatsTabUiController.allowPagePush.value}");
                               final ChatView preloadedChatView = ChatView(
                                 chatModel: chatModel,
+                                myUserId: userId,
                               );
                               await Future.delayed(const Duration(milliseconds: 250));
                               navigator
@@ -130,10 +133,10 @@ class ChatsTabLists extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CustomText(
+                         const CustomText(
                           "Welcome to WhatsApp Clone 🌚",
                           fontStyle: FontStyle.italic,
-                          color: Colors.lightBlue,
+                          color: WhatsAppColors.emerald,
                         ).animate().fadeOut(duration: const Duration(seconds: 1), curve: Curves.easeIn),
                         const SizedBox(height: 24),
                         SizedBox(
@@ -268,9 +271,12 @@ PageRouteBuilder<dynamic> profileDialogPageRoute(double overlayWidth, ChatModel 
                                   ),
                                   onPressed: () async {
                                     if (chatsTabUiController.allowPagePush.value) {
+                                      final String? userId = AppData.userId;
+                                      if(userId == null) return;
                                       chatsTabUiController.setAllowPagePush(false);
                                       final ChatView preloadedChatView = ChatView(
                                         chatModel: cacheChatModel,
+                                        myUserId: userId,
                                       );
                                       await Future.delayed(Durations.medium1);
                                       navigator

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class ChatSelectionAppBarChild extends StatelessWidget {
     return Obx(
       () {
         final Color getCurrIconColor = appUiState.isDarkMode.value ? Colors.white : Colors.black;
+        final Color primaryColor = Get.theme.primaryColor;
         return Row(
           children: [
             BackButton(
@@ -33,10 +35,69 @@ class ChatSelectionAppBarChild extends StatelessWidget {
                 )),
             IconButton(
                 onPressed: () {
-                  chatsTabUiController.chatTilesSelected.forEach((key, value) {
-                    if (value != null) AppData.chats.deleteChat(value);
-                  });
-                  chatsTabUiController.clearSelectedChatTiles();
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: Get.theme.scaffoldBackgroundColor,
+                          title: const CustomText(
+                            "Delete this chat?",
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          content: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Transform.translate(
+                                offset: const Offset(-8, 0),
+                                  child: Checkbox(value: false, onChanged: (value) {}, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,)),
+                              Expanded(
+                                child: CustomRichText(children: [
+                                  CustomTextSpanData("Also delete media received in this", fontSize: 14),
+                                  CustomTextSpanData(" chat from gallery", fontSize: 14),
+                                ], ),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            CustomElevatedButton(
+                              backgroundColor: Colors.transparent,
+                              onClick: () => Get.close(1),
+                              overlayColor: primaryColor.withValues(alpha: 0.1),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                                child: CustomText(
+                                  "Cancel",
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            CustomElevatedButton(
+                              backgroundColor: Colors.transparent,
+                              onClick: () async {
+                                Get.close(1);
+                                LoadingDialog.showLoadingDialog(context, msg: "Deleting selected chats");
+
+                                chatsTabUiController.chatTilesSelected.forEach((key, value) async {
+                                  if (value != null) await AppData.chats.deleteChatWithMsgs(value);
+                                });
+                                chatsTabUiController.clearSelectedChatTiles();
+                                Get.close(1);
+                              },
+                              overlayColor: primaryColor.withValues(alpha: 0.1),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                                child: CustomText(
+                                  "Delete",
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      });
                 },
                 icon: Icon(
                   Icons.delete,
