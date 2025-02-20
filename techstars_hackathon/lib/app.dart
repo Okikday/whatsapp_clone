@@ -3,14 +3,14 @@ import 'dart:ui';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class App extends StatefulWidget {
+  const App({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<App> createState() => _AppState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
