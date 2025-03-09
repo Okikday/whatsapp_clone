@@ -23,7 +23,7 @@ class FirebaseGoogleAuth {
   UserCredential? _userCredential;
   final UserDataFunctions userData = UserDataFunctions();
 
-  Future<Result<bool>> signInWithGoogle({String? phoneNumber}) async {
+  Future<Result<UserCredentialModel>> signInWithGoogle({String? phoneNumber}) async {
     try {
       // Triggering the authentication flow
       final GoogleSignInAccount? googleUser = await _googleAuth.signIn();
@@ -45,13 +45,14 @@ class FirebaseGoogleAuth {
       final User? user = userCredential.user;
       if (user == null) return Result.error("Null user");
 
+
       final Result outcomeCreateUser = await _firebaseData.createUserData(
-          UserCredentialModel(userID: user.uid, displayName: user.displayName ?? "Anonymous", email: user.email ?? "anonymous@gmail.com", phoneNumber: phoneNumber));
+          UserCredentialModel(userID: user.uid, displayName: user.displayName ?? "Anonymous", email: user.email ?? "anonymous@gmail.com", phoneNumber: phoneNumber, photoURL: user.photoURL, creationTime: DateTime.now()));
 
       if (outcomeCreateUser.isSuccess) {
         await userData.saveUserDetails(
             googleAccessToken: googleAuth.accessToken, googleIDToken: googleAuth.idToken, userCredentialModel: outcomeCreateUser.value);
-        return Result.success(true);
+        return Result.success(outcomeCreateUser.value);
       } else {
         return Result.unavailable("Unable to create User Data");
       }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/features/authentication/use_cases/auth_functions.dart';
@@ -86,6 +88,69 @@ class FirebaseData {
       return Result.error("Unable to get user data");
     }
   }
+
+  Future<Result<bool>> checkFieldInUsersExists(String fieldName, String value) async {
+    try {
+      final querySnapshot = await _collectionReference.where(fieldName, isEqualTo: value).get();
+      return Result.success(querySnapshot.docs.isNotEmpty);
+    } catch (e) {
+      return Result.error("Error checking field existence: ${e.toString()}");
+    }
+  }
+
+
+  Future<Result<UserCredentialModel?>> getWhere(Map<String, dynamic> filters) async {
+    try {
+      Query query = _collectionReference;
+
+      filters.forEach((key, value) {
+        query = query.where(key, isEqualTo: value);
+      });
+
+      final QuerySnapshot querySnapshot = await query.limit(1).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        return Result.success(null);
+      }
+
+      final DocumentSnapshot document = querySnapshot.docs.first;
+      final Map<String, dynamic>? userData = document.data() as Map<String, dynamic>?;
+
+      if (userData == null) {
+        return Result.error("Invalid user data format");
+      }
+
+      return Result.success(UserCredentialModel.fromMap(userData));
+    } catch (e) {
+      return Result.error("Error retrieving user: ${e.toString()}");
+    }
+  }
+
+
+  Future<Result<bool>> deleteWhere(Map<String, dynamic> filters) async {
+    try {
+      Query query = _collectionReference;
+
+      // Apply all filters to the query
+      filters.forEach((key, value) {
+        query = query.where(key, isEqualTo: value);
+      });
+
+      QuerySnapshot querySnapshot = await query.get();
+
+      for (DocumentSnapshot doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      return Result.success(true);
+    } catch (e) {
+      return Result.error("Failed to delete documents: ${e.toString()}");
+    }
+  }
+
+
+
+
 
   /// Updates the entire user data for the specified [userId] with [newData].
   ///

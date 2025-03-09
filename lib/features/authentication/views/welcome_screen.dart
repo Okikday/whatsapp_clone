@@ -110,7 +110,7 @@ List<Widget> welcomeScreenWidgets(
                 height: Constants.spaceExtraLarge,
               ),
               CustomElevatedButton(
-                borderRadius: ConstantSizing.borderRadiusLarge,
+                borderRadius: ConstantSizing.borderRadiusCircle,
                 backgroundColor: isDarkMode ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFF7F7FA),
                 overlayColor: isDarkMode ? WhatsAppColors.secondary.withValues(alpha: 0.1) : WhatsAppColors.primary.withValues(alpha: 0.1),
                 onClick: () async {
@@ -159,8 +159,8 @@ List<Widget> welcomeScreenWidgets(
                 label: "Agree and Continue",
                 backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
                 screenWidth: 100,
-                borderRadius: ConstantSizing.borderRadiusLarge,
-                textSize: Constants.fontSizeSmall + 1,
+                borderRadius: ConstantSizing.borderRadiusCircle,
+                textSize: ConstantSizing.fontSizeSmall + 1,
                 onClick: () {
                   Get.to(() => const ContactVerificationView(),
                       transition: Transition.rightToLeft, duration: const Duration(milliseconds: 250), curve: Curves.decelerate);

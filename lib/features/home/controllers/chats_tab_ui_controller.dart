@@ -37,14 +37,14 @@ class ChatsTabUiController extends GetxController{
   }
 
 
-  @override
-  onInit(){
-    super.onInit();
-
-    chatTilesSelected.listen((Map<int, String?> value) {
-      log("Selected chat tile: ${value.length}");
-    });
-  }
+  // @override
+  // onInit(){
+  //   super.onInit();
+  //
+  //   // chatTilesSelected.listen((Map<int, String?> value) {
+  //   //   log("Selected chat tile: ${value.length}");
+  //   // });
+  // }
 
   @override
   onClose(){

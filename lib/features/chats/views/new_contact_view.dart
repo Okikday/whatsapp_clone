@@ -291,7 +291,7 @@ class _NewContactViewState extends State<NewContactView> {
                         pixelHeight: 42,
                         label: "Save",
                         textColor: Colors.black,
-                        borderRadius: ConstantSizing.borderRadiusLarge,
+                        borderRadius: ConstantSizing.borderRadiusCircle,
                         backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
                         screenWidth: 100,
                         textSize: Constants.fontSizeSmall + 1,
@@ -343,6 +343,7 @@ class _NewContactViewState extends State<NewContactView> {
                     ],
                   ),
                 ),
+                ConstantSizing.columnSpacingSmall
               ],
             ),
           ),

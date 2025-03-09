@@ -192,7 +192,4 @@ enum MessageType {
 extension MessageTypeExtension on MessageType {
   // Get the integer value of the enum
   int get value => MessageType.values.indexOf(this);
-//
-// // Get MessageType from an integer value
-// static MessageType fromInt(int value) => MessageType.values[value];
 }

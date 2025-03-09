@@ -20,7 +20,7 @@ class UserDataFunctions {
       if (googleAccessToken != null) await _secureStorage.write(key: "googleAccessToken", value: googleAccessToken);
 
       await hiveData.setData(key: "$_path/$pathUserCredentialMap", value: userCredentialModel.toMap());
-      log("storedData: ${await hiveData.getData(key: "$_path/$pathUserCredentialMap")}");
+      // log("storedData: ${await hiveData.getData(key: "$_path/$pathUserCredentialMap")}");
       return Result.success(true);
     } catch (e) {
       return Result.error("Error: $e");
@@ -123,8 +123,8 @@ class UserCredentialModel {
       isAnonymous: map["isAnonymous"] as bool? ?? false,
       isEmailVerified: map["isEmailVerified"] as bool?,
       phoneNumber: map["phoneNumber"] as String?,
-      creationTime: map["creationTime"] as DateTime?,
-      lastSignInTime: map["lastSignInTime"] as DateTime?,
+      creationTime: map["creationTime"] != null ? DateTime.parse(map["creationTime"]) : null,
+      lastSignInTime: map["lastSignInTime"] != null ? DateTime.parse(map["lastSignInTime"]) : null,
     );
   }
 

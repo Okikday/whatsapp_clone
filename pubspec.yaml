@@ -55,6 +55,7 @@ dependencies:
   mobile_number: ^3.0.0
   custom_widgets_toolkit: ^0.0.40
   encrypt: ^5.0.3
+  basic_utils: ^5.7.0
 
 dev_dependencies:
   flutter_test:

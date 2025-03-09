@@ -70,6 +70,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.12.0"
+  basic_utils:
+    dependency: "direct main"
+    description:
+      name: basic_utils
+      sha256: "2064b21d3c41ed7654bc82cc476fd65542e04d60059b74d5eed490a4da08fc6c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.7.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -282,10 +290,10 @@ packages:
     dependency: "direct main"
     description:
       name: custom_widgets_toolkit
-      sha256: "55cba0bb60bed9b46c60fc28c398958d92b707aaf4e70738199ff05647fbe5f6"
+      sha256: "6dd98f15ab22718030df41268325d8559f57563e1b363505fdd401d0f6ec4f4f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.40"
+    version: "0.0.45"
   dart_style:
     dependency: transitive
     description:

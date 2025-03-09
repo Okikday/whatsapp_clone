@@ -20,9 +20,11 @@ class HomeAppBarChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+      final ThemeData themeData = Theme.of(context);
+      final bool isDarkMode = themeData.brightness == Brightness.dark;
       final HomeUiController stateController = homeUiController;
       final int stateCurrentIndex = stateController.homeBottomNavBarCurrentIndex.value;
+      final scaffoldBgColor = themeData.scaffoldBackgroundColor;
 
       return Row(
         children: [
@@ -60,59 +62,66 @@ class HomeAppBarChild extends StatelessWidget {
                     size: 24,
                     color: isDarkMode ? Colors.white : Colors.black,
                   )).animate().flipH(duration: const Duration(milliseconds: 150)).fadeIn(duration: const Duration(milliseconds: 150))),
-          CustomPopupMenuButton(
-            menuItems: const ["Sign out", "dev settings"],
-            onSelected: (value) async {
-              if (value == "Sign out") {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                          title: const CustomText(
-                            "Signing out...",
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          content: const CustomText(
-                            "Are you sure you want to sign out?",
-                            textAlign: TextAlign.center,
-                            fontSize: 13,
-                          ),
-                          actions: [
-                            CustomElevatedButton(
-                              backgroundColor: Colors.transparent,
-                              onClick: () => Get.close(1),
-                              overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                              child: const CustomText(
-                                "Exit",
-                                color: Colors.blueGrey,
-                              ),
+          PopupMenuTheme(
+            data: PopupMenuThemeData(color: scaffoldBgColor, shadowColor: Colors.blueGrey),
+            child: CustomPopupMenuButton(
+              menuItems: const ["Sign out", "dev settings"],
+              onSelected: (value) async {
+                if (value == "Sign out") {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: scaffoldBgColor,
+                          shadowColor: Colors.blueGrey,
+                            title: const CustomText(
+                              "Signing out",
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                             ),
-                            CustomElevatedButton(
-                              backgroundColor: Colors.transparent,
-                              overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                              onClick: () async{
-                                Get.close(1);
-                                LoadingDialog.showLoadingDialog(context, msg: "Signing out", backgroundColor: Get.theme.scaffoldBackgroundColor, progressIndicatorColor: Get.theme.primaryColor);
-                                await Future.delayed(const Duration(seconds: 1), () async {});
-                                await FirebaseGoogleAuth().googleSignOut();
-                                Get.close(1);
-                                Get.off(() => const WelcomeScreen());
+                            content: const CustomText(
+                              "Are you sure you want to sign out?",
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            actions: [
+                              CustomElevatedButton(
+                                backgroundColor: Colors.transparent,
+                                onClick: () => Get.close(1),
+                                overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                child: CustomText(
+                                  "Exit",
+                                  color: themeData.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              CustomElevatedButton(
+                                backgroundColor: Colors.transparent,
+                                overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                onClick: () async{
+                                  Get.close(1);
+                                  LoadingDialog.showLoadingDialog(context, msg: "Signing out", backgroundColor: Get.theme.scaffoldBackgroundColor, progressIndicatorColor: Get.theme.primaryColor);
+                                  await Future.delayed(const Duration(seconds: 1), () async {});
+                                  await FirebaseGoogleAuth().googleSignOut();
+                                  Get.close(1);
+                                  Get.off(() => const WelcomeScreen());
 
-                              },
-                              child: const CustomText(
-                                "Sign out",
-                                color: Colors.redAccent,
+                                },
+                                child: const CustomText(
+                                  "Sign out",
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ]);
-                    });
-              } else if (value == "dev settings") {
-                Get.to(() => const DevSettingsView());
-              }
-            },
+                            ]);
+                      });
+                } else if (value == "dev settings") {
+                  Get.to(() => const DevSettingsView());
+                }
+              },
+            ),
           )
         ],
       );
