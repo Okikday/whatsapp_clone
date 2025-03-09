@@ -21,6 +21,7 @@ import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
 import 'package:whatsapp_clone/features/authentication/views/verify_otp_view.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
+
 class ContactVerificationView extends StatefulWidget {
   const ContactVerificationView({super.key});
 
@@ -47,10 +48,10 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
     final Color scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Obx(
-      () {
+          () {
         final bool isDarkMode = appUiState.isDarkMode.value;
         final InputBorder underlineInputBorder =
-            UnderlineInputBorder(borderSide: BorderSide(color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary));
+        UnderlineInputBorder(borderSide: BorderSide(color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary));
         if (authUiController.systemNavBarColor.value != scaffoldBgColor) authUiController.setSystemNavBarColor(scaffoldBgColor);
 
         return AnnotatedRegion(
@@ -126,7 +127,7 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                                   isEnabled: false,
                                   defaultText: "+ 234",
                                   inputTextStyle:
-                                      const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
+                                  const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                                   textAlign: TextAlign.center,
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
@@ -139,18 +140,18 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                                   maxLines: 1,
                                   selectionColor: WhatsAppColors.emerald,
                                   selectionHandleColor: WhatsAppColors.emerald,
-                                  keyboardType: const TextInputType.numberWithOptions(),
+                                  keyboardType: TextInputType.phone,
                                   internalArgs: (c, f) {
                                     final replacement = c.text.replaceAll(RegExp(r'\s+'), '').replaceFirst(RegExp(r'^0|^\+234'), '');
                                     if (c.text != replacement) c.text = replacement;
                                     if (phoneNumber.value != replacement) phoneNumber.value = replacement;
                                   },
                                   cursorColor: const CustomText(
-                                        "",
-                                      ).effectiveStyle(context).color ??
+                                    "",
+                                  ).effectiveStyle(context).color ??
                                       Colors.green,
                                   inputTextStyle:
-                                      const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
+                                  const CustomText("", fontSize: Constants.fontSizeMedium, textAlign: TextAlign.center).style,
                                   border: underlineInputBorder,
                                   disabledBorder: underlineInputBorder,
                                   enabledBorder: underlineInputBorder,
@@ -159,31 +160,6 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                               ],
                             ),
                           ),
-
-                          // // Continue with Google button
-                          // Expanded(
-                          //   child: Align(
-                          //     alignment: Alignment.center,
-                          //     child: CustomElevatedButton(
-                          //       pixelHeight: 48,
-                          //       backgroundColor: isDarkMode ? Colors.white.withAlpha(75) : Colors.black.withAlpha(75),
-                          //       onClick: () async {
-                          //
-                          //       },
-                          //       child: const Row(
-                          //         mainAxisAlignment: MainAxisAlignment.center,
-                          //         spacing: 10,
-                          //         children: [
-                          //           Icon(
-                          //             FontAwesomeIcons.google,
-                          //             color: WhatsAppColors.primary,
-                          //           ),
-                          //           CustomText("Use Google", fontSize: 16)
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
@@ -196,6 +172,7 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: CustomElevatedButton(
+                        borderRadius: ConstantSizing.borderRadiusMedium,
                         pixelHeight: 48,
                         label: "Next",
                         backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
@@ -204,49 +181,65 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                         onClick: () async {
                           // Get.to(() => const VerifyOtpView());
                           if (!phoneNumber.value.isNumericOnly) return;
+                          if(phoneNumber.value.startsWith("0")) phoneNumber.value = phoneNumber.value.substring(1);
+                          if(phoneNumber.value.length != 10) return;
+
                           final ngnPhoneNumber = "+234${phoneNumber.value}";
+                          await Future.delayed(Durations.medium1);
 
-                          CustomSnackBar.showSnackBar(context, content: "Unable to send OTP", vibe: SnackBarVibe.error);
+                          CustomSnackBar.showSnackBar(Get.context!, content: "Unable to send OTP", vibe: SnackBarVibe.error);
 
-                          showCupertinoDialog(
-                              context: context,
+                          showDialog(
+                              context: Get.context!,
                               builder: (context) {
-                                return CupertinoAlertDialog(
-                                  title: const CustomText("Confirm phone number", fontSize: 15,),
+                                return AlertDialog(
+                                  backgroundColor: Get.theme.scaffoldBackgroundColor,
+                                  title: const CustomText("Confirm phone number", fontSize: 20, fontWeight: FontWeight.w600,),
                                   content: CustomRichText(
-                                    textAlign: TextAlign.center, children: [
-                                    CustomTextSpanData("Are you sure this is your phone number?\n"),
-                                    CustomTextSpanData(ngnPhoneNumber, color: WhatsAppColors.emerald, fontSize: 14)
+                                      textAlign: TextAlign.center, children: [
+                                    CustomTextSpanData("Are you sure this is your phone number?\n", fontSize: 13, fontWeight: FontWeight.w600,),
+                                    CustomTextSpanData(ngnPhoneNumber, color: WhatsAppColors.emerald, fontSize: 14, fontWeight: FontWeight.bold)
                                   ]),
                                   actions: [
-                                    CupertinoButton(onPressed: () => Get.close(1), child: const CustomText("Edit", color: Colors.blueGrey,),),
-                                    CupertinoButton(onPressed: () async{
-                                      Get.close(1);
-                                      await onGoogleSignIn(context);
-                                      LoadingDialog.showLoadingDialog(Get.context!, progressIndicatorColor: WhatsAppColors.secondary, backgroundColor: Get.theme.scaffoldBackgroundColor);
-                                      final Result userIdResult = await UserDataFunctions().getUserId();
-                                      if(!userIdResult.isSuccess) {
-                                        await FirebaseGoogleAuth().googleSignOut();
-                                        await UserDataFunctions().clearUserDetails();
+                                    CustomElevatedButton(
+                                      borderRadius: ConstantSizing.borderRadiusMedium,
+                                      backgroundColor: Colors.transparent,
+                                      overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
+                                      contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                      onClick: () => Get.close(1), child: const CustomText("Edit", color: Colors.blueGrey,),),
+                                    CustomElevatedButton(
+                                      borderRadius: ConstantSizing.borderRadiusMedium,
+                                      backgroundColor: Colors.transparent,
+                                      overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
+                                      contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                      onClick: () async{
                                         Get.close(1);
-                                        CustomSnackBar.showSnackBar(Get.context!, content: "Unable to complete sign up", vibe: SnackBarVibe.error);
-                                        return;
-                                      }
-                                      final outcomeUpdatePhoneNumber = await FirebaseData().updateUserField(userIdResult.value, {"phoneNumber": ngnPhoneNumber});
-                                      if(!outcomeUpdatePhoneNumber.isSuccess){
-                                        await FirebaseGoogleAuth().googleSignOut();
-                                        await UserDataFunctions().clearUserDetails();
+                                        await onGoogleSignIn(context, phoneNumber: phoneNumber.value);
+                                        LoadingDialog.showLoadingDialog(Get.context!, progressIndicatorColor: WhatsAppColors.secondary, backgroundColor: Get.theme.scaffoldBackgroundColor);
+                                        final Result userIdResult = await UserDataFunctions().getUserId();
+                                        if(!userIdResult.isSuccess) {
+                                          await FirebaseGoogleAuth().googleSignOut();
+                                          await UserDataFunctions().clearUserDetails();
+                                          Get.close(1);
+                                          CustomSnackBar.showSnackBar(Get.context!, content: "Unable to complete sign up", vibe: SnackBarVibe.error);
+                                          return;
+                                        }
+                                        final outcomeUpdatePhoneNumber = await FirebaseData().updateUserField(userIdResult.value, {"phoneNumber": ngnPhoneNumber});
+                                        if(!outcomeUpdatePhoneNumber.isSuccess){
+                                          await FirebaseGoogleAuth().googleSignOut();
+                                          await UserDataFunctions().clearUserDetails();
+                                          Get.close(1);
+                                          CustomSnackBar.showSnackBar(Get.context!, content: "Unable to complete sign up", vibe: SnackBarVibe.error);
+                                          return;
+                                        }
+
+                                        AppData.userId = userIdResult.value;
+                                        log("Successfully added phone number to firebase");
                                         Get.close(1);
-                                        CustomSnackBar.showSnackBar(Get.context!, content: "Unable to complete sign up", vibe: SnackBarVibe.error);
-                                        return;
-                                      }
+                                        CustomSnackBar.showSnackBar(Get.context!, content: "Successfully signed in with phone number and Google");
 
-                                      AppData.userId = userIdResult.value;
-                                      log("Successfully added phone number to firebase");
-                                      Get.close(1);
-                                      CustomSnackBar.showSnackBar(Get.context!, content: "Successfully signed in with phone number and Google");
-
-                                    }, child: const CustomText("Continue",  color: Colors.blueAccent,),)
+                                      }, child: CustomText("Continue",  color: Get.theme.primaryColor,
+                                      fontWeight: FontWeight.w600,),)
                                   ],
                                 );
                               });
@@ -262,9 +255,9 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
   }
 }
 
-Future<void> onGoogleSignIn(BuildContext context) async {
+Future<void> onGoogleSignIn(BuildContext context, {required String phoneNumber}) async {
   LoadingDialog.showLoadingDialog(Get.context!, progressIndicatorColor: WhatsAppColors.secondary, backgroundColor: Get.theme.scaffoldBackgroundColor);
-  final Result result = await FirebaseGoogleAuth().signInWithGoogle();
+  final Result result = await FirebaseGoogleAuth().signInWithGoogle(phoneNumber: phoneNumber);
   Get.close(1);
   if (result.isSuccess || result.value == true) {
     navigator?.pop();

@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:whatsapp_clone/data/app_data.dart';
-import 'package:whatsapp_clone/models/chat_model.dart';
+
 
 final ChatsTabUiController chatsTabUiController = Get.put<ChatsTabUiController>(ChatsTabUiController());
 
@@ -25,8 +25,8 @@ class ChatsTabUiController extends GetxController{
       final double overScroll = notification.overscroll;
       if(overScroll < 0.0){
         overscrollOffset.value += overScroll.abs();
-      if (overscrollOffset.value < 0) overscrollOffset.value = 0.0;
-      if (overscrollOffset.value > revealThreshold) overscrollOffset.value = filterTileHeight;
+        if (overscrollOffset.value < 0) overscrollOffset.value = 0.0;
+        if (overscrollOffset.value > revealThreshold) overscrollOffset.value = filterTileHeight;
       }
     } else if (notification is ScrollEndNotification) {
       if (overscrollOffset.value < revealThreshold) {
@@ -35,8 +35,8 @@ class ChatsTabUiController extends GetxController{
     }
     return true;
   }
-  
-  
+
+
   @override
   onInit(){
     super.onInit();
@@ -54,7 +54,7 @@ class ChatsTabUiController extends GetxController{
   }
 
 
-  
+
   // setChatTilesCount(int index) => chatTilesSelected = List.fi
   void selectChatTile(int index, {required String? chatId}) => chatTilesSelected[index] = chatId;
   void removeSelectedChatTile(int index) => chatTilesSelected[index] != null ? chatTilesSelected.remove(index) : () {};

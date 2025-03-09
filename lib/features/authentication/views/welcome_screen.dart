@@ -33,21 +33,21 @@ class WelcomeScreen extends StatelessWidget {
           ],
         ),
         body: Obx(
-          () {
+              () {
             final bool isDarkMode = appUiState.isDarkMode.value;
             final double width = appUiState.deviceWidth.value;
             final double height = appUiState.deviceHeight.value;
-            
+
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: height > width ? Get.width * 0.05 : height * 0.05),
               child: Get.width > Get.height
                   ? Row(
-                      children: welcomeScreenWidgets(context, isDarkMode),
-                    )
+                children: welcomeScreenWidgets(context, isDarkMode),
+              )
                   : Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: welcomeScreenWidgets(context, isDarkMode),
-                    ),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: welcomeScreenWidgets(context, isDarkMode),
+              ),
             );
           },
         ),
@@ -57,9 +57,9 @@ class WelcomeScreen extends StatelessWidget {
 }
 
 List<Widget> welcomeScreenWidgets(
-  BuildContext context,
-  bool isDarkMode,
-) {
+    BuildContext context,
+    bool isDarkMode,
+    ) {
   return [
     SizedBox(
         height: Get.height > Get.width ? Get.height * 0.4 : Get.width * 0.5,
@@ -67,15 +67,15 @@ List<Widget> welcomeScreenWidgets(
           padding: const EdgeInsets.all(Constants.spaceExtraLarge + 8),
           child: isDarkMode
               ? Image.asset(
-                  ImagesStrings.welcomeImgDark,
-                  fit: BoxFit.contain,
-                )
+            ImagesStrings.welcomeImgDark,
+            fit: BoxFit.contain,
+          )
               : Image.asset(
-                  ImagesStrings.welcomeImgDark,
-                  fit: BoxFit.contain,
-                  color: const Color(0xFF2BAB6F),
-                  colorBlendMode: BlendMode.srcIn,
-                ),
+            ImagesStrings.welcomeImgDark,
+            fit: BoxFit.contain,
+            color: const Color(0xFF2BAB6F),
+            colorBlendMode: BlendMode.srcIn,
+          ),
         )),
     Expanded(
       child: Column(
@@ -110,7 +110,7 @@ List<Widget> welcomeScreenWidgets(
                 height: Constants.spaceExtraLarge,
               ),
               CustomElevatedButton(
-                elevation: 0,
+                borderRadius: ConstantSizing.borderRadiusLarge,
                 backgroundColor: isDarkMode ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFF7F7FA),
                 overlayColor: isDarkMode ? WhatsAppColors.secondary.withValues(alpha: 0.1) : WhatsAppColors.primary.withValues(alpha: 0.1),
                 onClick: () async {
@@ -126,27 +126,26 @@ List<Widget> welcomeScreenWidgets(
                         });
                   }
                 },
-                child: IntrinsicWidth(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.globe,
-                          color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
-                          size: Constants.iconSizeMedium,
-                        ),
-                        const SizedBox(
-                          width: Constants.spaceSmall,
-                        ),
-                        CustomText("English", color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary),
-                        const SizedBox(
-                          width: Constants.spaceSmall,
-                        ),
-                        Icon(FontAwesomeIcons.angleDown, color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary, size: Constants.iconSizeSmall),
-                      ],
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.globe,
+                        color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
+                        size: Constants.iconSizeMedium,
+                      ),
+                      const SizedBox(
+                        width: Constants.spaceSmall,
+                      ),
+                      CustomText("English", color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary),
+                      const SizedBox(
+                        width: Constants.spaceSmall,
+                      ),
+                      Icon(FontAwesomeIcons.angleDown, color: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary, size: Constants.iconSizeSmall),
+                    ],
                   ),
                 ),
               ),
@@ -160,6 +159,7 @@ List<Widget> welcomeScreenWidgets(
                 label: "Agree and Continue",
                 backgroundColor: isDarkMode ? WhatsAppColors.secondary : WhatsAppColors.primary,
                 screenWidth: 100,
+                borderRadius: ConstantSizing.borderRadiusLarge,
                 textSize: Constants.fontSizeSmall + 1,
                 onClick: () {
                   Get.to(() => const ContactVerificationView(),

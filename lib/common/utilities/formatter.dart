@@ -43,7 +43,7 @@ class Formatter {
     }
   }
 
-  String chatDate(DateTime date) {
+  static String chatDate(DateTime date) {
     String getDayName(DateTime date) {
       const List<String> daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       return daysOfWeek[date.weekday - 1];

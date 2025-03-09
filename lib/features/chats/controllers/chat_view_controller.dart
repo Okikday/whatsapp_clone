@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:whatsapp_clone/data/app_data.dart';
-import 'package:whatsapp_clone/data/user_data/user_data.dart';
 import 'package:whatsapp_clone/models/chat_model.dart';
 
+
+const double defaultMsgBarHeight = 48.0;
 class ChatViewController extends GetxController {
   final Rx<ChatModel> _chatModel;
   final RxString _myUserId;
@@ -13,7 +13,6 @@ class ChatViewController extends GetxController {
 
   final TextEditingController textEditingController = TextEditingController();
   RxString messageInput = "".obs;
-  RxDouble messageBarHeight = 48.0.obs;
   RxBool isMicTappedDown = false.obs;
   RxBool allowPagePop = true.obs;
   RxMap<int, int?> chatsSelected = <int, int?>{}.obs;
@@ -34,11 +33,11 @@ class ChatViewController extends GetxController {
   }
 
   ChatModel get chatModel => _chatModel.value;
+  String get myUserId => _myUserId.value;
 
-  void resetValues() {
+  void resetMsgBox() {
+    textEditingController.clear();
     setMessageInput('');
-    // setIsChatViewActive(false);
-    clearSelectedChatBubble();
   }
 
   void setMessageInput(String value) => messageInput.value = value;
@@ -65,15 +64,4 @@ class ChatViewController extends GetxController {
   }
 
   void setAllowPagePop(bool value) => allowPagePop.value = value;
-  void checkMessageBarHeight(int numberOfLines, {double lineHeight = 18.0 * 1.2, int maxNumOfLines = 7}) {
-    const double minHeight = 48.0;
-    final double maxHeight = lineHeight * maxNumOfLines;
-    final double adjustedHeight = numberOfLines == 1
-        ? (minHeight + (numberOfLines - 1) * lineHeight).clamp(minHeight, maxHeight)
-        : ((numberOfLines - 1).round() * lineHeight + 32).clamp(minHeight, maxHeight);
-
-    if (adjustedHeight != messageBarHeight.value) messageBarHeight.value = adjustedHeight;
-  }
-
-  void resetMsgBarHeight() => messageBarHeight.value = 48.0;
 }

@@ -16,7 +16,6 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/features/home/views/sub_widgets/chats_tab_lists.dart';
-import 'package:whatsapp_clone/models/chat_model.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 
 class ChatsTabView extends StatefulWidget {
@@ -51,7 +50,7 @@ class _ChatsTabViewState extends State<ChatsTabView> with AutomaticKeepAliveClie
           );
         },
         child: Obx(
-          () {
+              () {
             final bool isDarkMode = appUiState.isDarkMode.value;
             final double overscrollOffset = chatsTabUiController.overscrollOffset.value;
             final double width = appUiState.deviceWidth.value;
@@ -169,7 +168,6 @@ class _ChatsTabViewState extends State<ChatsTabView> with AutomaticKeepAliveClie
     );
   }
 }
-
 
 
 

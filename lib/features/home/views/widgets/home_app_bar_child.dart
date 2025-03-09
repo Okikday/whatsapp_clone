@@ -32,8 +32,8 @@ class HomeAppBarChild extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 color: stateCurrentIndex == 0
                     ? isDarkMode
-                        ? Colors.white
-                        : WhatsAppColors.primary
+                    ? Colors.white
+                    : WhatsAppColors.primary
                     : null),
           ),
           Animate(
@@ -64,13 +64,14 @@ class HomeAppBarChild extends StatelessWidget {
             menuItems: const ["Sign out", "dev settings"],
             onSelected: (value) async {
               if (value == "Sign out") {
-                showCupertinoDialog(
+                showDialog(
                     context: context,
                     builder: (context) {
-                      return CupertinoAlertDialog(
+                      return AlertDialog(
                           title: const CustomText(
                             "Signing out...",
-                            fontSize: 15,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
                           ),
                           content: const CustomText(
                             "Are you sure you want to sign out?",
@@ -78,21 +79,27 @@ class HomeAppBarChild extends StatelessWidget {
                             fontSize: 13,
                           ),
                           actions: [
-                            CupertinoButton(
-                              onPressed: () => Get.close(1),
+                            CustomElevatedButton(
+                              backgroundColor: Colors.transparent,
+                              onClick: () => Get.close(1),
+                              overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                               child: const CustomText(
                                 "Exit",
                                 color: Colors.blueGrey,
                               ),
                             ),
-                            CupertinoButton(
-                              onPressed: () async{
+                            CustomElevatedButton(
+                              backgroundColor: Colors.transparent,
+                              overlayColor: Get.theme.primaryColor.withValues(alpha: 0.1),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                              onClick: () async{
                                 Get.close(1);
-                                LoadingDialog.showLoadingDialog(context, msg: "Signing out", backgroundColor: Get.theme.scaffoldBackgroundColor);
+                                LoadingDialog.showLoadingDialog(context, msg: "Signing out", backgroundColor: Get.theme.scaffoldBackgroundColor, progressIndicatorColor: Get.theme.primaryColor);
                                 await Future.delayed(const Duration(seconds: 1), () async {});
-                                  await FirebaseGoogleAuth().googleSignOut();
-                                  Get.close(1);
-                                  Get.off(() => const WelcomeScreen());
+                                await FirebaseGoogleAuth().googleSignOut();
+                                Get.close(1);
+                                Get.off(() => const WelcomeScreen());
 
                               },
                               child: const CustomText(

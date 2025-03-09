@@ -12,13 +12,12 @@ import 'package:whatsapp_clone/common/colors.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/data/app_data.dart';
-import 'package:whatsapp_clone/data/drift_database/data/repos/chat_repository.dart';
 import 'package:whatsapp_clone/features/chats/views/chat_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
-import 'package:whatsapp_clone/models/chat_model.dart';
 import 'package:whatsapp_clone/features/chats/views/new_contact_view.dart';
 import 'package:whatsapp_clone/features/home/views/widgets/custom_app_bar_container.dart';
 import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
+
 
 class SelectContactView extends StatelessWidget {
   const SelectContactView({super.key});
@@ -172,7 +171,7 @@ class SelectContactView extends StatelessWidget {
                                 radius: 21,
                                 backgroundColor: WhatsAppColors.emerald,
                                 backgroundImage:
-                                    Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: cacheChatModel.chatProfilePhoto),
+                                Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: cacheChatModel.chatProfilePhoto),
                               ),
                             ),
                             contentPadding: const EdgeInsets.only(left: 16, top: 4, bottom: 4, right: 12),
@@ -183,12 +182,12 @@ class SelectContactView extends StatelessWidget {
                             ),
                             subtitle: cacheChatModel.profileInfo.isNotEmpty
                                 ? CustomText(
-                                    cacheChatModel.profileInfo,
-                                    fontSize: 12,
-                                    color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary,
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis,
-                                  )
+                              cacheChatModel.profileInfo,
+                              fontSize: 12,
+                              color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                              overflow: TextOverflow.ellipsis,
+                            )
                                 : null,
                             onTap: () {
                               Get.close(1);
@@ -298,7 +297,7 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
                 decoration: BoxDecoration(
                     border: Border(
                         bottom:
-                            isSearchBarVisible ? BorderSide.none : BorderSide(color: WhatsAppColors.textSecondary.withValues(alpha: 0.1)))),
+                        isSearchBarVisible ? BorderSide.none : BorderSide(color: WhatsAppColors.textSecondary.withValues(alpha: 0.1)))),
                 child: Stack(
                   children: [
                     Row(
@@ -307,23 +306,23 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
                         BackButton(
                           color: getCurrIconColor,
                         ).animate().fade(
-                              begin: isSearchBarVisible ? 1.0 : 0.75,
-                              end: isSearchBarVisible ? 0.1 : 1.0,
-                            ),
+                          begin: isSearchBarVisible ? 1.0 : 0.75,
+                          end: isSearchBarVisible ? 0.1 : 1.0,
+                        ),
                         const SizedBox(
                           width: 4,
                         ),
                         Expanded(
                             child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CustomText("Select contact", fontSize: 15.5, fontWeight: FontWeight.w500),
-                            Visibility(
-                                visible: widget.noOfContacts.isNotEmpty,
-                                child: CustomText("${widget.noOfContacts} contacts", fontSize: 12, fontWeight: FontWeight.w500)),
-                          ],
-                        )),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const CustomText("Select contact", fontSize: 15.5, fontWeight: FontWeight.w500),
+                                Visibility(
+                                    visible: widget.noOfContacts.isNotEmpty,
+                                    child: CustomText("${widget.noOfContacts} contacts", fontSize: 12, fontWeight: FontWeight.w500)),
+                              ],
+                            )),
                         IconButton(
                             onPressed: () {
                               this.isSearchBarVisible.value = true;

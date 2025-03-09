@@ -3,12 +3,13 @@ import 'dart:developer';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:whatsapp_clone/common/colors.dart';
+import 'package:whatsapp_clone/common/utilities/formatter.dart';
 import 'package:whatsapp_clone/data/app_data.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 
-import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/msg_bubble.dart';
-import 'package:whatsapp_clone/test_data_folder/test_data/test_chats_data.dart';
+
 
 class ChatMsgsView extends StatelessWidget {
   final bool isDarkMode;
@@ -18,42 +19,14 @@ class ChatMsgsView extends StatelessWidget {
   final ChatViewController chatViewController;
   const ChatMsgsView(
       {super.key,
-      required this.isDarkMode,
-      required this.width,
-      required this.height,
-      required this.chatViewController,
-      required this.myUserId});
+        required this.isDarkMode,
+        required this.width,
+        required this.height,
+        required this.chatViewController,
+        required this.myUserId});
 
   @override
   Widget build(BuildContext context) {
-    final MessageModel message1 = MessageModel(
-      messageId: 'msg_001',
-      chatId: 'chat_123',
-      myId: 'user_456',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      mediaType: MessageType.text.value,
-      sentAt: DateTime.now(),
-      deliveredAt: DateTime.now(),
-      readAt: null,
-      isStarred: false,
-      isDeleted: false,
-      forwardCount: 0,
-    );
-
-    final MessageModel message2 = MessageModel(
-      messageId: 'msg_002',
-      chatId: 'chat_123',
-      myId: 'user_456',
-      content: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      mediaType: MessageType.text.value,
-      sentAt: DateTime.now(),
-      deliveredAt: DateTime.now(),
-      readAt: DateTime.now(),
-      isStarred: true,
-      isDeleted: false,
-      forwardCount: 1,
-    );
-
     return Expanded(
       child: SizedBox(
         width: width,
@@ -87,8 +60,87 @@ class ChatMsgsView extends StatelessWidget {
                           }),
                     );
                   } else if (snapshot.connectionState == ConnectionState.active && (snapshot.data == null || snapshot.data!.isEmpty)) {
-                    return const SliverToBoxAdapter(child: Center(child: SizedBox(child: CustomText("First Chat"))));
+                    return SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                                color: isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.background,
+                                borderRadius: BorderRadius.circular(4.0)),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8.0),
+                              child: CustomText(
+                                chatViewController.chatModel.creationTime != null
+                                    ? Formatter.chatDate(chatViewController.chatModel.creationTime!)
+                                    : Formatter.chatDate(DateTime.now()),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 36),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                  color: isDarkMode ? WhatsAppColors.darkGray : WhatsAppColors.background,
+                                  borderRadius: BorderRadius.circular(6.0)),
+                              // lock icon displayed before
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  onTap: () {},
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                                      child: CustomRichText(textAlign: TextAlign.center, children: [
+                                        const WidgetSpan(
+                                          child: Icon(
+                                            Icons.lock_outline_rounded,
+                                            size: 14,
+                                            color: Color(0xFFAD9E7B),
+                                          ),
+                                        ),
+                                        CustomTextSpanData(
+                                          " Messages and calls are end-to-end-encrypted. No one outside this chat, not even WhatsApp clone, can read or listen to them. Tap to learn more",
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFFAD9E7B),
+                                        )
+                                      ])),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
                   } else {
+                    final MessageModel message1 = MessageModel(
+                      messageId: 'msg_001',
+                      chatId: 'chat_123',
+                      myId: 'user_456',
+                      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit./n/n',
+                      messageType: MessageType.text,
+                      sentAt: DateTime.now(),
+                      deliveredAt: DateTime.now(),
+                      readAt: null,
+                      sentTime: DateTime.now(),
+                    );
+
+                    final MessageModel message2 = MessageModel(
+                      messageId: 'msg_002',
+                      chatId: 'chat_123',
+                      myId: 'user_456',
+                      content: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua./n/n',
+                      messageType: MessageType.text,
+                      sentAt: DateTime.now(),
+                      deliveredAt: DateTime.now(),
+                      readAt: DateTime.now(),
+                      sentTime: DateTime.now(),
+                    );
                     return SliverPadding(
                       padding: const EdgeInsetsDirectional.symmetric(vertical: 12),
                       sliver: SliverList.builder(
@@ -111,7 +163,6 @@ class ChatMsgsView extends StatelessWidget {
                               return Skeletonizer(
                                 enabled: true,
                                 child: MsgBubble(
-                                  bgColor: Colors.grey,
                                   messageModel: message,
                                   isFirstMsg: index == 3 || index == 0 ? true : false,
                                   index: index,

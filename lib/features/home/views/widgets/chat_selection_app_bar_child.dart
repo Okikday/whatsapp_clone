@@ -8,13 +8,15 @@ import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/data/app_data.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 
+import '../../../../common/colors.dart';
+
 class ChatSelectionAppBarChild extends StatelessWidget {
   const ChatSelectionAppBarChild({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () {
+          () {
         final Color getCurrIconColor = appUiState.isDarkMode.value ? Colors.white : Colors.black;
         final Color primaryColor = Get.theme.primaryColor;
         return Row(
@@ -49,7 +51,7 @@ class ChatSelectionAppBarChild extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Transform.translate(
-                                offset: const Offset(-8, 0),
+                                  offset: const Offset(-8, 0),
                                   child: Checkbox(value: false, onChanged: (value) {}, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,)),
                               Expanded(
                                 child: CustomRichText(children: [
@@ -64,20 +66,18 @@ class ChatSelectionAppBarChild extends StatelessWidget {
                               backgroundColor: Colors.transparent,
                               onClick: () => Get.close(1),
                               overlayColor: primaryColor.withValues(alpha: 0.1),
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                                child: CustomText(
-                                  "Cancel",
-                                  color: primaryColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                              child: CustomText(
+                                "Cancel",
+                                color: primaryColor,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             CustomElevatedButton(
                               backgroundColor: Colors.transparent,
                               onClick: () async {
                                 Get.close(1);
-                                LoadingDialog.showLoadingDialog(context, msg: "Deleting selected chats");
+                                LoadingDialog.showLoadingDialog(context, msg: "Deleting selected chats", progressIndicatorColor: WhatsAppColors.secondary, backgroundColor: Get.theme.scaffoldBackgroundColor);
 
                                 chatsTabUiController.chatTilesSelected.forEach((key, value) async {
                                   if (value != null) await AppData.chats.deleteChatWithMsgs(value);

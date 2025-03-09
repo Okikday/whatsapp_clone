@@ -61,11 +61,11 @@ class Utilities {
   }
 
   static PageRouteBuilder customPageRouteBuilder(
-    Widget child, {
-    Curve? curve,
-    Duration transitionDuration = Durations.medium3,
-    Duration reverseTransitionDuration = Durations.medium1,
-  }) {
+      Widget child, {
+        Curve? curve,
+        Duration transitionDuration = Durations.medium3,
+        Duration reverseTransitionDuration = Durations.medium1,
+      }) {
     curve = curve ?? CustomCurves.defaultIosSpring;
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {

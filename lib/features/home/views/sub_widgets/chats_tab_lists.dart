@@ -20,7 +20,7 @@ import 'package:whatsapp_clone/features/chats/views/profile_view.dart';
 import 'package:whatsapp_clone/features/chats/views/select_contact_view.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/chat_list_tile.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
-import 'package:whatsapp_clone/models/chat_model.dart';
+
 
 class ChatsTabLists extends StatelessWidget {
   const ChatsTabLists({
@@ -54,7 +54,7 @@ class ChatsTabLists extends StatelessWidget {
                 return SizeTransition(
                   sizeFactor: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: animation, curve: CustomCurves.ease)),
                   child: Obx(
-                    () {
+                        () {
                       final chatTilesSelected = chatsTabUiController.chatTilesSelected;
 
                       return ChatListTile(
@@ -62,8 +62,8 @@ class ChatsTabLists extends StatelessWidget {
                         width: Get.width,
                         chatName: chatModel.chatName,
                         profilePhoto: chatModel.chatProfilePhoto,
-                        lastUpdated: Formatter.chatTimeStamp(chatModel.lastUpdated),
-                        lastMsg: chatModel.lastMsg,
+                        lastUpdated: chatModel.lastUpdated != null ? Formatter.chatTimeStamp(chatModel.lastUpdated!) : null,
+                        lastMsg: chatModel.lastMsg ?? "",
                         isDarkMode: isDarkMode,
                         isSelected: chatTilesSelected[index] != null,
                         onTap: () async {
@@ -81,9 +81,9 @@ class ChatsTabLists extends StatelessWidget {
                               await Future.delayed(const Duration(milliseconds: 250));
                               navigator
                                   ?.push(Utilities.customPageRouteBuilder(preloadedChatView,
-                                      curve: appAnimationSettingsController.curve,
-                                      transitionDuration: appAnimationSettingsController.transitionDuration,
-                                      reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration))
+                                  curve: appAnimationSettingsController.curve,
+                                  transitionDuration: appAnimationSettingsController.transitionDuration,
+                                  reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration))
                                   .then((onValue) {
                                 chatsTabUiController.setAllowPagePush(true);
                               });
@@ -133,7 +133,7 @@ class ChatsTabLists extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                         const CustomText(
+                        const CustomText(
                           "Welcome to WhatsApp Clone 🌚",
                           fontStyle: FontStyle.italic,
                           color: WhatsAppColors.emerald,
@@ -152,9 +152,9 @@ class ChatsTabLists extends StatelessWidget {
                                   ),
                                   child: const Skeletonizer(
                                       child: Icon(
-                                    Icons.person,
-                                    size: 64,
-                                  )),
+                                        Icons.person,
+                                        size: 64,
+                                      )),
                                 );
                               }),
                         ),
@@ -223,9 +223,9 @@ PageRouteBuilder<dynamic> profileDialogPageRoute(double overlayWidth, ChatModel 
                               width: overlayWidth,
                               child: cacheChatModel.chatProfilePhoto != null && cacheChatModel.chatProfilePhoto!.isNotEmpty
                                   ? CachedNetworkImage(
-                                      imageUrl: cacheChatModel.chatProfilePhoto!,
-                                      fit: BoxFit.fitWidth,
-                                    )
+                                imageUrl: cacheChatModel.chatProfilePhoto!,
+                                fit: BoxFit.fitWidth,
+                              )
                                   : Image.asset(ImagesStrings.imgPlaceholder)),
                           Positioned(
                               top: 0,
@@ -281,9 +281,9 @@ PageRouteBuilder<dynamic> profileDialogPageRoute(double overlayWidth, ChatModel 
                                       await Future.delayed(Durations.medium1);
                                       navigator
                                           ?.pushReplacement(Utilities.customPageRouteBuilder(preloadedChatView,
-                                              curve: appAnimationSettingsController.curve,
-                                              transitionDuration: appAnimationSettingsController.transitionDuration,
-                                              reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration))
+                                          curve: appAnimationSettingsController.curve,
+                                          transitionDuration: appAnimationSettingsController.transitionDuration,
+                                          reverseTransitionDuration: appAnimationSettingsController.reverseTransitionDuration))
                                           .then((onValue) {
                                         chatsTabUiController.setAllowPagePush(true);
                                       });

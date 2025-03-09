@@ -6,9 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/data/firebase_data/firebase_data.dart';
+import 'package:whatsapp_clone/data/user_data/user_data.dart';
 
-import '../../../data/firebase_data/firebase_data.dart';
-import '../../../data/user_data/user_data.dart';
 
 class FirebaseGoogleAuth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -23,7 +23,7 @@ class FirebaseGoogleAuth {
   UserCredential? _userCredential;
   final UserDataFunctions userData = UserDataFunctions();
 
-  Future<Result<bool>> signInWithGoogle() async {
+  Future<Result<bool>> signInWithGoogle({String? phoneNumber}) async {
     try {
       // Triggering the authentication flow
       final GoogleSignInAccount? googleUser = await _googleAuth.signIn();
@@ -46,7 +46,7 @@ class FirebaseGoogleAuth {
       if (user == null) return Result.error("Null user");
 
       final Result outcomeCreateUser = await _firebaseData.createUserData(
-          UserCredentialModel(userID: user.uid, displayName: user.displayName ?? "Anonymous", email: user.email ?? "anonymous@gmail.com"));
+          UserCredentialModel(userID: user.uid, displayName: user.displayName ?? "Anonymous", email: user.email ?? "anonymous@gmail.com", phoneNumber: phoneNumber));
 
       if (outcomeCreateUser.isSuccess) {
         await userData.saveUserDetails(
@@ -121,7 +121,6 @@ class FirebasePhoneAuth {
               displayName: user.displayName ?? "",
               email: user.email ?? "",
               phoneNumber: user.phoneNumber,
-
             ),
           );
           if (outcomeCreateUser.isSuccess) {

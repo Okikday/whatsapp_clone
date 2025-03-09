@@ -6,7 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class HiveData {
   static late Box box;
   static late Box secureBox;
-  
+
   final List<int> generateHiveKey = List<int>.generate(32, (i) => Random.secure().nextInt(256));
 
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();

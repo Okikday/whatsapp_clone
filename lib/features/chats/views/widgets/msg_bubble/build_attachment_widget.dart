@@ -7,8 +7,9 @@ import 'package:heroine/heroine.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
-import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/views/sub_views/expand_image_view.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
+
 
 class BuildAttachmentWidget extends StatelessWidget {
   final ChatViewController chatViewController;
@@ -23,7 +24,7 @@ class BuildAttachmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+
 
     if (msgType == MessageType.image) {
       // Return Image Attachment
@@ -43,24 +44,24 @@ class BuildAttachmentWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: Material(
                   child: InkWell(
-                      borderRadius: BorderRadius.circular(10),
-                      onTap: chatViewController.chatsSelected.isNotEmpty ? null : () {
-                        if(chatViewController.chatsSelected.isEmpty){
-                          Get.to(() => ExpandImageView(imageUrl: mediaUrl, messageId: messageId, chatName: chatName, ), transition: Transition.fade);
-                        }
-                      },
-                      child: dateWidget != null ? Stack(
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl: mediaUrl,
-                            fit: BoxFit.fitWidth,
-                          ),
-                          if(dateWidget != null) Positioned(bottom: 2, right: 0, child: dateWidget!)
-                        ],
-                      ) : CachedNetworkImage(
-                        imageUrl: mediaUrl,
-                        fit: BoxFit.fitWidth,
-                      ),
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: chatViewController.chatsSelected.isNotEmpty ? null : () {
+                      if(chatViewController.chatsSelected.isEmpty){
+                        Get.to(() => ExpandImageView(imageUrl: mediaUrl, messageId: messageId, chatName: chatName, ), transition: Transition.fade);
+                      }
+                    },
+                    child: dateWidget != null ? Stack(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: mediaUrl,
+                          fit: BoxFit.fitWidth,
+                        ),
+                        if(dateWidget != null) Positioned(bottom: 2, right: 0, child: dateWidget!)
+                      ],
+                    ) : CachedNetworkImage(
+                      imageUrl: mediaUrl,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
               ),

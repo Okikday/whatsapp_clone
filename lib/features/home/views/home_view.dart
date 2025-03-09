@@ -52,7 +52,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, Auto
     WidgetsBinding.instance.addPostFrameCallback((_) => homeUiController.homeCameraIconAnimController.value!.forward(from: 0));
 
     return Obx(
-      () {
+          () {
         final HomeUiController stateController = homeUiController;
         final bool isDarkMode = appUiState.isDarkMode.value;
         final int homeBottomNavBarCurrentIndex = stateController.homeBottomNavBarCurrentIndex.value;
@@ -123,8 +123,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, Auto
                     homeBottomNavBarCurrentIndex == 0
                         ? Icons.add_comment_rounded
                         : homeBottomNavBarCurrentIndex == 1
-                            ? Icons.camera_alt
-                            : Icons.add_ic_call,
+                        ? Icons.camera_alt
+                        : Icons.add_ic_call,
                     color: scaffoldBgColor,
                   ),
                 ),

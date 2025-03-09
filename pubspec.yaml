@@ -54,6 +54,7 @@ dependencies:
   pin_code_fields: ^8.0.1
   mobile_number: ^3.0.0
   custom_widgets_toolkit: ^0.0.40
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

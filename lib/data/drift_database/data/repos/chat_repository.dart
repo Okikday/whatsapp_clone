@@ -1,8 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:whatsapp_clone/data/drift_database/app_drift_database.dart';
-import 'package:whatsapp_clone/data/drift_database/data/tables/chat_table.dart';
-import 'package:whatsapp_clone/data/drift_database/data/tables/message_table.dart';
-import 'package:whatsapp_clone/models/chat_model.dart';
+
+import '../../../../models/chat_model.dart';
+import '../tables/chat_table.dart';
+import '../tables/message_table.dart';
 
 
 
@@ -16,36 +17,42 @@ class ChatRepository {
   // Helper: Convert ChatModel to a Drift companion
   ChatTableCompanion _toCompanion(ChatModel chat) {
     return ChatTableCompanion(
-      chatId: Value(chat.chatId),
-      contactId: Value(chat.contactId),
-      chatName: Value(chat.chatName),
-      chatProfilePhoto: Value(chat.chatProfilePhoto),
-      lastMsg: Value(chat.lastMsg),
-      lastUpdated: Value(chat.lastUpdated),
-      isMuted: Value(chat.isMuted),
-      isArchived: Value(chat.isArchived),
-      isPinned: Value(chat.isPinned),
-      unreadMsgs: Value(chat.unreadMsgs),
-      hasStatusUpdate: Value(chat.hasStatusUpdate),
-      profileInfo: Value(chat.profileInfo),
+        chatId: Value(chat.chatId),
+        contactId: Value(chat.contactId),
+        chatName: Value(chat.chatName),
+        chatProfilePhoto: Value(chat.chatProfilePhoto),
+        lastMsg: Value(chat.lastMsg),
+        lastUpdated: Value(chat.lastUpdated),
+        isMuted: Value(chat.isMuted),
+        isArchived: Value(chat.isArchived),
+        isPinned: Value(chat.isPinned),
+        isBlocked: Value(chat.isBlocked),
+        isReported: Value(chat.isReported),
+        unreadMsgs: Value(chat.unreadMsgs),
+        hasStatusUpdate: Value(chat.hasStatusUpdate),
+        profileInfo: Value(chat.profileInfo),
+        creationTime: Value(chat.creationTime)
     );
   }
 
   // Helper: Convert Drift data object to ChatModel
   ChatModel _fromData(ChatTableData data) {
     return ChatModel(
-      chatId: data.chatId,
-      contactId: data.contactId,
-      chatName: data.chatName,
-      chatProfilePhoto: data.chatProfilePhoto,
-      lastMsg: data.lastMsg,
-      lastUpdated: data.lastUpdated,
-      isMuted: data.isMuted,
-      isArchived: data.isArchived,
-      isPinned: data.isPinned,
-      unreadMsgs: data.unreadMsgs,
-      hasStatusUpdate: data.hasStatusUpdate,
-      profileInfo: data.profileInfo,
+        chatId: data.chatId,
+        contactId: data.contactId,
+        chatName: data.chatName,
+        chatProfilePhoto: data.chatProfilePhoto,
+        lastMsg: data.lastMsg,
+        lastUpdated: data.lastUpdated,
+        isMuted: data.isMuted,
+        isArchived: data.isArchived,
+        isPinned: data.isPinned,
+        isBlocked: data.isBlocked,
+        isReported: data.isReported,
+        unreadMsgs: data.unreadMsgs,
+        hasStatusUpdate: data.hasStatusUpdate,
+        profileInfo: data.profileInfo,
+        creationTime: data.creationTime
     );
   }
 
@@ -83,7 +90,7 @@ class ChatRepository {
   Future<ChatModel?> getChatById(String chatId) async {
     final data = await _db.getSingle<ChatTable, ChatTableData>(
       _db.chatTable,
-      (tbl) => tbl.chatId.equals(chatId),
+          (tbl) => tbl.chatId.equals(chatId),
     );
     return data != null ? _fromData(data) : null;
   }
@@ -94,7 +101,7 @@ class ChatRepository {
     return await _db.updateData<ChatTable, ChatTableCompanion, ChatTableData>(
       _db.chatTable,
       companion,
-      (tbl) => tbl.chatId.equals(chat.chatId),
+          (tbl) => tbl.chatId.equals(chat.chatId),
     );
   }
 
@@ -127,7 +134,7 @@ class ChatRepository {
   Stream<List<ChatModel>> watchAllChats() {
     return _db.watchAllData<ChatTable, ChatTableData>(_db.chatTable).map(
           (dataList) => dataList.map(_fromData).toList(),
-        );
+    );
   }
 
   /// Returns a stream of chats matching the search term.
@@ -136,6 +143,6 @@ class ChatRepository {
     final query = _db.select(_db.chatTable)..where((tbl) => tbl.chatName.like(searchQuery) | tbl.contactId.like(searchQuery));
     return query.watch().map(
           (dataList) => dataList.map(_fromData).toList(),
-        );
+    );
   }
 }

@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
-import 'package:whatsapp_clone/data/hive_data/hive_data.dart';
+
+import '../hive_data/hive_data.dart';
 
 class UserDataFunctions {
   static const String _path = "user_data";
@@ -57,7 +58,7 @@ class UserDataFunctions {
       return Result.error("Failed to fetch user details: ${e.toString()}");
     }
   }
-  
+
   Future<Result<String>> getUserId() async{
     try {
       final userData = await hiveData.getData(key: "$_path/$pathUserCredentialMap");

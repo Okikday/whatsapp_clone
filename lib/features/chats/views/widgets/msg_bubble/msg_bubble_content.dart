@@ -7,11 +7,11 @@ import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
 import 'package:whatsapp_clone/common/utilities/utilities_funcs.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_use_cases.dart';
-import 'package:whatsapp_clone/models/message_model.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/functions/msg_bubble_functions.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/timestamped_chat_message.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/build_attachment_widget.dart';
 import 'package:whatsapp_clone/features/chats/views/widgets/msg_bubble/build_tagged_msg_widget.dart';
+import 'package:whatsapp_clone/models/message_model.dart';
 
 class MsgBubbleContent extends StatelessWidget {
   final ChatViewController chatViewController;
@@ -39,18 +39,18 @@ class MsgBubbleContent extends StatelessWidget {
     final Color sentAtTextColor = isSender
         ? (isDarkMode ? const Color(0xFF93B28F) : WhatsAppColors.gray)
         : isDarkMode
-            ? WhatsAppColors.gray
-            : WhatsAppColors.gray;
+        ? WhatsAppColors.gray
+        : WhatsAppColors.gray;
     final TextStyle msgContentStyle = const CustomText("").effectiveStyle(context).copyWith(
-          fontSize: 16,
-        );
-    final bool hasTaggedMessage = messageModel.taggedMessageID != null && messageModel.taggedMessageID!.isNotEmpty;
+      fontSize: 17,
+    );
+    final bool hasTaggedMessage = messageModel.taggedMessageId != null && messageModel.taggedMessageId!.isNotEmpty;
     final bool hasAttachment = messageModel.mediaUrl != null &&
         messageModel.mediaUrl!.isNotEmpty &&
-        MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text;
+        messageModel.messageType != MessageType.text;
     final bool hasMedia = messageModel.mediaUrl != null && messageModel.mediaUrl!.isNotEmpty;
     final bool hasMediaCaption = hasMedia && messageModel.content.isNotEmpty;
-    final bool isJustImgOverlay = hasMedia && MessageTypeExtension.fromInt(messageModel.mediaType) != MessageType.text && !hasMediaCaption;
+    final bool isJustImgOverlay = hasMedia && messageModel.messageType != MessageType.text && !hasMediaCaption;
     final TextStyle sentAtStyle = TextStyle(
       fontSize: 10,
       fontWeight: FontWeight.w500,
@@ -91,7 +91,7 @@ class MsgBubbleContent extends StatelessWidget {
         if (hasAttachment)
           BuildAttachmentWidget(
             chatViewController: chatViewController,
-            msgType: MessageTypeExtension.fromInt(messageModel.mediaType),
+            msgType: messageModel.messageType,
             mediaUrl: messageModel.mediaUrl!,
             messageId: messageModel.messageId,
             isSender: isSender,
@@ -99,16 +99,16 @@ class MsgBubbleContent extends StatelessWidget {
             chatName: "Someone",
             dateWidget: isJustImgOverlay
                 ? DecoratedBox(
-                    decoration: BoxDecoration(boxShadow: [BoxShadow(blurRadius: 8, color: isSender ? Colors.black54 : Colors.white38)]),
-                    child: BuildTimeStampWidget(
-                      date: dateText,
-                      isSender: isSender,
-                      deliveredAt: messageModel.deliveredAt,
-                      sentAtWidth: sentAtWidth,
-                      sentAtStyle: sentAtStyle,
-                      iconColor: sentAtTextColor,
-                    ),
-                  )
+              decoration: BoxDecoration(boxShadow: [BoxShadow(blurRadius: 8, color: isSender ? Colors.black54 : Colors.white38)]),
+              child: BuildTimeStampWidget(
+                date: dateText,
+                isSender: isSender,
+                deliveredAt: messageModel.deliveredAt,
+                sentAtWidth: sentAtWidth,
+                sentAtStyle: sentAtStyle,
+                iconColor: sentAtTextColor,
+              ),
+            )
                 : null,
           ),
         if (messageModel.content.isNotEmpty || hasMediaCaption)
