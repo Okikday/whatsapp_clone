@@ -43,33 +43,36 @@ class _SelectContactViewState extends State<SelectContactView> {
   late final StreamSubscription<EdgeInsets> viewInsetsSub;
   late final StreamSubscription<String> streamChatsTerm;
   StreamSubscription<List<ChatModel>>? chatStreamSub;
-  late ValueNotifier<List<ChatModel>> streamedChatsFiltered;
 
   @override
   void initState() {
     super.initState();
     viewInsetsSub = appUiState.viewInsets.listen((value) {
-      final bool isKeyboardVisible = value.bottom > 0.0;
-      final currentOffset = scrollbarController.offset;
-      if (isKeyboardVisible) {
-        scrollbarController.animateTo(currentOffset + value.bottom, duration: Durations.medium1, curve: Curves.decelerate);
-      } else {
-        scrollbarController.animateTo(currentOffset - value.bottom, duration: Durations.medium1, curve: Curves.decelerate);
-      }
+      // final bool isKeyboardVisible = value.bottom > 0.0;
+      // final currentOffset = scrollbarController.offset;
+      // if (isKeyboardVisible) {
+      //   scrollbarController.animateTo(currentOffset + value.bottom/2, duration: Durations.medium1, curve: Curves.decelerate);
+      // } else {
+      //   scrollbarController.animateTo(currentOffset - value.bottom/2, duration: Durations.medium1, curve: Curves.decelerate);
+      // }
     });
-    streamedChatsFiltered = ValueNotifier([]);
     streamChatsTerm = selectContactController.searchContactText.listen((value) {
       // Cancel any existing chat stream subscription.
       chatStreamSub?.cancel();
 
       if (value.isEmpty) {
-        streamedChatsFiltered.value = List.from([]);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          selectContactController.streamedChatsFiltered.value = List.from([]);
+        });
+
         return;
       }
 
       // Listen to the new stream for the current search term.
       chatStreamSub = AppData.chats.searchChatsStream(value).listen((chatList) {
-        streamedChatsFiltered.value = List.from(chatList);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          selectContactController.streamedChatsFiltered.value = List.from(chatList);
+        });
       });
     });
   }
@@ -80,7 +83,6 @@ class _SelectContactViewState extends State<SelectContactView> {
     streamChatsTerm.cancel();
     chatStreamSub?.cancel();
     scrollbarController.dispose();
-    streamedChatsFiltered.dispose();
     super.dispose();
   }
 
@@ -126,12 +128,13 @@ class _SelectContactViewState extends State<SelectContactView> {
                         const SliverToBoxAdapter(child: ConstantSizing.columnSpacingSmall),
 
                         if (selectContactController.isSearching.value)
-                          const SliverToBoxAdapter(
+                          SliverToBoxAdapter(
                             child: Center(
                               child: SizedBox.square(
                                 dimension: 24,
                                 child: CircularProgressIndicator(
                                   strokeCap: StrokeCap.round,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                               ),
                             ),
@@ -142,10 +145,7 @@ class _SelectContactViewState extends State<SelectContactView> {
                               selectContactController.searchContactText.value),
 
                         // SECTION: NEW GROUP, NEW CONTACT, NEW COMMUNITY.
-                        SliverVisibility(
-                          visible: isSearchContactTextEmpty,
-                          sliver: _buildFirstSelectContactViewSection(isDarkMode),
-                        ),
+                        SliverVisibility(visible: isSearchContactTextEmpty, sliver: _buildFirstSelectContactViewSection(isDarkMode)),
 
                         // SPACING...
                         SliverVisibility(
@@ -155,7 +155,7 @@ class _SelectContactViewState extends State<SelectContactView> {
 
                         // TITLE
                         SliverVisibility(
-                          visible: streamedChatsFiltered.value.isNotEmpty || isSearchContactTextEmpty,
+                          visible: selectContactController.streamedChatsFiltered.isNotEmpty || isSearchContactTextEmpty,
                           sliver: SliverToBoxAdapter(
                             child: Padding(
                               padding: const EdgeInsets.only(left: 16),
@@ -169,17 +169,13 @@ class _SelectContactViewState extends State<SelectContactView> {
                         ),
 
                         SliverVisibility(
-                          visible: streamedChatsFiltered.value.isNotEmpty || isSearchContactTextEmpty,
+                          visible: selectContactController.streamedChatsFiltered.isNotEmpty || isSearchContactTextEmpty,
                           sliver: SliverToBoxAdapter(child: ConstantSizing.columnSpacing(6)),
                         ),
 
                         SliverVisibility(
-                          visible: streamedChatsFiltered.value.isNotEmpty || isSearchContactTextEmpty,
-                          sliver: ValueListenableBuilder(
-                              valueListenable: streamedChatsFiltered,
-                              builder: (context, value, child) {
-                                return _buildContactsList(isDarkMode, value);
-                              }),
+                          visible: selectContactController.streamedChatsFiltered.isNotEmpty || isSearchContactTextEmpty,
+                          sliver: _buildContactsList(isDarkMode, selectContactController.streamedChatsFiltered),
                         ),
 
                         const SliverToBoxAdapter(child: SizedBox(height: 12)),
@@ -428,6 +424,7 @@ class SelectContactAppBar extends StatefulWidget {
 class _SelectContactAppBarState extends State<SelectContactAppBar> {
   late final FocusNode focusNode;
   late ValueNotifier<bool> isSearchBarVisible;
+  Timer? searchTimer;
   @override
   @override
   void initState() {
@@ -522,8 +519,14 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
                               onTapOutside: () {},
                               onchanged: (text) {
                                 widget.selectContactController.setSearchContactText(text);
-                                if (!widget.selectContactController.isSearching.value)
-                                  widget.selectContactController.searchContactOnWhatsApp();
+                                // Cancel the previous timer if it's still active.
+                                if (searchTimer?.isActive ?? false) {
+                                  searchTimer!.cancel();
+                                }
+                                // Schedule the search function to be called after 400ms.
+                                searchTimer = Timer(const Duration(milliseconds: 300), () async {
+                                  await widget.selectContactController.searchContactOnWhatsApp();
+                                });
                               },
                               selectionHandleColor: primaryColor,
                               selectionColor: primaryColor.withValues(alpha: 0.4),
@@ -595,9 +598,9 @@ Widget _buildSearchContactTile(bool isDarkMode, ChatModel cacheChatModel, String
           : null,
       trailing: CustomElevatedButton(
         onClick: () async {
-          final String _contactInput = contactInput;
+          final String input = contactInput;
           Get.close(1);
-          await addChatModelAsNumIfNotExist(cacheChatModel, _contactInput);
+          await addChatModelAsNumIfNotExist(cacheChatModel, input);
           final String? userId = AppData.userId;
           if (userId == null) return;
 

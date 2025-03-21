@@ -85,7 +85,7 @@ class MsgInputBar extends StatelessWidget {
       NativeTextInputModel? args,
       )? callbackFunction;
   final ChatViewController currChatViewController;
-  const MsgInputBar({super.key, required this.isDarkMode, this.callbackFunction, required this.currChatViewController, required this.keyboardHeight});
+  const MsgInputBar({super.key, required this.isDarkMode, this.callbackFunction, required this.currChatViewController, required this.keyboardHeight,});
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +113,10 @@ class MsgInputBar extends StatelessWidget {
               backgroundColor: isDarkMode ? WhatsAppColors.arsenic : Colors.white,
               borderRadius: 24,
               cursorColor: primaryColor,
+              readOnly: currChatViewController.isKeyboardReadOnly,
+              ontap: (){
+                currChatViewController.setIsKeyboardReadOnly(false);
+              },
               onTapOutside: () {},
               onchanged: (text) {
                 if (text == currChatViewController.messageInput.value) return;

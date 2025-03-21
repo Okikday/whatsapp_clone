@@ -60,10 +60,13 @@ class ChatView extends StatelessWidget {
                           scaffoldBgColor: scaffoldBgColor,
                           isDarkMode: isDarkMode,
                           onTapProfile: () async {
-                            // chatViewController.focusNode.unfocus();
+                            chatViewController.setIsKeyboardReadOnly(true);
+
                             final ProfileView preloadedProfileView = ProfileView(chatModel: chatModel,);
                             Future.delayed(const Duration(milliseconds: 150),
-                                    () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView)));
+                                    () => navigator?.push(CupertinoPageRoute(builder: (context) => preloadedProfileView)).then((v){
+                                      FocusScope.of(Get.context!).requestFocus();
+                                    }));
                           },
                         ))
                         : CustomAppBarContainer(scaffoldBgColor: scaffoldBgColor, child: ChatBubbleSelectionAppBar(chatViewController: chatViewController,)),

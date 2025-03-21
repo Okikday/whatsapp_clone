@@ -18,6 +18,7 @@ class ChatViewController extends GetxController {
   }
 
   final TextEditingController textEditingController = TextEditingController();
+  RxBool _isKeyboardReadOnly = false.obs;
   RxString messageInput = "".obs;
   RxBool isMicTappedDown = false.obs;
   RxBool allowPagePop = true.obs;
@@ -41,6 +42,9 @@ class ChatViewController extends GetxController {
 
   ChatModel get chatModel => _chatModel.value;
   String get myUserId => _myUserId.value;
+
+  bool get isKeyboardReadOnly => _isKeyboardReadOnly.value;
+  setIsKeyboardReadOnly(value){_isKeyboardReadOnly.value = value;}
 
   void resetMsgBox() {
     textEditingController.clear();

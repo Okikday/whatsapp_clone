@@ -125,11 +125,19 @@ class MessageRepository {
 
   /// Streams messages for a given chat, optionally limiting the number emitted.
   /// If [limit] is provided and greater than zero, the stream returns only that number of messages.
-  Stream<List<MessageModel>> watchMessagesForChat(String chatId, {int? limit}) {
+  /// Use [ascending] to sort messages in ascending order (by sentTime), or descending if false.
+  Stream<List<MessageModel>> watchMessagesForChat(
+      String chatId, {
+        int? limit,
+        bool ascending = false,
+      }) {
     final query = _db.select(_db.messageTable)
       ..where((tbl) => tbl.chatId.equals(chatId))
       ..orderBy([
-            (tbl) => OrderingTerm(expression: tbl.sentTime, mode: OrderingMode.desc)
+            (tbl) => OrderingTerm(
+          expression: tbl.sentTime,
+          mode: ascending ? OrderingMode.asc : OrderingMode.desc,
+        )
       ]);
 
     if (limit != null && limit > 0) {
@@ -138,6 +146,7 @@ class MessageRepository {
 
     return query.watch().map((dataList) => dataList.map(_fromData).toList());
   }
+
 
 
   /// Returns a stream of messages whose content contains the search term.

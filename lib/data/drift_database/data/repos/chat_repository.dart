@@ -155,4 +155,5 @@ class ChatRepository {
           (dataList) => dataList.map(_fromData).toList(),
     );
   }
+
 }

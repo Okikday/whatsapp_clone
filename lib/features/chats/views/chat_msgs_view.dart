@@ -41,7 +41,7 @@ class ChatMsgsView extends StatelessWidget {
 
             // TODO: Add the First chat's header, check disappearing messages, chatting this person for the first time and all that.
             StreamBuilder<List<MessageModel>>(
-                stream: AppData.messages.watchMessagesForChat(chatViewController.chatModel.chatId),
+                stream: AppData.messages.watchMessagesForChat(chatViewController.chatModel.chatId, ascending: true),
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     return SliverPadding(

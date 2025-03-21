@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ class SelectContactController extends GetxController {
   RxString searchContactText = "".obs;
   RxBool isSearching = false.obs;
   Rx<ChatModel?> searchedChatModel = Rx(null);
+  RxList<ChatModel> streamedChatsFiltered = <ChatModel>[].obs;
 
   @override
   void onInit() {
@@ -16,35 +18,42 @@ class SelectContactController extends GetxController {
     searchContactText.value = "";
   }
 
+  @override
+  void dispose(){
+    super.dispose();
+    searchContactText.close();
+
+  }
+
   setSearchContactText(String value) {
-    // log("input: $value");
-    return searchContactText.value = value;
+    searchContactText.value = value;
   }
 
 
   /// Formats a phone number to the international format for Nigeria (+234)
   /// after removing any whitespace. Returns the formatted number or null if invalid.
-  Future<void> searchContactOnWhatsApp() async {
-    if (isSearching.value) return;
+  Future<bool> searchContactOnWhatsApp() async {
+    if (isSearching.value) return false;
 
     // Reset previous search result.
     searchedChatModel.value = null;
     isSearching.value = true;
 
     // Remove whitespace and trim the input.
-    final text = _HelperSelectContactController.removeWhitespace(searchContactText.value);
+    final String text = _HelperSelectContactController.removeWhitespace(searchContactText.value);
 
     // Validate the phone number and its length.
     if (!text.isPhoneNumber || text.length < 10 || text.length > 15) {
+      searchedChatModel.value = null;
       isSearching.value = false;
-      return;
+      return false;
     }
 
     // Check if chat exists on device first.
     final ChatModel? checkNumberOnDevice = await AppData.chats.getChatByNumber(text);
     if (checkNumberOnDevice != null) {
       isSearching.value = false;
-      return;
+      return true;
     }
 
     // Normalize the phone number to start with +234 and search on WhatsApp.
@@ -56,6 +65,7 @@ class SelectContactController extends GetxController {
       searchedChatModel.value = await _HelperSelectContactController.getNumberOnWhatsApp('+234${text.substring(1)}');
     }
     isSearching.value = false;
+    return true;
   }
 
 }
