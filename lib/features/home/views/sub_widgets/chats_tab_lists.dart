@@ -133,12 +133,21 @@ class ChatsTabLists extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CustomText(
-                          "Welcome to WhatsApp Clone 🌚",
-                          fontStyle: FontStyle.italic,
-                          color: WhatsAppColors.emerald,
-                        ).animate().fadeOut(duration: const Duration(seconds: 1), curve: Curves.easeIn),
-                        const SizedBox(height: 24),
+                        CustomText("Start chatting", fontSize: 24, fontWeight: FontWeight.w600,),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24,),
+                          child: StreamBuilder<int>(
+                            stream: AppData.chats.streamChatCount(),
+                            builder: (context, snapshot) {
+                              int contactsCount = 0;
+                              if(snapshot.hasData && snapshot.data != null) {
+                                contactsCount = snapshot.data ?? 0;
+                              }
+                              return CustomText("Chat with your $contactsCount WhatsApp contacts, or invite a friend to WhatsApp", textAlign: TextAlign.center,);
+                            }
+                          ),
+                        ),
+                        ConstantSizing.columnSpacingLarge,
                         SizedBox(
                           height: 72,
                           child: ListView.builder(
@@ -147,7 +156,7 @@ class ChatsTabLists extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: EdgeInsets.only(
-                                    left: 8,
+                                    left: 12,
                                     right: index == 9 ? 8 : 0,
                                   ),
                                   child: const Skeletonizer(
@@ -158,17 +167,21 @@ class ChatsTabLists extends StatelessWidget {
                                 );
                               }),
                         ),
-                        const SizedBox(height: 32),
-                        TextButton.icon(
-                            style: ButtonStyle(overlayColor: WidgetStatePropertyAll(themeData.primaryColor.withValues(alpha: 0.1))),
-                            onPressed: () {
-                              navigator?.push(Utilities.customPageRouteBuilder(const SelectContactView()));
-                            },
-                            icon: Icon(
-                              Icons.add_rounded,
-                              color: themeData.primaryColor,
-                            ),
-                            label: CustomText("Start a new chat", color: themeData.primaryColor)),
+                        ConstantSizing.columnSpacingExtraLarge,
+                        CustomElevatedButton(
+                          onClick: (){
+
+                          },
+
+                          overlayColor: themeData.primaryColor.withAlpha(40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            side: BorderSide(color: isDarkMode ? WhatsAppColors.gray : WhatsAppColors.altLightGray)
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          backgroundColor: Colors.transparent,
+                          child: CustomText("Invite a friend", color: themeData.primaryColor, fontSize: 13, fontWeight: FontWeight.w600,),
+                        ),
                         const SizedBox(
                           height: 64,
                         ),
@@ -254,7 +267,7 @@ PageRouteBuilder<dynamic> profileDialogPageRoute(double overlayWidth, ChatModel 
                       ),
                       Expanded(
                         child: SizedBox(
-                          height: 48,
+
                           width: overlayWidth,
                           child: ColoredBox(
                             color: scaffoldBgColor,

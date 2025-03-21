@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/data/drift_database/app_drift_database.dart';
 
 import '../hive_data/hive_data.dart';
 
@@ -32,9 +33,10 @@ class UserDataFunctions {
       // Clear stored tokens and user information
       await _secureStorage.delete(key: 'googleIDToken');
       await _secureStorage.delete(key: 'googleAccessToken');
-      await hiveData.deleteData(key: "$_path/$pathUserCredentialMap");
+      // await hiveData.deleteData(key: "$_path/$pathUserCredentialMap");
       try {
         await hiveData.deleteData(key: "$_path/$pathUserCredentialMap");
+        await AppDriftDatabase.instance.clearAllTables();
       } catch (e) {
         log("Error deleting user Data, $e");
       }
@@ -65,7 +67,6 @@ class UserDataFunctions {
       if (userData == null) return Result.error("Unable to fetch user data");
       // Create the UserCredentialModel from the fetched data
       final UserCredentialModel user = UserCredentialModel.fromMap(Map<String, dynamic>.from(userData));
-
       return Result.success(user.userID);
     } catch (e) {
       return Result.error("error: $e");

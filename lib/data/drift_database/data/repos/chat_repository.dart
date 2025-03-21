@@ -95,6 +95,16 @@ class ChatRepository {
     return data != null ? _fromData(data) : null;
   }
 
+  /// Retrieves a single chat by the provided phone number (contactId).
+  Future<ChatModel?> getChatByNumber(String phoneNumber) async {
+    final data = await _db.getSingle<ChatTable, ChatTableData>(
+      _db.chatTable,
+          (tbl) => tbl.contactId.equals(phoneNumber),
+    );
+    return data != null ? _fromData(data) : null;
+  }
+
+
   /// Updates an existing chat.
   Future<int> updateChat(ChatModel chat) async {
     final companion = _toCompanion(chat);

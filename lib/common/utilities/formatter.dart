@@ -1,3 +1,4 @@
+import 'package:basic_utils/basic_utils.dart';
 import 'package:intl/intl.dart';
 
 class Formatter {
@@ -74,8 +75,36 @@ class Formatter {
     }
   }
 
-  static String formatPhoneNumber(String number) {
-    final RegExp regex = RegExp(r'(\d{3})(\d{3})(\d{4})');
-    return number.replaceFirstMapped(regex, (m) => "+234 ${m[1]} ${m[2]} ${m[3]}");
+  /// Formats a Nigerian phone number by removing whitespace and ensuring it starts with +234.
+  /// If [spacedFormat] is true, it formats the number with spaces like "+234 812 345 6789".
+  static String formatNgnPhoneNumber(String number, {bool spacedFormat = false}) {
+    // Remove all non-numeric characters except +
+    number = number.replaceAll(RegExp(r'[^\d+]'), '');
+
+    // If the number starts with +234, keep it
+    if (number.startsWith('+234')) {
+      number = number;
+    }
+    // If the number starts with 234 (without the +), add the +
+    else if (number.startsWith('234')) {
+      number = '+$number';
+    }
+    // If the number starts with 0, replace it with +234
+    else if (number.startsWith('0')) {
+      number = '+234${number.substring(1)}';
+    }
+    // If it doesn't match, return as is
+    else {
+      return number;
+    }
+
+    // Apply spacing if spacedFormat is true
+    if (spacedFormat) {
+      final RegExp regex = RegExp(r'(\+234)(\d{3})(\d{3})(\d{4})');
+      return number.replaceFirstMapped(regex, (m) => "${m[1]} ${m[2]} ${m[3]} ${m[4]}");
+    }
+
+    return number;
   }
+
 }

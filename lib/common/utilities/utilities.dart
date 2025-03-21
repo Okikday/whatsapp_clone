@@ -117,11 +117,12 @@ class Result<T> {
   }
 
   factory Result.unavailable(dynamic unavailable) {
+    log("unavailable: $unavailable");
     return Result._(unavailable: unavailable);
   }
 
   /// Indicates whether the result is successful.
-  bool get isSuccess => value != null;
+  bool get isSuccess => error == null && unavailable == null;
 
   /// Indicates whether the result is a failure.
   bool get isError => error != null;

@@ -85,15 +85,6 @@ class MessageRepository {
     );
   }
 
-  /// Retrieves all messages for a given chat.
-  Future<List<MessageModel>> getMessagesForChat(String chatId) async {
-    final dataList = await _db.queryData<MessageTable, MessageTableData>(
-      _db.messageTable,
-          (tbl) => tbl.chatId.equals(chatId),
-    );
-    return dataList.map(_fromData).toList();
-  }
-
   /// Updates an existing message.
   Future<int> updateMessage(MessageModel message) async {
     final companion = _toCompanion(message);
@@ -112,15 +103,42 @@ class MessageRepository {
     );
   }
 
-  /// Streams messages for a given chat.
-  Stream<List<MessageModel>> watchMessagesForChat(String chatId) {
-    return _db
-        .watchQueryData<MessageTable, MessageTableData>(
-      _db.messageTable,
-          (tbl) => tbl.chatId.equals(chatId),
-    )
-        .map((dataList) => dataList.map(_fromData).toList());
+  /// Retrieves messages for a given chat, optionally limiting the number returned.
+  /// If [limit] is provided and greater than zero, only that number of messages is returned.
+  Future<List<MessageModel>> getMessagesForChat(String chatId, {int? limit}) async {
+    // Build a query to get messages for the given chatId.
+    final query = _db.select(_db.messageTable)
+      ..where((tbl) => tbl.chatId.equals(chatId))
+      ..orderBy([
+            (tbl) => OrderingTerm(expression: tbl.sentTime, mode: OrderingMode.desc)
+      ]);
+
+    // Apply the limit if provided.
+    if (limit != null && limit > 0) {
+      query.limit(limit);
+    }
+
+    // Get the data and convert it to MessageModel.
+    final dataList = await query.get();
+    return dataList.map(_fromData).toList();
   }
+
+  /// Streams messages for a given chat, optionally limiting the number emitted.
+  /// If [limit] is provided and greater than zero, the stream returns only that number of messages.
+  Stream<List<MessageModel>> watchMessagesForChat(String chatId, {int? limit}) {
+    final query = _db.select(_db.messageTable)
+      ..where((tbl) => tbl.chatId.equals(chatId))
+      ..orderBy([
+            (tbl) => OrderingTerm(expression: tbl.sentTime, mode: OrderingMode.desc)
+      ]);
+
+    if (limit != null && limit > 0) {
+      query.limit(limit);
+    }
+
+    return query.watch().map((dataList) => dataList.map(_fromData).toList());
+  }
+
 
   /// Returns a stream of messages whose content contains the search term.
   Stream<List<MessageModel>> searchMessagesStream(String searchTerm) {

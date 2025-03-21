@@ -133,6 +133,13 @@ class AppDriftDatabase extends _$AppDriftDatabase {
 
   /// Close the database connection
   Future<void> closeDb() async => close();
+
+  Future<void> clearAllTables() async {
+    for (final table in allTables) {
+      await delete(table).go();
+    }
+  }
+
 }
 
 LazyDatabase _openConnection() {
@@ -142,6 +149,8 @@ LazyDatabase _openConnection() {
     return NativeDatabase(file);
   });
 }
+
+
 
 // Future<QueryExecutor> _openEncryptedConnection(String encryptionKey) async {
 //   return LazyDatabase(() async {

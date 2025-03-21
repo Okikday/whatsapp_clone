@@ -2,14 +2,20 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/chat_services.dart';
 import 'package:whatsapp_clone/models/chat_model.dart';
 
-
 const double defaultMsgBarHeight = 48.0;
+
 class ChatViewController extends GetxController {
   final Rx<ChatModel> _chatModel;
+  late final ChatServices chatServices;
   final RxString _myUserId;
-  ChatViewController(ChatModel chatModel, String myUserId): _chatModel = chatModel.obs, _myUserId = myUserId.obs;
+  ChatViewController(ChatModel chatModel, String myUserId)
+      : _chatModel = chatModel.obs,
+        _myUserId = myUserId.obs {
+    chatServices = ChatServices(chatModel);
+  }
 
   final TextEditingController textEditingController = TextEditingController();
   RxString messageInput = "".obs;
@@ -18,7 +24,7 @@ class ChatViewController extends GetxController {
   RxMap<int, int?> chatsSelected = <int, int?>{}.obs;
 
   @override
-  void onInit() async{
+  void onInit() async {
     super.onInit();
     setMessageInput('');
     chatsSelected.listen((Map<int, int?> value) {
@@ -29,6 +35,7 @@ class ChatViewController extends GetxController {
   @override
   void onClose() {
     chatsSelected.close();
+    chatServices.dispose();
     super.onClose();
   }
 

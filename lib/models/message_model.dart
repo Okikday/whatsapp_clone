@@ -16,9 +16,9 @@ class MessageModel {
   final DateTime? deliveredAt;
   final DateTime? readAt;
   final DateTime? editedAt;
-  final bool isStarred;
+  final bool isStarred; // not needed
   final bool isDeleted;
-  final bool isForwarded;
+  final bool isForwarded; // not needed or can be changed to int
   final bool isReported;
 
   MessageModel({

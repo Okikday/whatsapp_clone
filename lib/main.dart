@@ -31,16 +31,15 @@ void main() async {
   await hiveData.initSecureHiveData();
 
   final UserDataFunctions userDataFunctions = UserDataFunctions();
-  final Result userIdResult = await userDataFunctions.getUserId();
+  final Result<String> userIdResult = await userDataFunctions.getUserId();
   final bool isUserSignedIn;
 
-  if (userIdResult.isSuccess) {
+  if (userIdResult.isSuccess == true) {
     isUserSignedIn = true;
     AppData.userId = userIdResult.value;
   } else {
     isUserSignedIn = false;
   }
-  log("isUserSignedIn: $isUserSignedIn");
 
   runApp(App(
     isUserSignedIn: isUserSignedIn,

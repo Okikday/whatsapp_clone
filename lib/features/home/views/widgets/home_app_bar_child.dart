@@ -74,6 +74,7 @@ class HomeAppBarChild extends StatelessWidget {
                         return AlertDialog(
                           backgroundColor: scaffoldBgColor,
                           shadowColor: Colors.blueGrey,
+                            elevation: 1,
                             title: const CustomText(
                               "Signing out",
                               fontSize: 20,

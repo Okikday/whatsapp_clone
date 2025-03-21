@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 
-class ChatMsgBoxFunctions {
+class ChatMsgBoxWidgets {
   static Widget widgetAttachmentIconButton({
     required bool isDarkMode,
     void Function()? onPressed,

@@ -99,9 +99,9 @@ class FirebaseData {
   }
 
 
-  Future<Result<UserCredentialModel?>> getWhere(Map<String, dynamic> filters) async {
+  Future<Result<UserCredentialModel?>> getUserWhere(Map<String, dynamic> filters, {Query? userQuery}) async {
     try {
-      Query query = _collectionReference;
+      Query query = userQuery ?? _collectionReference;
 
       filters.forEach((key, value) {
         query = query.where(key, isEqualTo: value);
@@ -126,8 +126,64 @@ class FirebaseData {
     }
   }
 
+  Future<Result<dynamic>> getWhere(
+      Map<String, dynamic> filters, {
+        Query? suppliedQuery,
+      }) async {
+    try {
+      Query query = suppliedQuery ?? _collectionReference;
 
-  Future<Result<bool>> deleteWhere(Map<String, dynamic> filters) async {
+      // Apply each filter to the query.
+      filters.forEach((key, value) {
+        query = query.where(key, isEqualTo: value);
+      });
+
+      final QuerySnapshot querySnapshot = await query.limit(1).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        return Result.success(null);
+      }
+
+      final DocumentSnapshot document = querySnapshot.docs.first;
+      final dynamic data = document.data();
+
+      return Result.success(data);
+    } catch (e) {
+      return Result.error("Error retrieving data: ${e.toString()}");
+    }
+  }
+
+  Future<Result<List<dynamic>>> getAllWhere(
+      Map<String, dynamic> filters, {
+        Query? suppliedQuery,
+      }) async {
+    try {
+      Query query = suppliedQuery ?? _collectionReference;
+
+      // Apply each filter to the query.
+      filters.forEach((key, value) {
+        query = query.where(key, isEqualTo: value);
+      });
+
+      // Retrieve all matching documents.
+      final QuerySnapshot querySnapshot = await query.get();
+
+      // If no documents match, return an empty list.
+      if (querySnapshot.docs.isEmpty) {
+        return Result.success([]);
+      }
+
+      // Extract the data from each document.
+      final List<dynamic> allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+      return Result.success(allData);
+    } catch (e) {
+      return Result.error("Error retrieving data: ${e.toString()}");
+    }
+  }
+
+
+  Future<Result<bool>> deleteUserWhere(Map<String, dynamic> filters) async {
     try {
       Query query = _collectionReference;
 

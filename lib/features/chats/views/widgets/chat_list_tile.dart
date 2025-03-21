@@ -90,12 +90,7 @@ class ChatListTile extends StatelessWidget {
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: (profilePhoto != null && profilePhoto!.isNotEmpty)
-                                  ? Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: profilePhoto!)
-                                  : Utilities.imgProvider(imgsrc: ImageSource.asset, defaultAssetImage: IconStrings.userIcon),
-                              fit: BoxFit.cover,
-                            ),
+                            color: Theme.of(context).primaryColor
                           ),
                           child: GestureDetector(
                             onTapDown: (details) {},

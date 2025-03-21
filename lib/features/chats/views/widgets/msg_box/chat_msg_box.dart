@@ -14,8 +14,9 @@ import 'package:whatsapp_clone/common/widgets/custom_native_text_input.dart';
 import 'package:whatsapp_clone/data/app_data.dart';
 import 'package:whatsapp_clone/data/user_data/user_data.dart';
 import 'package:whatsapp_clone/features/chats/controllers/chat_view_controller.dart';
+import 'package:whatsapp_clone/features/chats/use_cases/functions/chat_msg_box_functions.dart';
 import 'package:whatsapp_clone/features/chats/use_cases/functions/chats_functions.dart';
-import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box_functions.dart';
+import 'package:whatsapp_clone/features/chats/views/widgets/msg_box/chat_msg_box_widgets.dart';
 import 'package:whatsapp_clone/models/chat_model.dart';
 import 'package:whatsapp_clone/models/message_model.dart';
 
@@ -62,41 +63,7 @@ class ChatMsgBox extends StatelessWidget {
                   isDarkMode: appUiState.isDarkMode.value,
                   scaffoldBgColor: scaffoldBgColor,
                   onTapSend: () async {
-                    final String content = chatViewController.messageInput.value;
-                    chatViewController.resetMsgBox();
-
-                    final Result myIdResult = await UserDataFunctions().getUserId();
-                    if (!myIdResult.isSuccess) {
-                      if (Get.context!.mounted) {
-                        CustomSnackBar.showSnackBar(Get.context!,
-                            content: "Unable to send message, try contacting app's developer", vibe: SnackBarVibe.warning);
-                      }
-                      return;
-                    }
-
-                    final ChatModel chatModel = chatViewController.chatModel;
-                    String msgId = ChatsFunctions.generateMsgId();
-                    int count = 0;
-                    while (await AppData.messages.doesMsgIdExists(msgId) && count < 10) {
-                      if (count > 10) break;
-                      msgId = ChatsFunctions.generateMsgId();
-                      count++;
-                    }
-                    if (count > 10) return;
-
-                    final DateTime currentTime = DateTime.now();
-                    final addMsgResult = await AppData.messages.addMessage(MessageModel(
-                        messageId: msgId,
-                        chatId: chatModel.chatId,
-                        content: content,
-                        sentAt: null,
-                        myId: myIdResult.value,
-                        messageType: MessageType.text,
-                        sentTime: currentTime));
-
-                    await AppData.chats
-                        .updateChat(chatModel.copyWith(lastMsg: chatViewController.messageInput.value, lastUpdated: DateTime.now()));
-                    chatViewController.resetMsgBox();
+                    ChatMsgBoxFunctions(chatViewController).sendMessage();
                   },
                 )
               ],
@@ -205,8 +172,8 @@ class MsgInputBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       spacing: 0,
                       children: [
-                        ChatMsgBoxFunctions.widgetAttachmentIconButton(isDarkMode: isDarkMode),
-                        ChatMsgBoxFunctions.widgetCameraIconButton(
+                        ChatMsgBoxWidgets.widgetAttachmentIconButton(isDarkMode: isDarkMode),
+                        ChatMsgBoxWidgets.widgetCameraIconButton(
                             isDarkMode: isDarkMode, isVisible: currChatViewController.messageInput.isEmpty ? true : false)
                       ],
                     ),

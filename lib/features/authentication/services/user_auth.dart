@@ -71,9 +71,19 @@ class FirebaseGoogleAuth {
 
   Future<Result<bool>> googleSignOut() async {
     try {
+      final Result<UserCredentialModel?> getUserDetails = await userData.getUserDetails();
+      if(getUserDetails.value == null || getUserDetails.isSuccess == false) return Result.error("Error getting details from storage. Try clearing cache");
+
+      final ref = FirebaseFirestore.instance.collection("existingNumbers");
+      await ref.doc(getUserDetails.value?.phoneNumber).delete();
+      await FirebaseFirestore.instance.collection("chats").doc(getUserDetails.value?.userID).set({
+        'publicKey': "",
+        'canReceiveChats': false
+      });
       await _googleAuth.signOut();
       await _firebaseAuth.signOut();
       userData.clearUserDetails();
+
       return Result.success(true);
     } catch (e) {
       return Result.error("Error: $e");

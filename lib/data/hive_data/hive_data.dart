@@ -41,44 +41,72 @@ class HiveData {
 
 
 
-  // Method to retrieve secure data
-  Future<String?> getSecureData({required String key}) async {
+  // // Method to retrieve secure data
+  // Future<String?> getSecureString({required String key}) async {
+  //   final String? savedHiveKey = await secureStorage.read(key: 'hiveKey');
+  //
+  //   // If saved Key exists
+  //   if (savedHiveKey != null) {
+  //
+  //     if(secureBox.isOpen == true){
+  //       final secureData = secureBox.get(key);
+  //       return secureData;
+  //     }else{
+  //       final hiveKey = base64Url.decode(savedHiveKey);
+  //       secureBox = await Hive.openBox("secureBox", encryptionCipher: HiveAesCipher(hiveKey));
+  //       final secureData = secureBox.get(key);
+  //       return secureData;
+  //     }
+  //
+  //   } else {
+  //     return null;
+  //   }
+  // }
+  //
+  // Future<void> setSecureString({required String key, required String value}) async{
+  //   final String? savedHiveKey = await secureStorage.read(key: 'hiveKey');
+  //
+  //   // If saved Key exists
+  //   if (savedHiveKey != null) {
+  //
+  //     if(secureBox.isOpen == true){
+  //       await secureBox.put(key, value);
+  //     }else{
+  //       final hiveKey = base64Url.decode(savedHiveKey);
+  //       secureBox = await Hive.openBox("secureBox", encryptionCipher: HiveAesCipher(hiveKey));
+  //       await secureBox.put(key, value);
+  //     }
+  //
+  //   }
+  // }
+
+  Future<void> setSecureData({required String key, required dynamic value}) async {
     final String? savedHiveKey = await secureStorage.read(key: 'hiveKey');
-
-    // If saved Key exists
     if (savedHiveKey != null) {
-
-      if(secureBox.isOpen == true){
-        final secureData = secureBox.get(key);
-        return secureData;
-      }else{
+      if (secureBox.isOpen) {
+        await secureBox.put(key, value);
+      } else {
         final hiveKey = base64Url.decode(savedHiveKey);
         secureBox = await Hive.openBox("secureBox", encryptionCipher: HiveAesCipher(hiveKey));
-        final secureData = secureBox.get(key);
-        return secureData;
+        await secureBox.put(key, value);
       }
-
-    } else {
-      return null;
     }
   }
 
-  Future<void> setSecureData({required String key, required String value}) async{
+  Future<dynamic> getSecureData({required String key}) async {
     final String? savedHiveKey = await secureStorage.read(key: 'hiveKey');
-
-    // If saved Key exists
     if (savedHiveKey != null) {
-
-      if(secureBox.isOpen == true){
-        await secureBox.put(key, value);
-      }else{
+      if (secureBox.isOpen) {
+        return secureBox.get(key);
+      } else {
         final hiveKey = base64Url.decode(savedHiveKey);
         secureBox = await Hive.openBox("secureBox", encryptionCipher: HiveAesCipher(hiveKey));
-        await secureBox.put(key, value);
+        return secureBox.get(key);
       }
-
     }
+    return null;
   }
+
 
 
 }

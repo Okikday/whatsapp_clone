@@ -13,12 +13,11 @@ import 'package:pointycastle/pointycastle.dart' as pointy;
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
 import 'package:whatsapp_clone/models/encrypt_model.dart';
 
-class EncryptionLogic {
-  // Singleton pattern
-  static final EncryptionLogic _instance = EncryptionLogic._internal();
-  factory EncryptionLogic() => _instance;
-  EncryptionLogic._internal();
+class SymmetricEncryption {
 
+  SymmetricEncryption(String password){
+    initSymmetric(password);
+  }
   // Keys for symmetric encryption
   late encrypt.Key _key;
   late encrypt.Encrypter _encrypter;
