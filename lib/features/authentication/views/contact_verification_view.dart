@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
@@ -22,6 +23,7 @@ import 'package:whatsapp_clone/data/firebase_data/firebase_data.dart';
 import 'package:whatsapp_clone/data/user_data/user_data.dart';
 import 'package:whatsapp_clone/features/authentication/controllers/auth_ui_controller.dart';
 import 'package:whatsapp_clone/features/authentication/services/user_auth.dart';
+import 'package:whatsapp_clone/features/authentication/use_cases/auth_functions.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
 class ContactVerificationView extends StatefulWidget {
@@ -234,41 +236,39 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                                       contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                                       onClick: () async {
                                         try {
-                                          Get.close(1);
+
+                                          Get.close(1); // Close the Confirm number Dialog
                                           LoadingDialog.showLoadingDialog(Get.context!,
                                               progressIndicatorColor: WhatsAppColors.secondary,
-                                              backgroundColor: Get.theme.scaffoldBackgroundColor);
-                                          final Result<bool> googleSignInOutcome =
-                                              await onGoogleSignIn(context, ngnPhoneNumber: ngnPhoneNumber);
+                                              backgroundColor: Get.theme.scaffoldBackgroundColor,);
 
-                                          final Result userIdResult = await UserDataFunctions().getUserId();
-                                          if (userIdResult.isSuccess == false ||
-                                              googleSignInOutcome.isSuccess == false ||
-                                              googleSignInOutcome.value! == false) {
+
+                                          final Result googleSignInOutcome =
+                                              await AuthFunctions().onGoogleSignIn(ngnPhoneNumber: ngnPhoneNumber);
+                                          if(googleSignInOutcome.isSuccess != true ||
+                                          googleSignInOutcome.value != true){
                                             await FirebaseGoogleAuth().googleSignOut();
                                             await UserDataFunctions().clearUserDetails();
+                                            FirebaseFirestore.instance.collection("public_info").doc(AppData.userId).delete();
                                             Get.close(1);
                                             CustomSnackBar.showSnackBar(Get.context!,
-                                                content: "Unable to sign in with phone number and Google", vibe: SnackBarVibe.error);
+                                                content: googleSignInOutcome.value, vibe: SnackBarVibe.error);
                                             return;
                                           }
 
-                                          AppData.userId = userIdResult.value;
                                           Get.close(1);
-                                          if (googleSignInOutcome.value!) {
-                                            navigator?.pop();
-                                            Get.off(() => RoutesNames.homeView);
-                                            CustomSnackBar.showSnackBar(Get.context!,
-                                                content: "Successfully signed in with phone number and Google", usePrimaryColor: true);
-                                          } else {
-                                            CustomSnackBar.showSnackBar(Get.context!,
-                                                content: "Currently unable to sign in with phone number and Google",
-                                                vibe: SnackBarVibe.warning);
-                                          }
+                                          navigator?.pop();
+                                          Get.off(() => RoutesNames.homeView);
+                                          CustomSnackBar.showSnackBar(Get.context!,
+                                              content: "Successfully signed in with phone number and Google", usePrimaryColor: true, backgroundColor: scaffoldBgColor);
                                         } catch (e) {
                                           log("error: $e");
+                                          await FirebaseGoogleAuth().googleSignOut();
+                                          await UserDataFunctions().clearUserDetails();
+                                          FirebaseFirestore.instance.collection("public_info").doc(AppData.userId).delete();
+                                          Get.close(1);
                                           CustomSnackBar.showSnackBar(Get.context!,
-                                              content: "Error while signing in", vibe: SnackBarVibe.error);
+                                              content: "Unknown error while signing in", vibe: SnackBarVibe.error);
                                         }
                                       },
                                       child: CustomText(
@@ -292,109 +292,5 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
   }
 }
 
-Future<Result<bool>> onGoogleSignIn(BuildContext context, {required String ngnPhoneNumber}) async {
-  try {
-    final Result<UserCredentialModel> result = await FirebaseGoogleAuth().signInWithGoogle(phoneNumber: ngnPhoneNumber);
-    if (result.isSuccess == false) return Result.error(result.value.toString());
-    final Result doesNumberConflict = await doesNumberConfict(ngnPhoneNumber, (result.value as UserCredentialModel).email);
-    if (doesNumberConflict.isSuccess == false) return Result.error(doesNumberConflict.value.toString());
-    log("doesNumberConflict: ${doesNumberConflict.value}");
-
-    if (doesNumberConflict.value == false) {
-      log("Creating exising phone number>.....");
-      AppData.userId = result.value!.userID;
-      await createExistingPhoneNumber(result.value!);
-      log("Successfully created existing phone number");
-      return Result.success(true);
-    } else {
-      await FirebaseFirestore.instance.collection("users").doc(result.value?.userID).delete();
-      if (context.mounted) {
-        CustomSnackBar.showSnackBar(context, content: "Phone number already exists with another email", vibe: SnackBarVibe.error);
-      }
-      await Future.delayed(Durations.medium1);
-    }
-  } catch (e) {
-    return Result.success(false);
-  }
-  return Result.success(false);
-}
-
-Future<Result<bool>> doesNumberConfict(String ngnPhoneNumber, String email) async {
-  try {
-    final Result userDataWithPN = await FirebaseData()
-        .getWhere(suppliedQuery: FirebaseFirestore.instance.collection("existingNumbers"), {"phoneNumber": ngnPhoneNumber});
-
-    if (userDataWithPN.isSuccess == false) return Result.error("Unable to check if user's phone number exists or invalid data format");
-
-    if (userDataWithPN.value == null) {
-      return Result.success(false);
-    }
-
-    try {
-      final Map<String, dynamic> userData = Map.from(userDataWithPN.value);
-
-      if (userData['email'] == null) return Result.error("Email field empty");
-      if (userData['email'] != email) {
-        return Result.success(true);
-      } else {
-        return Result.success(false);
-      }
-    } catch (e) {
-      return Result.success(false);
-    }
-  } catch (e) {
-    log("Error checking if number conflicts/exists: $e");
-  }
-  return Result.error("Error checking if number conflicts/exists");
-}
-
-createExistingPhoneNumber(UserCredentialModel userCredentialModel) async {
-  final Map<String, dynamic> originalUserData = userCredentialModel.toMap();
-
-  UserCredentialModel defaultUserData = UserCredentialModel.fromMap({
-    'userID': originalUserData['userID'],
-    'displayName': originalUserData['displayName'],
-    'isAnonymous': originalUserData['isAnonymous'],
-    'creationTime': originalUserData['creationTime'],
-    'phoneNumber': originalUserData['phoneNumber'],
-    'photoURL': originalUserData['photoURL'],
-    'userName': originalUserData['userName'],
-    'email': originalUserData['email'],
-  });
-
-  final ref = FirebaseFirestore.instance.collection("existingNumbers");
-  await ref.doc(originalUserData['phoneNumber']).set(defaultUserData.toMap());
-  log(" >>> Initing user on firebase");
- final bool resInitUser = await initUserOnFirebase(defaultUserData.userID, originalUserData['phoneNumber']);
-
-  log(" >>> Successfully init user on firebase");
-  return;
-}
-
-Future<bool> initUserOnFirebase(String myUserId, String contactId) async {
-try{
-  final DocumentReference docRef = FirebaseFirestore.instance.collection("chats").doc(myUserId);
-  // First setup user's document
-  await docRef.set({
-    'canReceiveChats': false,
-    'contactId': contactId,
-    'publicKey': "",
-  });
-
-  RSAPublicKey? publicKey = await EncryptionService.instance.getPublicKeyAsync();
-  await docRef.set({
-    'canReceiveChats': true,
-    'contactId': contactId,
-    'publicKey': publicKey,
-  });
-
-  await docRef.collection("messages").doc('chatId').set({'field': "value"});
-
-  return true;
-}catch(e){
-  log("Error @ initUserOnFirebase: $e");
-  return false;
-}
 
 
-}

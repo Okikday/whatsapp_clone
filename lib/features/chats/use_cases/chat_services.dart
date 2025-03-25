@@ -14,10 +14,12 @@ import 'package:whatsapp_clone/models/asymmetric_encrypt_model.dart';
 
 class ChatServices {
   static final CollectionReference firebaseChatRef = FirebaseFirestore.instance.collection("chats");
+  static final CollectionReference firebasePublicInfoRef = FirebaseFirestore.instance.collection("public_info");
   late StreamSubscription<DocumentSnapshot> _publicKeySubscription;
   String? _otherUserPublicKey;
   late String? _myId;
   late String _chatId;
+  bool canChatUser = true;
 
   ChatServices(ChatModel chatModel) {
     _myId = AppData.userId;
@@ -28,15 +30,20 @@ class ChatServices {
   listenToPublicKey() {
     log("Started listening to publicKey on this Chat Service");
 
-    _publicKeySubscription = firebaseChatRef.doc("$_chatId/publicKey").snapshots().listen(
+    _publicKeySubscription = firebasePublicInfoRef.doc(_chatId).snapshots().listen(
       (snapshot) {
         final data = snapshot.data();
-        if (data == null) return;
-        final String dataToString = data as String;
-        if (dataToString.isEmpty) return;
-        _otherUserPublicKey = dataToString;
-        log("Updated publicKey for this Chat Service");
+        if (data == null){canChatUser = false; return;}
+        final Map<String, dynamic> dataToString = Map<String, dynamic>.from(data as Map);
+        final String? gottenPublicKey = dataToString['publicKey'];
+        if (dataToString.isEmpty || gottenPublicKey == null || gottenPublicKey.isEmpty){canChatUser = false; return;}
+        _otherUserPublicKey = gottenPublicKey;
+        log("Updated publicKey for this Chat User");
       },
+      onError: (error, stacktrace){
+        // Connect to the internet error handling
+        log("Error checking public key for current chat");
+      }
     );
   }
 

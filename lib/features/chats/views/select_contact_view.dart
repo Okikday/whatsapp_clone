@@ -140,9 +140,30 @@ class _SelectContactViewState extends State<SelectContactView> {
                             ),
                           ),
 
-                        if (selectContactController.searchedChatModel.value != null)
-                          _buildSearchContactTile(isDarkMode, selectContactController.searchedChatModel.value!,
-                              selectContactController.searchContactText.value),
+                        SliverToBoxAdapter(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return SizeTransition(
+                                sizeFactor: animation,
+                                axisAlignment: -1.0,
+                                child: child,
+                              );
+                            },
+                            child: selectContactController.searchedChatModel.value != null
+                                ? _buildSearchContactTile(
+                              isDarkMode,
+                              selectContactController.searchedChatModel.value!,
+                              selectContactController.searchContactText.value,
+                              key: const ValueKey('select_contact_view_tile'),
+                            )
+                                : const SizedBox(
+                              key: ValueKey('select_contact_view_empty'),
+                              height: 0,
+                            ),
+                          ),
+                        ),
+
 
                         // SECTION: NEW GROUP, NEW CONTACT, NEW COMMUNITY.
                         SliverVisibility(visible: isSearchContactTextEmpty, sliver: _buildFirstSelectContactViewSection(isDarkMode)),
@@ -524,7 +545,7 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
                                   searchTimer!.cancel();
                                 }
                                 // Schedule the search function to be called after 400ms.
-                                searchTimer = Timer(const Duration(milliseconds: 300), () async {
+                                searchTimer = Timer(const Duration(milliseconds: 400), () async {
                                   await widget.selectContactController.searchContactOnWhatsApp();
                                 });
                               },
@@ -546,6 +567,8 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
                                 color: widget.isDarkMode ? Colors.white : Colors.black,
                                 onPressed: () async {
                                   this.isSearchBarVisible.value = false;
+                                  widget.selectContactController.setSearchContactText("");
+                                  widget.selectContactController.searchedChatModel.value = null;
                                   Future.delayed(Durations.medium1, () {
                                     if (context.mounted) focusNode.unfocus();
                                   });
@@ -570,66 +593,65 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
   }
 }
 
-Widget _buildSearchContactTile(bool isDarkMode, ChatModel cacheChatModel, String contactInput) {
-  return SliverToBoxAdapter(
-    child: ListTile(
-      leading: Padding(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: CircleAvatar(
-          radius: 21,
-          backgroundColor: WhatsAppColors.emerald,
-          backgroundImage: Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: cacheChatModel.chatProfilePhoto),
-        ),
+Widget _buildSearchContactTile(bool isDarkMode, ChatModel cacheChatModel, String contactInput, {Key? key,}) {
+  return ListTile(
+    key: key,
+    leading: Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: CircleAvatar(
+        radius: 21,
+        backgroundColor: WhatsAppColors.emerald,
+        backgroundImage: Utilities.imgProvider(imgsrc: ImageSource.network, imgurl: cacheChatModel.chatProfilePhoto),
       ),
-      contentPadding: const EdgeInsets.only(left: 16, top: 4, bottom: 4, right: 12),
-      title: CustomText(
-        cacheChatModel.chatName,
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-      ),
-      subtitle: cacheChatModel.profileInfo.isNotEmpty
-          ? CustomText(
-              cacheChatModel.profileInfo,
-              fontSize: 12,
-              color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-              overflow: TextOverflow.ellipsis,
-            )
-          : null,
-      trailing: CustomElevatedButton(
-        onClick: () async {
-          final String input = contactInput;
-          Get.close(1);
-          await addChatModelAsNumIfNotExist(cacheChatModel, input);
-          final String? userId = AppData.userId;
-          if (userId == null) return;
-
-          navigator
-              ?.push(Utilities.customPageRouteBuilder(ChatView(
-            chatModel: cacheChatModel,
-            myUserId: userId,
-          )))
-              .then((onValue) async {
-            final Stream<List<MessageModel>> hasChatted = AppData.messages.watchMessagesForChat(cacheChatModel.chatId, limit: 1);
-            hasChatted.listen((messages) async {
-              if (messages.isNotEmpty) {
-                return;
-              } else {
-                await AppData.chats.deleteChatWithMsgs(cacheChatModel.chatId);
-              }
-            });
-          });
-        },
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        backgroundColor: Theme.of(Get.context!).primaryColor,
-        borderRadius: ConstantSizing.borderRadiusCircle,
-        child: const CustomText(
-          "Chat",
-          color: Colors.white,
-        ),
-      ),
-      onTap: () {},
     ),
+    contentPadding: const EdgeInsets.only(left: 16, top: 4, bottom: 4, right: 12),
+    title: CustomText(
+      cacheChatModel.chatName,
+      fontSize: 17,
+      fontWeight: FontWeight.w500,
+    ),
+    subtitle: cacheChatModel.profileInfo.isNotEmpty
+        ? CustomText(
+            cacheChatModel.profileInfo,
+            fontSize: 12,
+            color: isDarkMode ? WhatsAppColors.darkTextSecondary : WhatsAppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+            overflow: TextOverflow.ellipsis,
+          )
+        : null,
+    trailing: CustomElevatedButton(
+      onClick: () async {
+        final String input = contactInput;
+        Get.close(1);
+        await addChatModelAsNumIfNotExist(cacheChatModel, input);
+        final String? userId = AppData.userId;
+        if (userId == null) return;
+
+        navigator
+            ?.push(Utilities.customPageRouteBuilder(ChatView(
+          chatModel: cacheChatModel,
+          myUserId: userId,
+        )))
+            .then((onValue) async {
+          final Stream<List<MessageModel>> hasChatted = AppData.messages.watchMessagesForChat(cacheChatModel.chatId, limit: 1);
+          hasChatted.listen((messages) async {
+            if (messages.isNotEmpty) {
+              return;
+            } else {
+              await AppData.chats.deleteChatWithMsgs(cacheChatModel.chatId);
+            }
+          });
+        });
+      },
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      backgroundColor: Theme.of(Get.context!).primaryColor,
+      borderRadius: ConstantSizing.borderRadiusCircle,
+      child: const CustomText(
+        "Chat",
+        color: Colors.white,
+      ),
+    ),
+    onTap: () {},
   );
 }
 

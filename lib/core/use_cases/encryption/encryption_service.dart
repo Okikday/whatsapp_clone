@@ -50,7 +50,7 @@ class EncryptionService {
       if (_myId == null || _myId!.isEmpty) {
         log("EncryptionService: No userId found in AppData");
       }
-      _fbPublicKeyDocRef = FirebaseFirestore.instance.collection("chats").doc(_myId);
+      _fbPublicKeyDocRef = FirebaseFirestore.instance.collection("public_info").doc(_myId);
       // Initialize keys first, then start listening.
       _initKeys().then((result) {
         if (result.isSuccess) {
@@ -111,7 +111,7 @@ class EncryptionService {
       }
       log("EncryptionService: Inside _initKeys");
       _myId = AppData.userId;
-      _fbPublicKeyDocRef = FirebaseFirestore.instance.collection("chats").doc(_myId);
+      _fbPublicKeyDocRef = FirebaseFirestore.instance.collection("public_info").doc(_myId);
 
       final Map<int, String>? encDetails = await _getAesEncDetails();
       if (encDetails == null) {
@@ -157,9 +157,9 @@ class EncryptionService {
         return false;
       }
       final String encodedPublicKey = CryptoUtils.encodeRSAPublicKeyToPem(_currAsymmetricKeysModel!.publicKey!);
-      await _fbPublicKeyDocRef.update({
+      await _fbPublicKeyDocRef.set({
         'publicKey': encodedPublicKey,
-      });
+      }, SetOptions(merge: true));
       return true;
     } catch (e) {
       log("updateFirebasePublicKey error: $e");
@@ -216,7 +216,7 @@ class EncryptionService {
       }
       AppData.userId = userIdRaw.value;
       _myId = userIdRaw.value;
-      _fbPublicKeyDocRef = FirebaseFirestore.instance.collection("chats").doc(_myId);
+      _fbPublicKeyDocRef = FirebaseFirestore.instance.collection("public_info").doc(_myId);
       return true;
     } catch (e) {
       log("Error in tryLoadMyId: $e");

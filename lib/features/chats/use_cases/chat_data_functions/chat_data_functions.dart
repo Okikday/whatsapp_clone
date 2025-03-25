@@ -7,11 +7,13 @@ import 'package:whatsapp_clone/data/firebase_data/firebase_data.dart';
 import 'package:whatsapp_clone/data/user_data/user_data.dart';
 
 class ChatFirebaseDataFunctions {
+  static final CollectionReference firebasePublicInfoRef = FirebaseFirestore.instance.collection("public_info");
+
   static Future<Result<ChatModel>> getNumberOnWhatsApp(String ngnPhoneNumber) async {
     try {
       // is number on WhatsApp raw data form
       final Result isNumberOnWARaw = await FirebaseData()
-          .getWhere(suppliedQuery: FirebaseFirestore.instance.collection("existingNumbers"), {"phoneNumber": ngnPhoneNumber});
+          .getWhere(suppliedQuery: firebasePublicInfoRef, {"phoneNumber": ngnPhoneNumber});
 
       if (isNumberOnWARaw.isSuccess == false || isNumberOnWARaw.value == null) {
         return Result.error("Unable to get number or number doesn't exists");
@@ -34,6 +36,7 @@ class ChatFirebaseDataFunctions {
         );
 
         if(chatModel.contactId == getUserDetails.value?.phoneNumber) return Result.success(chatModel.copyWith(chatName: "${chatModel.chatName} (You)"));
+
         return Result.success(chatModel);
       } else {
         return Result.unavailable("Number doesn't exists");
