@@ -395,7 +395,7 @@ class _SelectContactViewState extends State<SelectContactView> {
               ),
               onPressed: () {},
             ),
-            onTap: () {
+            onTap: () async{
               navigator?.push(Utilities.customPageRouteBuilder(const NewContactView(),
                   curve: appAnimationSettingsController.curve,
                   transitionDuration: appAnimationSettingsController.transitionDuration,
@@ -528,6 +528,8 @@ class _SelectContactAppBarState extends State<SelectContactAppBar> {
                           IconButton(onPressed: () {}, icon: Icon(Icons.more_vert, color: getCurrIconColor))
                         ],
                       ),
+
+                      // Search Bar
                       AnimatedPositioned(
                         duration: Durations.medium1,
                         curve: appAnimationSettingsController.curve,

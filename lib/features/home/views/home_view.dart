@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:whatsapp_clone/app/controllers/app_animation_settings.dart';
 import 'package:whatsapp_clone/app/controllers/app_ui_state.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/core/services/message_services.dart';
 import 'package:whatsapp_clone/features/chats/views/select_contact_view.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 import 'package:whatsapp_clone/features/home/views/tab_views/calls_tab_view.dart';
@@ -34,6 +35,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, Auto
     homeUiController.setHomeBottomNavBarCurrentIndex(0);
     homeUiController.sethomeCameraIconAnimController(AnimationController(vsync: this, duration: const Duration(milliseconds: 250)));
     pageController = PageController(initialPage: homeUiController.homeBottomNavBarCurrentIndex.value);
+    MessageServices.instance;
   }
 
   @override

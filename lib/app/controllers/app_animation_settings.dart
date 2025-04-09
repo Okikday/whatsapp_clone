@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
-final AppAnimationSettings appAnimationSettingsController = Get.put(AppAnimationSettings());
+final AppAnimationSettings appAnimationSettingsController = Get.put(AppAnimationSettings(), permanent: true);
 
 
 

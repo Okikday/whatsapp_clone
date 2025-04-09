@@ -5,6 +5,8 @@ import 'package:whatsapp_clone/features/authentication/views/welcome_screen.dart
 import 'package:whatsapp_clone/common/themes.dart';
 import 'package:whatsapp_clone/routes_names.dart';
 
+import 'app/controllers/app_animation_settings.dart';
+
 class App extends StatelessWidget {
   final bool isUserSignedIn;
   const App({
@@ -15,6 +17,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    appAnimationSettingsController.transitionDuration;
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: "WhatsApp Clone",

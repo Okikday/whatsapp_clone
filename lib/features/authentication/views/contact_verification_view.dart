@@ -259,8 +259,6 @@ class _ContactVerificationViewState extends State<ContactVerificationView> {
                                           Get.close(1);
                                           navigator?.pop();
                                           Get.off(() => RoutesNames.homeView);
-                                          CustomSnackBar.showSnackBar(Get.context!,
-                                              content: "Successfully signed in with phone number and Google", usePrimaryColor: true, backgroundColor: scaffoldBgColor);
                                         } catch (e) {
                                           log("error: $e");
                                           await FirebaseGoogleAuth().googleSignOut();

@@ -110,7 +110,7 @@ class AuthFunctions {
         'publicKey': CryptoUtils.encodeRSAPublicKeyToPem(publicKey),
       });
 
-      await FirebaseFirestore.instance.collection("chats").doc(userCredentialModel.userID).collection("messages").doc("default").set({});
+      await FirebaseFirestore.instance.collection("chats").doc(userCredentialModel.userID).collection("users").doc("default").set({});
       return true;
     } catch (e) {
       log("Error @ initUserOnFirebase: $e");
