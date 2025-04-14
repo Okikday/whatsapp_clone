@@ -15,6 +15,7 @@ import 'package:whatsapp_clone/common/assets_strings.dart';
 import 'package:whatsapp_clone/common/colors.dart';
 import 'package:whatsapp_clone/common/constants.dart';
 import 'package:custom_widgets_toolkit/custom_widgets_toolkit.dart';
+import 'package:whatsapp_clone/core/services/message_services.dart';
 import 'package:whatsapp_clone/features/home/views/sub_widgets/chats_tab_lists.dart';
 import 'package:whatsapp_clone/features/home/controllers/chats_tab_ui_controller.dart';
 
@@ -32,6 +33,7 @@ class _ChatsTabViewState extends State<ChatsTabView> with AutomaticKeepAliveClie
 
   @override
   Widget build(BuildContext context) {
+    MessageServices.instance.start();
     super.build(context);
     // chatsTabUiController.setOverscrollOffset(0.0);
     final ThemeData themeData = Theme.of(context);

@@ -105,34 +105,46 @@ class MessageRepository {
 
   /// Retrieves messages for a given chat, optionally limiting the number returned.
   /// If [limit] is provided and greater than zero, only that number of messages is returned.
-  Future<List<MessageModel>> getMessagesForChat(String chatId, {int? limit}) async {
-    // Build a query to get messages for the given chatId.
+  Future<List<MessageModel>> getMessagesForChat(
+      String currentUserId,
+      String friendUserId, {
+        int? limit,
+      }) async {
     final query = _db.select(_db.messageTable)
-      ..where((tbl) => tbl.chatId.equals(chatId))
+      ..where((tbl) =>
+      (tbl.myId.equals(currentUserId) & tbl.chatId.equals(friendUserId)) |
+      (tbl.myId.equals(friendUserId) & tbl.chatId.equals(currentUserId))
+      )
       ..orderBy([
-            (tbl) => OrderingTerm(expression: tbl.sentTime, mode: OrderingMode.desc)
+            (tbl) => OrderingTerm(
+          expression: tbl.sentTime,
+          mode: OrderingMode.desc,
+        )
       ]);
 
-    // Apply the limit if provided.
     if (limit != null && limit > 0) {
       query.limit(limit);
     }
 
-    // Get the data and convert it to MessageModel.
     final dataList = await query.get();
     return dataList.map(_fromData).toList();
   }
+
 
   /// Streams messages for a given chat, optionally limiting the number emitted.
   /// If [limit] is provided and greater than zero, the stream returns only that number of messages.
   /// Use [ascending] to sort messages in ascending order (by sentTime), or descending if false.
   Stream<List<MessageModel>> watchMessagesForChat(
-      String chatId, {
+      String currentUserId,
+      String friendUserId, {
         int? limit,
         bool ascending = false,
       }) {
     final query = _db.select(_db.messageTable)
-      ..where((tbl) => tbl.chatId.equals(chatId))
+      ..where((tbl) =>
+      (tbl.myId.equals(currentUserId) & tbl.chatId.equals(friendUserId)) |
+      (tbl.myId.equals(friendUserId) & tbl.chatId.equals(currentUserId))
+      )
       ..orderBy([
             (tbl) => OrderingTerm(
           expression: tbl.sentTime,
@@ -146,6 +158,7 @@ class MessageRepository {
 
     return query.watch().map((dataList) => dataList.map(_fromData).toList());
   }
+
 
 
 

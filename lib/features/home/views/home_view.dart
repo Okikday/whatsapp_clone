@@ -35,7 +35,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin, Auto
     homeUiController.setHomeBottomNavBarCurrentIndex(0);
     homeUiController.sethomeCameraIconAnimController(AnimationController(vsync: this, duration: const Duration(milliseconds: 250)));
     pageController = PageController(initialPage: homeUiController.homeBottomNavBarCurrentIndex.value);
-    MessageServices.instance;
   }
 
   @override

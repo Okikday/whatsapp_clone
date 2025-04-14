@@ -635,7 +635,7 @@ Widget _buildSearchContactTile(bool isDarkMode, ChatModel cacheChatModel, String
           myUserId: userId,
         )))
             .then((onValue) async {
-          final Stream<List<MessageModel>> hasChatted = AppData.messages.watchMessagesForChat(cacheChatModel.chatId, limit: 1);
+          final Stream<List<MessageModel>> hasChatted = AppData.messages.watchMessagesForChat(AppData.userId!, cacheChatModel.chatId, limit: 1);
           hasChatted.listen((messages) async {
             if (messages.isNotEmpty) {
               return;

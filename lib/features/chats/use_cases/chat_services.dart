@@ -5,6 +5,7 @@ import 'package:basic_utils/basic_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import 'package:whatsapp_clone/common/utilities/utilities.dart';
+import 'package:whatsapp_clone/core/data/firebase_paths.dart';
 import 'package:whatsapp_clone/core/use_cases/encryption/asymmetric_encryption.dart';
 import 'package:whatsapp_clone/core/use_cases/encryption/encryption_logic.dart';
 import 'package:whatsapp_clone/data/app_data.dart';
@@ -13,8 +14,6 @@ import 'package:whatsapp_clone/features/chats/use_cases/functions/chats_function
 import 'package:whatsapp_clone/models/asymmetric_encrypt_model.dart';
 
 class ChatServices {
-  static final CollectionReference firebaseChatRef = FirebaseFirestore.instance.collection("chats");
-  static final CollectionReference firebasePublicInfoRef = FirebaseFirestore.instance.collection("public_info");
   late StreamSubscription<DocumentSnapshot> _publicKeySubscription;
   String? _otherUserPublicKey;
   late String? _myId;
@@ -30,7 +29,7 @@ class ChatServices {
   listenToPublicKey() {
     log("Started listening to publicKey on this Chat Service");
 
-    _publicKeySubscription = firebasePublicInfoRef.doc(_chatId).snapshots().listen(
+    _publicKeySubscription = FirebasePaths.publicInfoDocRef(_chatId).snapshots().listen(
       (snapshot) {
         final data = snapshot.data();
         if (data == null){canChatUser = false; return;}
@@ -79,11 +78,13 @@ class ChatServices {
         'timestamp': FieldValue.serverTimestamp()
       };
       if(_chatId.isEmpty || _myId == null || _myId!.isEmpty) return Result.error("chatId or _myId empty or null @ ChatServices");
-      final DocumentReference docRef = firebaseChatRef.doc(_chatId).collection("messages").doc(_myId).collection("received").doc(encryptedMessageModel.messageId);
+      final DocumentReference docRef = FirebasePaths.otherUsersRef(_chatId).doc(_myId).collection("messages").doc(encryptedMessageModel.messageId);
       await docRef.set(msgToSend);
+
+      await FirebasePaths.otherUsersRef(_chatId).doc(_myId).set({"sentMsg": true}, SetOptions(merge: true));
       return Result.success(true);
     }catch(e){
-      log("Unable to send message to firebase");
+      log("Unable to send message to firebase $e");
       return Result.error("Error sending message to firebase");
     }
   }
